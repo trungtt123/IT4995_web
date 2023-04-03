@@ -4,31 +4,53 @@ import { getTextWithIcon } from "../Services/Helper/common";
 import default_avatar from '../Assets/images/default_avatar.jpg'
 import { useHistory, useLocation } from "react-router-dom";
 import OutlinedInput from '@mui/material/OutlinedInput';
+import { Button } from "@mui/material";
+import ModalAddMember from "../Components/ModalAddMember";
 function MessageItem(props) {
     if (props.idSender != props.idUser)
         return (
-            <div style={{ height: 40 }}>
+            <div style={{ height: 60, position: 'relative' }}>
                 <span>{props?.avatar?.url
                     ? <img src={props?.avatar?.url} style={{ width: 30, height: 30, borderRadius: 15 }} />
                     : <img src={default_avatar} style={{ width: 30, height: 30, borderRadius: 15 }} />}
                 </span>
-                <span>
+                <span style={{
+                    backgroundColor: '#ccc',
+                    height: 40,
+                    borderRadius: 10,
+                    color: 'black',
+                    padding: 5,
+                    position: 'absolute',
+                    top: -20,
+                    marginLeft: 5
+                }}>
                     {props.mess}
                 </span>
             </div>
         );
     else
         return (
-            <div style={{ height: 40 }}>
-                <div style={{ float: 'right' }}>
+            <div style={{ height: 60, position: 'relative' }}>
+                <span style={{
+                    float: 'right',
+                    backgroundColor: '#5540ff',
+                    height: 40,
+                    borderRadius: 10,
+                    color: 'white',
+                    padding: 5,
+                    position: 'absolute',
+                    top: -20,
+                    right: 0
+                }}>
                     {props.mess}
-                </div>
+                </span>
             </div>
         );
 }
 
 export default function Conversation({ socket }) {
     const location = useLocation();
+    const history = useHistory();
     const { user } = useSelector(
         (state) => state.auth
     );
@@ -48,8 +70,9 @@ export default function Conversation({ socket }) {
             token: user.token,
             userId: user.id,
             conversationId: conversation._id,
-            content: getTextWithIcon(mess + " ")
+            content: textMessage
         });
+        setTextMessage('');
     }
     const handleBack = () => {
         // socket?.emit('client_leave_conversation', {
@@ -59,8 +82,11 @@ export default function Conversation({ socket }) {
         // })
         // navigation.goBack();
     }
-    const handleAddMember = () => {
-        setShowAddMember(true);
+    const handleCall = () => {
+        history.push({
+            pathname: '/room',
+            state: { roomId: conversation._id }
+        });
     }
 
     const scrollToBottom = () => {
@@ -92,72 +118,36 @@ export default function Conversation({ socket }) {
     }, [listMessage]);
     return (
         <>
-            {/* {showAddMember && <ModalAddMember conversationId={conversation._id} socket={socket}
-        closeModal={() => setShowAddMember(false)} />} */}
+            {showAddMember && <ModalAddMember conversationId={conversation._id}
+                socket={socket} closeModal={() => setShowAddMember(false)} />}
             <div>
-                {/* thanh tim kiem */}
-                {/* <View style={{ marginTop: 10 }}>
-        <TextInput
-          style={{
-            fontSize: 17,
-            backgroundColor: '#f1f2f4',
-            marginTop: 0,
-            height: 40,
-            paddingRight: 10,
-            paddingLeft: 10,
-            borderRadius: 25
-          }}
-          placeholder=" Tìm kiếm trong cuộc trò chuyện "
-          keyboardType="default"
-        >
-          <Ionicons style={{ border: 1, width: 20, marginTop: 2 }} name="search" size={20} color="grey" />
-          <Text style={{ color: "grey" }}> Tìm kiếm trong cuộc trò chuyện </Text>
-        </TextInput>
-      </View> */}
-
-
-                <div
-                    //     showsHorizontalScrollIndicator={false}
-                    //   showsVerticalScrollIndicator={false}
-                    //   ref={ref => { mess.current = ref }}
-                    //   onContentSizeChange={() => mess.current.scrollToEnd({ animated: true })}
-                    style={{ width: "100%"}}>
-                    <div style={{overflow: 'hidden' }}>
+                <div style={{
+                    height: 50, width: '100%', position: 'fixed', backgroundColor: 'white', zIndex: 10,
+                    boxShadow: '2px 2px 4px rgba(0, 0, 0, 0.2)'
+                }}>
+                    <Button onClick={() => setShowAddMember(true)}
+                        variant="contained">Thêm TV</Button>
+                    <Button onClick={() => handleCall()}
+                        variant="contained">Call</Button>
+                </div>
+                <div style={{ width: "100%" }}>
+                    <div style={{ overflow: 'hidden', paddingTop: 20 }}>
                         {listMessage.map((e, index) => {
                             return <MessageItem
                                 key={e._id} avatar={avatar[e.sender]}
                                 mess={e.content} idSender={e.sender} idUser={user.id} keyExtractor={(e) => e._id} />
                         }
                         )}
-                        <div ref={messageEndRef} />
+                        <div style={{marginBottom: 40}} 
+                        ref={messageEndRef} />
                     </div>
                 </div>
-                <OutlinedInput placeholder="Please enter text" />
-                {/* <View style={styles.nhapTinNhan}>
-          <AntDesign name="appstore1" size={24} color="#0099ff" style={{ marginLeft: 5 }} />
-          <Entypo name="camera" size={24} color="#0099ff" style={{ marginLeft: 10 }} />
-          <Entypo name="image" size={24} color="#0099ff" style={{ marginLeft: 10 }} />
-          <Entypo name="mic" size={24} color="#0099ff" style={{ marginLeft: 10 }} />
-          <TextInput
-            style={{
-              fontSize: 17,
-              backgroundColor: '#f2f3f4',
-              marginLeft: 10,
-              height: 40,
-              width: "50%",
-              paddingRight: 10,
-              paddingLeft: 10,
-              borderRadius: 25
-            }}
-            placeholder=" Aa"
-            keyboardType="default"
-            value={getTextWithIcon(textMessage)}
-            onChangeText={(text) => { setTextMessage(text); }}
-            onSubmitEditing={async () => { await handleSendMessage(textMessage); setTextMessage(""); }}
-          ></TextInput>
-          <AntDesign name="like1" size={24} color="#0099ff" style={{ marginLeft: 10 }} />
-        </View> */}
-
+                <div style={{position: 'fixed', bottom: 0}}> 
+                    <OutlinedInput value={textMessage}
+                        placeholder="Nhập tin nhắn" onChange={(e) => setTextMessage(e.target.value)} />
+                    <Button onClick={() => handleSendMessage()}
+                        variant="contained">Gửi</Button>
+                </div>
             </div>
         </>
     );
