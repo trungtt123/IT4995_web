@@ -44,7 +44,7 @@ class Room extends Component {
     }
 
     // DONT FORGET TO CHANGE TO YOUR URL
-    this.serviceIP = 'http://localhost:8080/webrtcPeer'
+    this.serviceIP = 'https://it4995-server.onrender.com/webrtcPeer'
 
     // https://reactjs.org/docs/refs-and-the-dom.html
     // this.localVideoref = React.createRef()

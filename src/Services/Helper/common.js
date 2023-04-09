@@ -148,3 +148,24 @@ export const convertMsToTime = (milliseconds) => {
         seconds,
     )}`;
 }
+export function getTimeCreateConversation(dateString) {
+    const date = new Date(dateString);
+    const formattedDate = date.toLocaleString('en-GB', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+        timeZone: 'Asia/Ho_Chi_Minh'
+    });
+    return formattedDate
+}
+export const getRandomColor = () => {
+    const letters = '0123456789ABCDEF';
+    let color = '#';
+    for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+}

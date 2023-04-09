@@ -15,7 +15,7 @@ export const verifyToken = createAsyncThunk(
   "auth/verifyToken",
   async (_, thunkAPI) => {
     try {
-      await delay(3000);
+      // await delay(3000);
       return await authService.verifyToken();
     } catch (e) {
       console.log("error", e);

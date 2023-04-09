@@ -94,7 +94,7 @@ export default function Conversation({ socket }) {
     }
 
     useEffect(() => {
-        socket && socket.emit('join_conversation', {
+        conversation && socket && socket.emit('join_conversation', {
             conversationId: conversation._id,
             token: user.token
         })
@@ -116,6 +116,9 @@ export default function Conversation({ socket }) {
     useEffect(() => {
         scrollToBottom();
     }, [listMessage]);
+    useEffect(() => {
+        if (!conversation) history.push('/') 
+    }, [conversation])
     return (
         <>
             {showAddMember && <ModalAddMember conversationId={conversation._id}

@@ -1,30 +1,42 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { login } from "../Redux/authSlice";
+import { OutlinedInput, TextField, Button } from "@mui/material";
+import { VisibilityOffOutlined } from '@mui/icons-material';
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
+import soict from '../Assets/images/soict.png'
 const Login = (props) => {
     const dispatch = useDispatch();
     const [phone, setPhone] = useState();
     const [pass, setPass] = useState();
-
+    const [isShowPass, setIsShowPass] = useState(false);
     const handleSubmit = () => {
-        dispatch(login({phonenumber: phone, password: pass}))
+        dispatch(login({ phonenumber: phone, password: pass }))
     }
     return (
         <div style={{
-            textAlign: 'center'
+            textAlign: 'center',
+            padding: '50px 20px'
         }}>
-            <div style={{marginBottom: 5}}>
-                <label>Phone </label>
-                <input type="text" defaultValue={phone}
-                onChange={(e) => setPhone(e.target.value)} style={{ height: 40, fontSize: 20 }} />
+            <img src={soict} style={{ width: 200, height: 200, borderRadius: 100 }} />
+            <div style={{ margin: 10 }}>
+                <TextField defaultValue={phone} style={{ width: '100%' }}
+                    id="outlined-basic" label="Số điện thoại" variant="outlined" onChange={(e) => setPhone(e.target.value)} />
             </div>
-            <div style={{marginBottom: 5}}>
-                <label>Pass </label>
-                <input defaultValue={pass} onChange={(e) => setPass(e.target.value)}
-                type="password" style={{ height: 40, fontSize: 20 }} />
+            <div style={{ margin: 10, position: 'relative' }}>
+                <TextField defaultValue={pass} style={{ width: '100%' }} type={!isShowPass ? "password" : "text"}
+                    id="outlined-basic" label="Mật khẩu" variant="outlined" onChange={(e) => setPass(e.target.value)} />
+                {!isShowPass ? 
+                <VisibilityOffOutlined onClick={() => setIsShowPass(true)}
+                style={{position: 'absolute', right: 15, top: 15}} fontSize="small"/> 
+                : <VisibilityOutlinedIcon onClick={() => setIsShowPass(false)}
+                style={{position: 'absolute', right: 15, top: 15}} fontSize="small"/> }
             </div>
-            <button onClick={() => handleSubmit()}
-            style={{width: 100, height: 40}}>Gửi</button>
+            <div style={{fontSize: 15, float: 'right', margin: 10}}>Forgot Password</div>
+            <div style={{ margin: 10 }}>
+                <Button onClick={() => handleSubmit()} style={{ width: '100%' }}
+                    variant="contained">Đăng nhập</Button>
+            </div>
         </div>
     );
 };

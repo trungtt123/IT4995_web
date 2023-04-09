@@ -1,14 +1,22 @@
 import React, { useState, useEffect } from "react";
-import { _getCache, _setCache } from "../Services/Helper/common";
+import { _getCache, _setCache, getTimeCreateConversation, getRandomColor } from "../Services/Helper/common";
 import { useDispatch, useSelector } from "react-redux";
 import ModalCreateConversation from "../Components/ModalCreateConversation";
 import Button from '@mui/material/Button';
 import { useHistory } from "react-router-dom";
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import ListItemAvatar from '@mui/material/ListItemAvatar';
+import Avatar from '@mui/material/Avatar';
+import SearchBar from "../Components/SearchBar";
+
 export default function Conversations({ socket }) {
     const dispatch = useDispatch();
     const history = useHistory();
     const [conversations, setConversations] = useState([]);
     const [showModalCreateConversation, setShowModalCreateConversation] = useState(false);
+    const [keyword, setKeyword] = useState('');
     const { user } = useSelector(
         (state) => state.auth
     );
@@ -17,6 +25,9 @@ export default function Conversations({ socket }) {
             pathname: '/conversation',
             state: { conversation: conversation }
         });
+    }
+    const handleSearch = (keyword) => {
+        setKeyword(keyword)
     }
     useEffect(() => {
         socket.emit('me', { userId: user.id });
@@ -36,18 +47,37 @@ export default function Conversations({ socket }) {
             {showModalCreateConversation
                 && <ModalCreateConversation socket={socket}
                     closeModal={() => setShowModalCreateConversation(false)} />}
-            <div style={{ marginTop: 30 }}>
-                {conversations?.map((item, index) => {
-                    return <div key={item._id} onClick={() => goToConversation(item)}
+            <div style={{ textAlign: 'center' }}>
+                <Button style={{ position: 'fixed', bottom: 40, right: 10, width: 60, height: 60, borderRadius: '50%', zIndex: 1000 }}
+                    onClick={() => setShowModalCreateConversation(true)}
+                    variant="contained">TẠO MỚI</Button>
+            </div>
+            <SearchBar onSearch={(keyword) => handleSearch(keyword)}/>
+
+            <List sx={{ width: '100%' }}>
+                {conversations?.filter((o) => o.conversationName.includes(keyword))?.map((item, index) => {
+                    let secondary = item?.messages[item?.messages.length - 1]?.content;
+                    if (!secondary) secondary = getTimeCreateConversation(item?.createdAt);
+                    return <ListItem style={{ boxShadow: '2px 2px 4px rgba(0,0,0,0.1)' }}
+                        key={item._id} onClick={() => goToConversation(item)}
+                        sx={{ bgcolor: 'background.paper', m: 1, width: 'auto', borderRadius: 5, height: 80 }}
+                    >
+                        <ListItemAvatar>
+                            {/* style={{ background: `linear-gradient(to bottom right, ${getRandomColor()}, ${getRandomColor()}, ${getRandomColor()}, #000)`, color: '#fff'}} */}
+                            <Avatar style={{ backgroundColor: getRandomColor() }}>
+                                {item.conversationName[0]}
+                            </Avatar>
+                        </ListItemAvatar>
+                        <ListItemText primary={item.conversationName} primaryTypographyProps={{ style: { fontWeight: 'bold' } }}
+                            secondary={secondary} />
+                    </ListItem>
+                })}
+
+                {/* <div 
                         style={{ padding: 5, height: 100, border: 'solid 1px #ccc', margin: 5, borderRadius: 20 }}>
                         <div>{item.conversationName}</div>
                         <div>{item?.messages[item?.messages.length - 1]?.content}</div>
-                    </div>
-                })}
-            </div>
-            <div style={{textAlign: 'center'}}>
-            <Button onClick={() => setShowModalCreateConversation(true)}
-            variant="contained">TẠO MỚI</Button>
-            </div>
+                    </div> */}
+            </List>
         </>)
 }

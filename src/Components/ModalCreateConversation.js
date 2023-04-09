@@ -35,10 +35,12 @@ const ModalCreateConversation = ({ socket, closeModal }) => {
             justifyContent="center"
           >
             <Grid item>
-              <TextField id="outlined-basic" label="Tên cuộc hội thoại" variant="outlined" onChange={(e) => setName(e.target.value)} />
+              <TextField sx={{mb: 1}}
+              id="outlined-basic" label="Tên cuộc hội thoại" variant="outlined" onChange={(e) => setName(e.target.value)} />
               <div>
-                <Button onClick={() => handleCreateNewConversation(true)}
-                  variant="contained">Gửi</Button>
+                <Button sx={{width: '100%'}}
+                onClick={() => handleCreateNewConversation(true)}
+                  variant="contained">Tạo mới</Button>
               </div>
             </Grid>
           </Grid>
