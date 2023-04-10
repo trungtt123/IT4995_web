@@ -37,9 +37,11 @@ const ModalAddMember = ({ socket, conversationId, closeModal }) => {
             justifyContent="center"
           >
             <Grid item>
-              <TextField id="outlined-basic" label="Số điện thoại" variant="outlined" onChange={(e) => setPhoneNumber(e.target.value)} />
+              <TextField sx={{mb: 1}}
+               id="outlined-basic" label="Số điện thoại" variant="outlined" onChange={(e) => setPhoneNumber(e.target.value)} />
               <div>
-                <Button onClick={() => handleAddMember(true)}
+                <Button sx={{width: '100%'}}
+                onClick={() => handleAddMember(true)}
                   variant="contained">Gửi</Button>
               </div>
             </Grid>

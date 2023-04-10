@@ -7,22 +7,25 @@ import OutlinedInput from '@mui/material/OutlinedInput';
 import { Button } from "@mui/material";
 import ModalAddMember from "../Components/ModalAddMember";
 import SendRoundedIcon from '@mui/icons-material/SendRounded';
+import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
+import CallIcon from '@mui/icons-material/Call';
+import InfoIcon from '@mui/icons-material/Info';
 function MessageItem(props) {
     if (props.idSender != props.idUser)
         return (
-            <div style={{ position: 'relative', width: '100%', minHeight: 50, marginLeft: 5, marginBottom: 10 }}>
-                <span>{props?.avatar?.url
+            <div style={{ position: 'relative', width: '100%', marginLeft: 5, marginBottom: 20,
+            display: 'flex',
+            justifyContent: 'flex-start', }}>
+                <span style={{alignSelf: 'flex-start'}}>{props?.avatar?.url
                     ? <img src={props?.avatar?.url} style={{ width: 30, height: 30, borderRadius: 15 }} />
                     : <img src={default_avatar} style={{ width: 30, height: 30, borderRadius: 15 }} />}
                 </span>
                 <span style={{
                     backgroundColor: '#ccc',
-                    minHeight: 30,
+                    minHeight: 20,
                     borderRadius: 10,
                     color: 'black',
                     padding: 5,
-                    position: 'absolute',
-                    top: -10,
                     marginLeft: 5,
                     maxWidth: '80%',
                     wordBreak: 'break-word'
@@ -34,18 +37,19 @@ function MessageItem(props) {
     else
         return (
             <div style={{
-                width: '100%', minHeight: 50, display: 'flex',
-                justifyContent: 'flex-end', marginBottom: 10,
+                width: '100%',display: 'flex',
+                justifyContent: 'flex-end', marginBottom: 20,
             }}>
                 <span style={{
                     alignSelf: 'flex-end',
-                    backgroundColor: '#5540ff',
+                    backgroundColor: '#1976d2',
                     minHeight: 30,
                     borderRadius: 10,
                     color: 'white',
                     padding: 5,
                     maxWidth: '80%',
-                    wordBreak: 'break-word'
+                    wordBreak: 'break-word',
+                    marginRight: 5
                 }}>
                     {props.mess}
                 </span>
@@ -130,15 +134,21 @@ export default function Conversation({ socket }) {
                 socket={socket} closeModal={() => setShowAddMember(false)} />}
             <div>
                 <div style={{
-                    height: 50, width: '100%', position: 'fixed', backgroundColor: 'white', zIndex: 10, top: 0,
+                    height: 50, width: '100%', position: 'fixed', backgroundColor: 'white', zIndex: 10, top: -2,
+                    display: 'flex',
+                    justifyContent: 'flex-end',
                     boxShadow: '2px 2px 4px rgba(0, 0, 0, 0.2)'
                 }}>
-                    <Button onClick={() => setShowAddMember(true)}
-                        variant="contained">Thêm TV</Button>
-                    <Button onClick={() => handleCall()}
-                        variant="contained">Call</Button>
+                    <div style={{ position: 'relative' }}>
+                        <PersonAddAlt1Icon style={{position: 'absolute', top: 15, right: 90}}
+                        onClick={() => setShowAddMember(true)} />
+                        <CallIcon style={{position: 'absolute', top: 15, right: 50}}
+                        onClick={() => handleCall()} />
+                        <InfoIcon style={{position: 'absolute', top: 15, right: 10}}
+                        onClick={() => handleCall()} />
+                    </div>
                 </div>
-                <div style={{ width: "100%", marginTop: 50}}>
+                <div style={{ width: "100%", marginTop: 50 }}>
                     <div style={{ overflow: 'hidden', paddingTop: 20, marginBottom: 200 }}>
                         {listMessage.map((e, index) => {
                             return <MessageItem
@@ -165,7 +175,7 @@ export default function Conversation({ socket }) {
                                  /> */}
                             <span style={{ position: 'relative', marginLeft: 5 }}>
                                 <SendRoundedIcon onClick={() => handleSendMessage()}
-                                    
+
                                     color="primary" style={{ position: 'absolute', top: -2, fontSize: 30 }} />
                             </span>
                         </div>

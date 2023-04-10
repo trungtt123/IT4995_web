@@ -20,7 +20,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function SearchBar({onSearch}) {
+export default function SearchBar({ onSearch }) {
   const classes = useStyles();
 
   const handleSearch = (event) => {
@@ -32,12 +32,15 @@ export default function SearchBar({onSearch}) {
   return (
     <Paper component="form" className={classes.root}>
       <SearchIcon className={classes.iconButton} />
-      <InputBase
-        className={classes.input}
-        placeholder="Tìm kiếm"
-        inputProps={{ 'aria-label': 'search' }}
-        onChange={handleSearch}
-      />
+      <input style={{
+        width: '100%',
+        height: 40,
+        fontSize: 16,
+        fontFamily: `-apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+        "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",sans-serif`,
+        border: 'none',
+        outline: 'none',
+      }} placeholder='Tìm kiếm' onChange={handleSearch} />
     </Paper>
   );
 }
