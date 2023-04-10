@@ -6,10 +6,11 @@ import { useHistory, useLocation } from "react-router-dom";
 import OutlinedInput from '@mui/material/OutlinedInput';
 import { Button } from "@mui/material";
 import ModalAddMember from "../Components/ModalAddMember";
+import SendRoundedIcon from '@mui/icons-material/SendRounded';
 function MessageItem(props) {
     if (props.idSender != props.idUser)
         return (
-            <div style={{ position: 'relative', width: '100%', minHeight: 50 }}>
+            <div style={{ position: 'relative', width: '100%', minHeight: 50, marginLeft: 5, marginBottom: 10 }}>
                 <span>{props?.avatar?.url
                     ? <img src={props?.avatar?.url} style={{ width: 30, height: 30, borderRadius: 15 }} />
                     : <img src={default_avatar} style={{ width: 30, height: 30, borderRadius: 15 }} />}
@@ -32,19 +33,17 @@ function MessageItem(props) {
         );
     else
         return (
-            <div style={{ width: '100%', minHeight: 50, display: 'flex',
-            justifyContent: 'flex-end', marginBottom: 10 }}>
+            <div style={{
+                width: '100%', minHeight: 50, display: 'flex',
+                justifyContent: 'flex-end', marginBottom: 10,
+            }}>
                 <span style={{
                     alignSelf: 'flex-end',
-                    // float: 'right',
                     backgroundColor: '#5540ff',
                     minHeight: 30,
                     borderRadius: 10,
                     color: 'white',
                     padding: 5,
-                    // position: 'absolute',
-                    // top: -20,
-                    // right: 0,
                     maxWidth: '80%',
                     wordBreak: 'break-word'
                 }}>
@@ -139,23 +138,38 @@ export default function Conversation({ socket }) {
                     <Button onClick={() => handleCall()}
                         variant="contained">Call</Button>
                 </div>
-                <div style={{ width: "100%", marginTop: 50 }}>
-                    <div style={{ overflow: 'hidden', paddingTop: 20 }}>
+                <div style={{ width: "100%", marginTop: 50}}>
+                    <div style={{ overflow: 'hidden', paddingTop: 20, marginBottom: 200 }}>
                         {listMessage.map((e, index) => {
                             return <MessageItem
                                 key={e._id} avatar={avatar[e.sender]}
                                 mess={e.content} idSender={e.sender} idUser={user.id} keyExtractor={(e) => e._id} />
-                            }
+                        }
                         )}
                         <div ref={messageEndRef} />
                     </div>
-                    <div style={{height: 100}}></div>
                 </div>
-                <div style={{ position: 'fixed', bottom: 0 }}>
-                    <OutlinedInput value={textMessage}
-                        placeholder="Nhập tin nhắn" onChange={(e) => setTextMessage(e.target.value)} />
-                    <Button onClick={() => handleSendMessage()}
-                        variant="contained">Gửi</Button>
+                <div>
+                    <div style={{ position: 'fixed', bottom: 0, height: 60, width: '100%', backgroundColor: '#f5f5f5', padding: 5 }}>
+                        <div style={{ textAlign: 'center' }}>
+                            <input value={textMessage}
+                                style={{
+                                    fontFamily: `-apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+                                    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+                                    sans-serif`,
+                                    fontWeight: '500',
+                                    width: '80%', height: 40, border: 'none', outline: 'none', borderRadius: 20, padding: 5, fontSize: 18,
+                                    marginLeft: -30
+                                }} placeholder="Nhập tin nhắn" onChange={(e) => setTextMessage(e.target.value)} />
+                            {/* <OutlinedInput 
+                                 /> */}
+                            <span style={{ position: 'relative', marginLeft: 5 }}>
+                                <SendRoundedIcon onClick={() => handleSendMessage()}
+                                    
+                                    color="primary" style={{ position: 'absolute', top: -2, fontSize: 30 }} />
+                            </span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </>
