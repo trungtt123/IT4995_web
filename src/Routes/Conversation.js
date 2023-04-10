@@ -9,20 +9,22 @@ import ModalAddMember from "../Components/ModalAddMember";
 function MessageItem(props) {
     if (props.idSender != props.idUser)
         return (
-            <div style={{ height: 60, position: 'relative' }}>
+            <div style={{ position: 'relative', width: '100%', minHeight: 50 }}>
                 <span>{props?.avatar?.url
                     ? <img src={props?.avatar?.url} style={{ width: 30, height: 30, borderRadius: 15 }} />
                     : <img src={default_avatar} style={{ width: 30, height: 30, borderRadius: 15 }} />}
                 </span>
                 <span style={{
                     backgroundColor: '#ccc',
-                    height: 40,
+                    minHeight: 30,
                     borderRadius: 10,
                     color: 'black',
                     padding: 5,
                     position: 'absolute',
-                    top: -20,
-                    marginLeft: 5
+                    top: -10,
+                    marginLeft: 5,
+                    maxWidth: '80%',
+                    wordBreak: 'break-word'
                 }}>
                     {props.mess}
                 </span>
@@ -30,17 +32,21 @@ function MessageItem(props) {
         );
     else
         return (
-            <div style={{ height: 60, position: 'relative' }}>
+            <div style={{ width: '100%', minHeight: 50, display: 'flex',
+            justifyContent: 'flex-end', marginBottom: 10 }}>
                 <span style={{
-                    float: 'right',
+                    alignSelf: 'flex-end',
+                    // float: 'right',
                     backgroundColor: '#5540ff',
-                    height: 40,
+                    minHeight: 30,
                     borderRadius: 10,
                     color: 'white',
                     padding: 5,
-                    position: 'absolute',
-                    top: -20,
-                    right: 0
+                    // position: 'absolute',
+                    // top: -20,
+                    // right: 0,
+                    maxWidth: '80%',
+                    wordBreak: 'break-word'
                 }}>
                     {props.mess}
                 </span>
@@ -117,7 +123,7 @@ export default function Conversation({ socket }) {
         scrollToBottom();
     }, [listMessage]);
     useEffect(() => {
-        if (!conversation) history.push('/') 
+        if (!conversation) history.push('/')
     }, [conversation])
     return (
         <>
@@ -125,7 +131,7 @@ export default function Conversation({ socket }) {
                 socket={socket} closeModal={() => setShowAddMember(false)} />}
             <div>
                 <div style={{
-                    height: 50, width: '100%', position: 'fixed', backgroundColor: 'white', zIndex: 10,
+                    height: 50, width: '100%', position: 'fixed', backgroundColor: 'white', zIndex: 10, top: 0,
                     boxShadow: '2px 2px 4px rgba(0, 0, 0, 0.2)'
                 }}>
                     <Button onClick={() => setShowAddMember(true)}
@@ -133,19 +139,19 @@ export default function Conversation({ socket }) {
                     <Button onClick={() => handleCall()}
                         variant="contained">Call</Button>
                 </div>
-                <div style={{ width: "100%" }}>
+                <div style={{ width: "100%", marginTop: 50 }}>
                     <div style={{ overflow: 'hidden', paddingTop: 20 }}>
                         {listMessage.map((e, index) => {
                             return <MessageItem
                                 key={e._id} avatar={avatar[e.sender]}
                                 mess={e.content} idSender={e.sender} idUser={user.id} keyExtractor={(e) => e._id} />
-                        }
+                            }
                         )}
-                        <div style={{marginBottom: 40}} 
-                        ref={messageEndRef} />
+                        <div ref={messageEndRef} />
                     </div>
+                    <div style={{height: 100}}></div>
                 </div>
-                <div style={{position: 'fixed', bottom: 0}}> 
+                <div style={{ position: 'fixed', bottom: 0 }}>
                     <OutlinedInput value={textMessage}
                         placeholder="Nhập tin nhắn" onChange={(e) => setTextMessage(e.target.value)} />
                     <Button onClick={() => handleSendMessage()}
