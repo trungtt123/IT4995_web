@@ -1,12 +1,10 @@
 import React, { Component } from 'react';
-import { withRouter  } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import { io } from 'socket.io-client'
 
 import Video from '../Components/video'
 import Videos from '../Components/videos'
-
-import Chat from '../Components/chat'
-
+import CallEndIcon from '@mui/icons-material/CallEnd';
 import Draggable from '../Components/draggable'
 
 class Room extends Component {
@@ -26,15 +24,15 @@ class Room extends Component {
       pc_config: {
         "iceServers": [
           {
-            urls : 'stun:stun.l.google.com:19302'
+            urls: 'stun:stun.l.google.com:19302'
           }
         ]
       },
 
       sdpConstraints: {
         'mandatory': {
-            'OfferToReceiveAudio': true,
-            'OfferToReceiveVideo': true
+          'OfferToReceiveAudio': true,
+          'OfferToReceiveVideo': true
         }
       },
 
@@ -44,7 +42,7 @@ class Room extends Component {
     }
 
     // DONT FORGET TO CHANGE TO YOUR URL
-    this.serviceIP = 'https://it4995-server.onrender.com/webrtcPeer'
+    this.serviceIP = 'http://localhost:8080/webrtcPeer'
 
     // https://reactjs.org/docs/refs-and-the-dom.html
     // this.localVideoref = React.createRef()
@@ -98,7 +96,7 @@ class Room extends Component {
 
   whoisOnline = () => {
     // let all peers know I am joining
-    this.sendToPeer('onlinePeers', null, {local: this.socket.id})
+    this.sendToPeer('onlinePeers', null, { local: this.socket.id })
   }
 
   sendToPeer = (messageType, payload, socketID) => {
@@ -216,7 +214,7 @@ class Room extends Component {
       // return pc
       callback(pc)
 
-    } catch(e) {
+    } catch (e) {
       console.log('Something went wrong! pc not created!!', e)
       // return;
       callback(null)
@@ -242,7 +240,7 @@ class Room extends Component {
       this.getLocalStream()
 
       // console.log(data.success)
-      const status = data.peerCount > 1 ? `Total Connected Peers to room ${this.state.roomId}: ${data.peerCount}` : `Waiting for other peers to connect ${this.state.roomId}` 
+      const status = data.peerCount > 1 ? `Total Connected Peers to room ${this.state.roomId}: ${data.peerCount}` : `Waiting for other peers to connect ${this.state.roomId}`
 
       this.setState({
         status: status,
@@ -281,7 +279,7 @@ class Room extends Component {
           ...selectedVideo,
           status: data.peerCount > 1 ? `Total Connected Peers to room ${this.state.roomId}: ${data.peerCount}` : `Waiting for other peers to connect room ${this.state.roomId}`
         }
-        }
+      }
       )
     })
 
@@ -301,7 +299,7 @@ class Room extends Component {
       this.createPeerConnection(socketID, pc => {
         // 2. Create Offer
         if (pc) {
-      
+
           // Send Channel
           const handleSendChannelStatusChange = (event) => {
             console.log('send channel status: ' + this.state.sendChannels[0].readyState)
@@ -310,7 +308,7 @@ class Room extends Component {
           const sendChannel = pc.createDataChannel('sendChannel')
           sendChannel.onopen = handleSendChannelStatusChange
           sendChannel.onclose = handleSendChannelStatusChange
-        
+
           this.setState(prevState => {
             return {
               sendChannels: [...prevState.sendChannels, sendChannel]
@@ -370,7 +368,7 @@ class Room extends Component {
         const sendChannel = pc.createDataChannel('sendChannel')
         sendChannel.onopen = handleSendChannelStatusChange
         sendChannel.onclose = handleSendChannelStatusChange
-        
+
         this.setState(prevState => {
           return {
             sendChannels: [...prevState.sendChannels, sendChannel]
@@ -422,7 +420,7 @@ class Room extends Component {
       // get remote's peerConnection
       const pc = this.state.peerConnections[data.socketID]
       // console.log(data.sdp)
-      pc.setRemoteDescription(new RTCSessionDescription(data.sdp)).then(()=>{})
+      pc.setRemoteDescription(new RTCSessionDescription(data.sdp)).then(() => { })
     })
 
     this.socket.on('candidate', (data) => {
@@ -528,43 +526,43 @@ class Room extends Component {
       // stop all remote peerconnections
       peerConnections && Object.values(peerConnections).forEach(pc => pc.close())
 
-      return (<div>You have successfully Disconnected</div>)
+      return;
     }
 
     const statusText = <div style={{ color: 'yellow', padding: 5 }}>{status}</div>
 
     return (
       <div>
-      <Draggable style={{
-        zIndex: 101,
-        position: 'absolute',
-        right: 0,
-        cursor: 'move'
-      }}>
-        <Video
-          videoType='localVideo'
-          videoStyles={{
-            // zIndex:2,
-            // position: 'absolute',
-            // right:0,
-            width: 200,
-            height: 200,
-            // margin: 5,
-            // backgroundColor: 'black'
-          }}
-          frameStyle={{
-            width: 200,
-            margin: 5,
-            borderRadius: 5,
-            backgroundColor: 'black',
-          }}
-          showMuteControls={true}
-          // ref={this.localVideoref}
-          videoStream={localStream}
-          autoPlay muted>
-        </Video>
-      </Draggable>
-      {/* <Video
+        <Draggable style={{
+          zIndex: 101,
+          position: 'absolute',
+          right: 0,
+          cursor: 'move'
+        }}>
+          <Video
+            videoType='localVideo'
+            videoStyles={{
+              // zIndex:2,
+              // position: 'absolute',
+              // right:0,
+              width: 200,
+              height: 200,
+              // margin: 5,
+              // backgroundColor: 'black'
+            }}
+            frameStyle={{
+              width: 200,
+              margin: 5,
+              borderRadius: 5,
+              backgroundColor: 'black',
+            }}
+            showMuteControls={true}
+            // ref={this.localVideoref}
+            videoStream={localStream}
+            autoPlay muted>
+          </Video>
+        </Draggable>
+        {/* <Video
           frameStyle={{
             zIndex: 1,
             position: 'fixed',
@@ -584,47 +582,27 @@ class Room extends Component {
         videoStream={this.state.selectedVideo && this.state.selectedVideo.stream}
         // autoPlay
       ></Video> */}
-      <br />
+        <br />
         <div style={{
           zIndex: 3,
           position: 'absolute',
-          // margin: 10,
-          // backgroundColor: '#cdc4ff4f',
-          // padding: 10,
-          // borderRadius: 5,
+          bottom: 20,
+          textAlign: 'center',
+          left: `50%`, transform: `translate(-50%, -50%)`
         }}>
-          <i onClick={(e) => {this.setState({disconnected: true})}} style={{ cursor: 'pointer', paddingLeft: 15, color: 'red' }} className='material-icons'>highlight_off</i>
-          <div style={{
-            margin: 10,
-            backgroundColor: '#cdc4ff4f',
-            padding: 10,
-            borderRadius: 5,
-          }}>{ statusText }</div>
+          {/* <i onClick={(e) => {this.setState({disconnected: true})}} style={{ cursor: 'pointer', paddingLeft: 15, color: 'red' }} className='material-icons'>highlight_off</i> */}
+          <div onClick={(e) => { this.setState({ disconnected: true }) }} style={{
+
+          }}> <CallEndIcon style={{ fontSize: 50, color: 'red' }} /> </div>
         </div>
         <div>
           <Videos
             switchVideo={this.switchVideo}
             remoteStreams={remoteStreams}
-            // videoStream={this.state.selectedVideo && this.state.selectedVideo.stream}
+          // videoStream={this.state.selectedVideo && this.state.selectedVideo.stream}
           ></Videos>
         </div>
         <br />
-
-        <Chat
-            user={{
-              uid: this.socket && this.socket.id || ''
-          }}
-          messages={messages}
-          sendMessage={(message) => {
-            this.setState(prevState => {
-              return {messages: [...prevState.messages, message]}
-            })
-            this.state.sendChannels.map(sendChannel => {
-              sendChannel.readyState === 'open' && sendChannel.send(JSON.stringify(message))
-            })
-            this.sendToPeer('new-message', JSON.stringify(message), {local: this.socket.id})
-          }}
-        />
 
         {/* <div style={{zIndex: 1, position: 'fixed'}} >
           <button onClick={this.createOffer}>Offer</button>

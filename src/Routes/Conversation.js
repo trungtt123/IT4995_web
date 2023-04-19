@@ -13,10 +13,12 @@ import InfoIcon from '@mui/icons-material/Info';
 function MessageItem(props) {
     if (props.idSender != props.idUser)
         return (
-            <div style={{ position: 'relative', width: '100%', marginLeft: 5, marginBottom: 20,
-            display: 'flex',
-            justifyContent: 'flex-start', }}>
-                <span style={{alignSelf: 'flex-start'}}>{props?.avatar?.url
+            <div style={{
+                position: 'relative', width: '100%', marginLeft: 5, marginBottom: 20,
+                display: 'flex',
+                justifyContent: 'flex-start',
+            }}>
+                <span style={{ alignSelf: 'flex-start' }}>{props?.avatar?.url
                     ? <img src={props?.avatar?.url} style={{ width: 30, height: 30, borderRadius: 15 }} />
                     : <img src={default_avatar} style={{ width: 30, height: 30, borderRadius: 15 }} />}
                 </span>
@@ -37,7 +39,7 @@ function MessageItem(props) {
     else
         return (
             <div style={{
-                width: '100%',display: 'flex',
+                width: '100%', display: 'flex',
                 justifyContent: 'flex-end', marginBottom: 20,
             }}>
                 <span style={{
@@ -128,6 +130,7 @@ export default function Conversation({ socket }) {
     useEffect(() => {
         if (!conversation) history.push('/')
     }, [conversation])
+    console.log(conversation);
     return (
         <>
             {showAddMember && <ModalAddMember conversationId={conversation._id}
@@ -136,16 +139,22 @@ export default function Conversation({ socket }) {
                 <div style={{
                     height: 50, width: '100%', position: 'fixed', backgroundColor: 'white', zIndex: 10, top: -2,
                     display: 'flex',
-                    justifyContent: 'flex-end',
+                    justifyContent: 'space-between',
                     boxShadow: '2px 2px 4px rgba(0, 0, 0, 0.2)'
                 }}>
+                    <div style={{
+                        marginTop: 13, marginLeft: 10, 
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap', width: '50%',
+                        overflow: 'hidden'
+                    }}>{conversation?.conversationName}</div>
                     <div style={{ position: 'relative' }}>
-                        <PersonAddAlt1Icon style={{position: 'absolute', top: 15, right: 90}}
-                        onClick={() => setShowAddMember(true)} />
-                        <CallIcon style={{position: 'absolute', top: 15, right: 50}}
-                        onClick={() => handleCall()} />
-                        <InfoIcon style={{position: 'absolute', top: 15, right: 10}}
-                        onClick={() => handleCall()} />
+                        <PersonAddAlt1Icon style={{ position: 'absolute', top: 13, right: 90 }}
+                            onClick={() => setShowAddMember(true)} />
+                        <CallIcon style={{ position: 'absolute', top: 13, right: 50 }}
+                            onClick={() => handleCall()} />
+                        <InfoIcon style={{ position: 'absolute', top: 13, right: 10 }}
+                            onClick={() => handleCall()} />
                     </div>
                 </div>
                 <div style={{ width: "100%", marginTop: 50 }}>

@@ -29,7 +29,7 @@ class Videos extends Component {
       }
 
       let _rVideos = nextProps.remoteStreams.map((rVideo, index) => {
-
+        console.log('nextProps.remoteStreams', nextProps.remoteStreams);
         const _videoTrack = rVideo.stream.getTracks().filter(track => track.kind === 'video')
         // if (_videoTrack.length)
         //   _videoTrack[0].onmute = () => {
