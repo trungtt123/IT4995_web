@@ -40,7 +40,7 @@ const Home = ({ socket }) => {
                 {tabIndex === 1 && <Conversations socket={socket} />}
                 {tabIndex === 2 && <Profile />}
             </div>
-            <div style={{ position: 'fixed', bottom: 0, width: '100%', height: 60 }}>
+            <div style={{ position: 'fixed', bottom: -1, width: '100%', height: 60 }}>
                 <Tabs style={{ display: 'flex', width: '100%', backgroundColor: 'white' }}
                     value={tabIndex} onChange={handleChange}>
                     <Tab icon={tab1} aria-label="phone" style={{ flexGrow: 1 }} />

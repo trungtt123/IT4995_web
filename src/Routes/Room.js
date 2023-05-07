@@ -6,6 +6,7 @@ import Video from '../Components/video'
 import Videos from '../Components/videos'
 import CallEndIcon from '@mui/icons-material/CallEnd';
 import Draggable from '../Components/draggable'
+import { CHAT_SERVER_URL } from '../Services/Helper/constant';
 
 class Room extends Component {
   constructor(props) {
@@ -42,7 +43,7 @@ class Room extends Component {
     }
 
     // DONT FORGET TO CHANGE TO YOUR URL
-    this.serviceIP = 'http://localhost:8080/webrtcPeer'
+    this.serviceIP = `${CHAT_SERVER_URL}/webrtcPeer`
 
     // https://reactjs.org/docs/refs-and-the-dom.html
     // this.localVideoref = React.createRef()

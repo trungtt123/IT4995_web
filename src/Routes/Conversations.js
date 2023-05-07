@@ -52,7 +52,7 @@ export default function Conversations({ socket }) {
                 && <ModalCreateConversation socket={socket}
                     closeModal={() => setShowModalCreateConversation(false)} />}
             <div style={{ textAlign: 'center' }}>
-                <Button style={{ position: 'fixed', bottom: 80, right: 10, width: 60, height: 60, borderRadius: '50%', zIndex: 1000 }}
+                <Button style={{ position: 'fixed', bottom: 80, right: 10, width: 60, height: 60, borderRadius: '50%', zIndex: 1000, fontSize: 11 }}
                     onClick={() => setShowModalCreateConversation(true)}
                     variant="contained">TẠO MỚI</Button>
             </div>

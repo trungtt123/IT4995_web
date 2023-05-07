@@ -25,6 +25,7 @@ const Signup = (props) => {
     const [isShowConfirmPass, setIsShowConfirmPass] = useState(false);
     const [error, setError] = useState();
     const [isShowModal, setIsShowModal] = useState(false);
+    const windowHeight = window.innerHeight;
     const handleSubmit = () => {
 
         if (!name) {
@@ -54,60 +55,62 @@ const Signup = (props) => {
     }
     return (
         <>
-            {isShowModal && <ConfirmModal 
-            onAccept={() => history.push('/login')}
-            onReject={() => window.location.reload()}
-            primary={'Đăng ký thành công'} 
-            secondary={'Đăng nhập để tiếp tục'} />}
+            {isShowModal && <ConfirmModal
+                onAccept={() => history.push('/login')}
+                onReject={() => window.location.reload()}
+                primary={'Đăng ký thành công'}
+                secondary={'Đăng nhập để tiếp tục'} />}
             <div style={{
                 textAlign: 'center',
                 padding: '50px 20px'
             }}>
-                <img src={soict} style={{ width: 200, height: 200, borderRadius: 100 }} />
-                <div style={{ margin: 10 }}>
-                    <TextField defaultValue={name} style={{ width: '100%' }}
-                        id="outlined-basic" label="Họ và tên" variant="outlined" onChange={(e) => setName(e.target.value)} />
-                </div>
-                <div style={{ margin: 10 }}>
-                    <TextField defaultValue={phone} style={{ width: '100%' }}
-                        id="outlined-basic" label="Số điện thoại" variant="outlined" onChange={(e) => setPhone(e.target.value)} />
-                </div>
-                <LocalizationProvider dateAdapter={AdapterDayjs} >
-                    <MobileDatePicker label="Ngày sinh"
-                        value={birthday}
-                        onChange={(newValue) => setBirthday(newValue)}
-                        defaultValue={dayjs(new Date())} sx={{ width: '94%' }} />
-                </LocalizationProvider>
-                <div style={{ margin: 10, position: 'relative' }}>
-                    <TextField defaultValue={pass} style={{ width: '100%' }} type={!isShowPass ? "password" : "text"}
-                        id="outlined-basic" label="Mật khẩu" variant="outlined" onChange={(e) => setPass(e.target.value)} />
-                    {!isShowPass ?
-                        <VisibilityOffOutlined onClick={() => setIsShowPass(true)}
-                            style={{ position: 'absolute', right: 15, top: 15 }} fontSize="small" />
-                        : <VisibilityOutlinedIcon onClick={() => setIsShowPass(false)}
-                            style={{ position: 'absolute', right: 15, top: 15 }} fontSize="small" />}
-                </div>
-                <div style={{ margin: 10, position: 'relative' }}>
-                    <TextField defaultValue={confirmPass} style={{ width: '100%' }} type={!isShowConfirmPass ? "password" : "text"}
-                        id="outlined-basic" label="Xác nhận mật khẩu" variant="outlined" onChange={(e) => setConfirmPass(e.target.value)} />
-                    {!isShowConfirmPass ?
-                        <VisibilityOffOutlined onClick={() => setIsShowConfirmPass(true)}
-                            style={{ position: 'absolute', right: 15, top: 15 }} fontSize="small" />
-                        : <VisibilityOutlinedIcon onClick={() => setIsShowConfirmPass(false)}
-                            style={{ position: 'absolute', right: 15, top: 15 }} fontSize="small" />}
-                </div>
-                <div style={{ fontSize: 15, color: 'red', textAlign: 'left', marginLeft: 10 }}>{error}</div>
-                <div style={{ margin: 10 }}>
-                    <Button onClick={() => handleSubmit()} style={{ width: '100%' }}
-                        variant="contained">Đăng ký</Button>
+                <div style={{marginBottom: Math.max(50, windowHeight - 700)}}>
+                    <img src={soict} style={{ width: 200, height: 200, borderRadius: 100 }} />
+                    <div style={{ margin: 10 }}>
+                        <TextField defaultValue={name} style={{ width: '100%' }}
+                            id="outlined-basic" label="Họ và tên" variant="outlined" onChange={(e) => setName(e.target.value)} />
+                    </div>
+                    <div style={{ margin: 10 }}>
+                        <TextField defaultValue={phone} style={{ width: '100%' }}
+                            id="outlined-basic" label="Số điện thoại" variant="outlined" onChange={(e) => setPhone(e.target.value)} />
+                    </div>
+                    <LocalizationProvider dateAdapter={AdapterDayjs} >
+                        <MobileDatePicker label="Ngày sinh"
+                            value={birthday}
+                            onChange={(newValue) => setBirthday(newValue)}
+                            defaultValue={dayjs(new Date())} sx={{ width: '94%' }} />
+                    </LocalizationProvider>
+                    <div style={{ margin: 10, position: 'relative' }}>
+                        <TextField defaultValue={pass} style={{ width: '100%' }} type={!isShowPass ? "password" : "text"}
+                            id="outlined-basic" label="Mật khẩu" variant="outlined" onChange={(e) => setPass(e.target.value)} />
+                        {!isShowPass ?
+                            <VisibilityOffOutlined onClick={() => setIsShowPass(true)}
+                                style={{ position: 'absolute', right: 15, top: 15 }} fontSize="small" />
+                            : <VisibilityOutlinedIcon onClick={() => setIsShowPass(false)}
+                                style={{ position: 'absolute', right: 15, top: 15 }} fontSize="small" />}
+                    </div>
+                    <div style={{ margin: 10, position: 'relative' }}>
+                        <TextField defaultValue={confirmPass} style={{ width: '100%' }} type={!isShowConfirmPass ? "password" : "text"}
+                            id="outlined-basic" label="Xác nhận mật khẩu" variant="outlined" onChange={(e) => setConfirmPass(e.target.value)} />
+                        {!isShowConfirmPass ?
+                            <VisibilityOffOutlined onClick={() => setIsShowConfirmPass(true)}
+                                style={{ position: 'absolute', right: 15, top: 15 }} fontSize="small" />
+                            : <VisibilityOutlinedIcon onClick={() => setIsShowConfirmPass(false)}
+                                style={{ position: 'absolute', right: 15, top: 15 }} fontSize="small" />}
+                    </div>
+                    <div style={{ fontSize: 15, color: 'red', textAlign: 'left', marginLeft: 10 }}>{error}</div>
+                    <div style={{ margin: 10 }}>
+                        <Button onClick={() => handleSubmit()} style={{ width: '100%' }}
+                            variant="contained">Đăng ký</Button>
+                    </div>
                 </div>
                 <div style={{
-                    position: 'fixed', bottom: 0,
-                    left: '50%',
-                    transform: `translate(-50%, -50%)`
+                    // position: 'fixed', bottom: 0,
+                    // left: '50%',
+                    // transform: `translate(-50%, -50%)`
                 }}>
-                    <Button style={{fontSize: 15}} onClick={() => history.push('/login')}
-                    variant="text">{`ĐĂNG NHẬP`}</Button>
+                    <Button style={{ fontSize: 15 }} onClick={() => history.push('/login')}
+                        variant="text">{`ĐĂNG NHẬP`}</Button>
                 </div>
             </div>
         </>

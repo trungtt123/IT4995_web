@@ -14,9 +14,13 @@ import axios from '../setups/custom_axios';
 import { REST_API_URL } from "../Services/Helper/constant";
 import ConfirmModal from "../Components/ConfirmModal";
 import userService from "../Services/Api/userService";
-import { getTimeUnixTimeStamp } from "../Services/Helper/common";
+import { _setCache, getTimeUnixTimeStamp } from "../Services/Helper/common";
 import CameraAltIcon from '@mui/icons-material/CameraAlt';
-import CameraAltOutlinedIcon from '@mui/icons-material/CameraAltOutlined';
+import SettingsIcon from '@mui/icons-material/Settings';
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import soict from '../Assets/images/soict.png';
+import SyncLockIcon from '@mui/icons-material/SyncLock';
+import LogoutIcon from '@mui/icons-material/Logout';
 const Profile = (props) => {
     const dispatch = useDispatch();
     const history = useHistory();
@@ -35,6 +39,7 @@ const Profile = (props) => {
     const [isShowConfirmPass, setIsShowConfirmPass] = useState(false);
     const [error, setError] = useState();
     const [isShowModal, setIsShowModal] = useState(false);
+    const [expand, setExpand] = useState(false);
     const inputAvatar = useRef();
     const handleChangeAvatar = (e) => {
         console.log(e.target.files);
@@ -56,11 +61,15 @@ const Profile = (props) => {
         const dateString = birthday.$y + "-" + (birthday.$M + 1) + "-" + birthday.$D;
         const formData = new FormData();
         formData.append("avatar", fileAvatar);
-        axios.post(`/user/set_user_info?username=${name}&birthday=${dateString}`, formData, { headers: { 'Content-Type': 'multipart/form-data' }}).then(() => {
+        axios.post(`/user/set_user_info?username=${name}&birthday=${dateString}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } }).then(() => {
             setIsShowModal(true);
         }).catch(e => {
             console.error(e);
         })
+    }
+    const handleLogout = () => {
+        _setCache('token', '');
+        window.location.reload();
     }
     useEffect(() => {
         userService.getUserInfor(user.id).then((result) => {
@@ -85,6 +94,23 @@ const Profile = (props) => {
                     primary={'Cập nhật thành công'}
                 />
             }
+            <div style={{ position: 'relative', width: '100%', zIndex: 9999 }}>
+                <div style={{ position: 'absolute', top: 0, right: 0, width: '100%' }}>
+                    {!expand && <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-end' }}>
+                        <MoreHorizIcon onClick={() => setExpand(true)}
+                            style={{ margin: 5, color: '#666666' }} />
+                    </div>}
+                    {expand && <div className="element" style={{ backgroundColor: '#4da6ff', marginLeft: '50%', height: 200, padding: 10, borderBottomLeftRadius: 10, textAlign: 'center' }}>
+                        <img src={soict} style={{ width: 100, height: 100, borderRadius: 50 }} />
+                        <Button onClick={() => {}} variant="text" style={{color: 'white'}}>
+                            <span style={{marginRight: 5}}>{`Đổi mật khẩu`}</span> <SyncLockIcon style={{fontSize: 17, marginTop: -3}}/>
+                        </Button>
+                        <Button onClick={() => handleLogout()} variant="text" style={{color: 'white'}}>
+                        <span style={{marginRight: 5}}>{`Đăng xuất`}</span> <LogoutIcon style={{fontSize: 17, marginTop: -3}}/>
+                        </Button>
+                    </div>}
+                </div>
+            </div>
             <div style={{
                 textAlign: 'center',
                 padding: '50px 20px'
