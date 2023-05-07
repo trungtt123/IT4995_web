@@ -10,6 +10,9 @@ import { CHAT_SERVER_URL } from '../Services/Helper/constant';
 import Conversation from './Conversation';
 import { verifyToken } from '../Redux/authSlice';
 import Loading from '../Components/Loading';
+import Signup from './Signup';
+import Home from './Home';
+import Profile from './Profile';
 const socket = io(`${CHAT_SERVER_URL}`);
 function AppNavigator(props) {
     const { isLoading, isAuthenticated } = useSelector(
@@ -19,20 +22,23 @@ function AppNavigator(props) {
     useEffect(() => {
         dispatch(verifyToken());
     }, [])
+    console.log('isAuthen', isAuthenticated);
     return (
         <HashRouter>
             {
                 isLoading ? <Loading /> : 
                 !isAuthenticated && <Switch>
+                    <Route path="/signup" exact component={Signup} />
                     <Route path="/" component={Login} />
                 </Switch>
             }
             {
                 isAuthenticated && <Switch>
-                    <Route path="/" exact render={() => <Conversations socket={socket} />} />
                     <Route path="/conversation" exact render={() => <Conversation socket={socket} />}/>
+                    <Route path="/profile" exact component={Profile}/>
                     <Route path="/createRoom" exact component={CreateRoom} />
                     <Route path="/room" exact component={Room} />
+                    <Route path="/" render={() => <Home socket={socket}/>} />
                 </Switch>
             }
         </HashRouter>

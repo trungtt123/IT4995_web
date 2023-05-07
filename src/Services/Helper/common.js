@@ -161,6 +161,14 @@ export function getTimeCreateConversation(dateString) {
     });
     return formattedDate
 }
+export function getTimeUnixTimeStamp(unixtime) {
+    let date = new Date(unixtime * 1000); // chuyển Unix timestamp sang đối tượng Date
+    let year = date.getFullYear(); // lấy năm
+    let month = ("0" + (date.getMonth() + 1)).slice(-2); // lấy tháng (được bổ sung 0 ở đầu nếu tháng < 10)
+    let day = ("0" + date.getDate()).slice(-2); // lấy ngày (được bổ sung 0 ở đầu nếu ngày < 10)
+    let formattedDate = year + "-" + month + "-" + day; // ghép chuỗi theo định dạng yyyy-mm-dd
+    return formattedDate; // kết quả sẽ là 2021-05-03
+}
 export const getRandomColor = () => {
     const letters = '0123456789ABCDEF';
     let color = '#';

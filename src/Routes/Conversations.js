@@ -10,6 +10,10 @@ import ListItemText from '@mui/material/ListItemText';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Avatar from '@mui/material/Avatar';
 import SearchBar from "../Components/SearchBar";
+import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
+import CallIcon from '@mui/icons-material/Call';
+import InfoIcon from '@mui/icons-material/Info';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 export default function Conversations({ socket }) {
     const dispatch = useDispatch();
@@ -48,12 +52,13 @@ export default function Conversations({ socket }) {
                 && <ModalCreateConversation socket={socket}
                     closeModal={() => setShowModalCreateConversation(false)} />}
             <div style={{ textAlign: 'center' }}>
-                <Button style={{ position: 'fixed', bottom: 40, right: 10, width: 60, height: 60, borderRadius: '50%', zIndex: 1000 }}
+                <Button style={{ position: 'fixed', bottom: 80, right: 10, width: 60, height: 60, borderRadius: '50%', zIndex: 1000 }}
                     onClick={() => setShowModalCreateConversation(true)}
                     variant="contained">TẠO MỚI</Button>
             </div>
+            <div style={{marginTop: 0}}>
             <SearchBar onSearch={(keyword) => handleSearch(keyword)}/>
-
+            </div>
             <List sx={{ width: '100%' }}>
                 {conversations?.filter((o) => o.conversationName.includes(keyword))?.map((item, index) => {
                     let secondary = item?.messages[item?.messages.length - 1]?.content;

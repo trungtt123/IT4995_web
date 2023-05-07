@@ -10,6 +10,7 @@ import SendRoundedIcon from '@mui/icons-material/SendRounded';
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
 import CallIcon from '@mui/icons-material/Call';
 import InfoIcon from '@mui/icons-material/Info';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 function MessageItem(props) {
     if (props.idSender != props.idUser)
         return (
@@ -146,8 +147,14 @@ export default function Conversation({ socket }) {
                         marginTop: 13, marginLeft: 10, 
                         textOverflow: 'ellipsis',
                         whiteSpace: 'nowrap', width: '50%',
-                        overflow: 'hidden'
-                    }}>{conversation?.conversationName}</div>
+                        overflow: 'hidden',
+                        position:'relative'
+                    }}>
+                        <ArrowBackIcon style={{marginRight: 10}}
+                            onClick={() => history.goBack()} />
+
+                        <span style={{position: 'absolute', top: -2}}>{conversation?.conversationName}</span>
+                    </div>
                     <div style={{ position: 'relative' }}>
                         <PersonAddAlt1Icon style={{ position: 'absolute', top: 13, right: 90 }}
                             onClick={() => setShowAddMember(true)} />
