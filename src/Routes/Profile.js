@@ -102,7 +102,7 @@ const Profile = (props) => {
                     </div>}
                     {expand && <div className="element" style={{ backgroundColor: '#4da6ff', marginLeft: '50%', height: 200, padding: 10, borderBottomLeftRadius: 10, textAlign: 'center' }}>
                         <img src={soict} style={{ width: 100, height: 100, borderRadius: 50 }} />
-                        <Button onClick={() => {}} variant="text" style={{color: 'white'}}>
+                        <Button onClick={() => history.push('/changePassword')} variant="text" style={{color: 'white'}}>
                             <span style={{marginRight: 5}}>{`Đổi mật khẩu`}</span> <SyncLockIcon style={{fontSize: 17, marginTop: -3}}/>
                         </Button>
                         <Button onClick={() => handleLogout()} variant="text" style={{color: 'white'}}>

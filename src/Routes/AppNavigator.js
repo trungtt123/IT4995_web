@@ -13,6 +13,7 @@ import Loading from '../Components/Loading';
 import Signup from './Signup';
 import Home from './Home';
 import Profile from './Profile';
+import ChangePassword from './ChangePassword';
 const socket = io(`${CHAT_SERVER_URL}`);
 function AppNavigator(props) {
     const { isLoading, isAuthenticated } = useSelector(
@@ -38,6 +39,7 @@ function AppNavigator(props) {
                     <Route path="/profile" exact component={Profile}/>
                     <Route path="/createRoom" exact component={CreateRoom} />
                     <Route path="/room" exact component={Room} />
+                    <Route path="/changePassword" exact component={ChangePassword}/>
                     <Route path="/" render={() => <Home socket={socket}/>} />
                 </Switch>
             }
