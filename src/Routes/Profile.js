@@ -88,15 +88,17 @@ const Profile = (props) => {
     }, []);
     useEffect(() => {
         const handleClickOutside = (event) => {
-            console.log('iconOpenModal.current', iconOpenModal.current);
-            console.log('iconOpenModal.current.contains(event.target)', iconOpenModal.current?.contains(event.target));
             if (iconOpenModal.current && iconOpenModal.current.contains(event.target)) {
-                console.log("Click vào icon modal");
+                modalExpand.current.style.display = '';
+                iconOpenModal.current.style.display = 'none';
+                modalExpand.current.classList.remove('element-slide-back');
+                modalExpand.current.classList.add('element-slide-from-right');
                 return;
             }
             if (modalExpand.current && !modalExpand.current.contains(event.target)) {
-                setExpand(false);
-                console.log("Không click vào phần tử div");
+                modalExpand.current.classList.remove('element-slide-from-right');
+                modalExpand.current.classList.add('element-slide-back');
+                iconOpenModal.current.style.display = '';
             }
         };
 
@@ -120,14 +122,14 @@ const Profile = (props) => {
             <div style={{ position: 'relative', width: '100%', zIndex: 9999 }}>
                 <div style={{ position: 'absolute', top: 0, right: 0, width: '100%' }}>
                     {<div ref={iconOpenModal}
-                        style={{ flexDirection: 'row', justifyContent: 'flex-end', display: expand ? 'none' : 'flex' }}>
+                        style={{ position: 'absolute', right: 0 }}>
                         <MoreHorizIcon onClick={() => setExpand(true)}
                             style={{ margin: 5, color: '#666666' }} />
                     </div>}
                     {<div ref={modalExpand}
-                        className="element"
+                        className="element-slide-from-right"
                         style={{
-                            display: expand ? '' : 'none',
+                            display: 'none',
                             backgroundColor: '#4da6ff', marginLeft: '50%', height: 200, padding: 10, borderBottomLeftRadius: 10, textAlign: 'center'
                         }}>
                         <img src={soict} style={{ width: 100, height: 100, borderRadius: 50 }} />

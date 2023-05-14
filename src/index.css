@@ -110,12 +110,28 @@ main {
 		transform: translateX(0%);
 	}
 }
+@keyframes slide-back {
+	0% {
+		transform: translateX(0%);
+	}
 
-.element {
+	100% {
+		transform: translateX(100%);
+	}
+}
+
+.element-slide-from-right {
 	/* width: 80%; */
 	animation-name: slide-from-right;
 	animation-duration: 0.5s;
 	animation-timing-function: ease-out;
+}
+.element-slide-back {
+	/* width: 80%; */
+	animation-name: slide-back;
+	animation-duration: 0.5s;
+	animation-timing-function: ease-out;
+	animation-fill-mode: forwards;
 }
 .MuiTabs-flexContainer {
 	display: flex !important;

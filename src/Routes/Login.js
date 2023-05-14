@@ -8,6 +8,9 @@ import soict from '../Assets/images/soict.png'
 import { useHistory } from "react-router-dom";
 const Login = (props) => {
     const dispatch = useDispatch();
+    const { loginType } = useSelector(
+        (state) => state.auth
+    );
     const history = useHistory();
     const [phone, setPhone] = useState();
     const [pass, setPass] = useState();
@@ -36,11 +39,13 @@ const Login = (props) => {
                         : <VisibilityOutlinedIcon onClick={() => setIsShowPass(false)}
                             style={{ position: 'absolute', right: 15, top: 15 }} fontSize="small" />}
                 </div>
+                {loginType === 0 && <div style={{textAlign: 'left', fontSize: 15, color: 'red', marginLeft: '10px'}}>Thông tin đăng nhập không đúng</div>}
                 <div style={{ fontSize: 15, float: 'right', margin: 10 }}>Quên mật khẩu</div>
                 <div style={{ margin: 10 }}>
                     <Button onClick={() => handleSubmit()} style={{ width: '100%' }}
                         variant="contained">Đăng nhập</Button>
                 </div>
+                
             </div>
             <div style={{
                 // position: 'fixed', bottom: 0,
@@ -51,6 +56,7 @@ const Login = (props) => {
                 <Button style={{ fontSize: 15 }} onClick={() => history.push('/signup')}
                     variant="text">{`TẠO TÀI KHOẢN MỚI`}</Button>
             </div>
+            
         </div>
     );
 };

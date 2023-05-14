@@ -15,6 +15,7 @@ import { REST_API_URL } from "../Services/Helper/constant";
 import ConfirmModal from "../Components/ConfirmModal";
 import userService from "../Services/Api/userService";
 import { _setCache, getTimeUnixTimeStamp } from "../Services/Helper/common";
+import HeaderScreen from "../Components/HeaderScreen";
 const ChangePassword = (props) => {
     const dispatch = useDispatch();
     const history = useHistory();
@@ -53,16 +54,18 @@ const ChangePassword = (props) => {
                     secondary={'Đăng nhập lại để tiếp tục'}
                 />
             }
+            <HeaderScreen title={"Đổi mật khẩu"}/>
             <div style={{
                 textAlign: 'center',
-                padding: '50px 20px'
+                padding: '50px 20px',
+                marginTop: 20
             }}>
                 <div style={{ margin: 10 }}>
                     <TextField
                         type="password"
                         value={oldPassword}
                         style={{ width: '100%' }}
-                        id="outlined-basic" label="Mật khẩu hiện tại" variant="outlined"
+                        id="oldPassword" label="Mật khẩu hiện tại" variant="outlined"
                         onChange={(e) => setOldPassword(e.target.value)} />
                 </div>
                 <div style={{ margin: 10 }}>
@@ -70,7 +73,7 @@ const ChangePassword = (props) => {
                         type="password"
                         value={newPassword}
                         style={{ width: '100%' }}
-                        id="outlined-basic" label="Mật khẩu mới" variant="outlined"
+                        id="newPassword" label="Mật khẩu mới" variant="outlined"
                         onChange={(e) => setNewPassword(e.target.value)} />
                 </div>
                 <div style={{ margin: 10 }}>
@@ -78,7 +81,7 @@ const ChangePassword = (props) => {
                         type="password"
                         value={confirmNewPass}
                         style={{ width: '100%' }}
-                        id="outlined-basic" label="Xác nhận mật khẩu mới" variant="outlined"
+                        id="confirmNewPass" label="Xác nhận mật khẩu mới" variant="outlined"
                         onChange={(e) => setConfirmNewPass(e.target.value)} />
                 </div>
                 <div style={{ fontSize: 15, color: 'red', textAlign: 'left', marginLeft: 10 }}>{error}</div>
