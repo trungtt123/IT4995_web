@@ -48,6 +48,7 @@ const Home = ({ socket }) => {
             setTabIndex(1);
         }
     }, [])
+    console.log('tabIndex', tabIndex);
     return (
         <>
             {

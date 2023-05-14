@@ -21,6 +21,7 @@ import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import soict from '../Assets/images/soict.png';
 import SyncLockIcon from '@mui/icons-material/SyncLock';
 import LogoutIcon from '@mui/icons-material/Logout';
+import { delay } from "../Services/Helper/common";
 const Profile = (props) => {
     const dispatch = useDispatch();
     const history = useHistory();
@@ -87,7 +88,7 @@ const Profile = (props) => {
         })
     }, []);
     useEffect(() => {
-        const handleClickOutside = (event) => {
+        const handleClickOutside = async (event) => {
             if (iconOpenModal.current && iconOpenModal.current.contains(event.target)) {
                 modalExpand.current.style.display = '';
                 iconOpenModal.current.style.display = 'none';
@@ -99,6 +100,8 @@ const Profile = (props) => {
                 modalExpand.current.classList.remove('element-slide-from-right');
                 modalExpand.current.classList.add('element-slide-back');
                 iconOpenModal.current.style.display = '';
+                await delay(1000);
+                modalExpand.current.style.display = 'none';
             }
         };
 

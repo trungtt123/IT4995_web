@@ -19,7 +19,8 @@ class Room extends Component {
       remoteStreams: [],    // holds all Video Streams (all remote streams)
       peerConnections: {},  // holds all Peer Connections
       selectedVideo: null,
-
+      muteMyCamera: false,
+      muteMyMic: false,
       status: 'Please wait...',
 
       pc_config: {
@@ -531,7 +532,7 @@ class Room extends Component {
     }
 
     const statusText = <div style={{ color: 'yellow', padding: 5 }}>{status}</div>
-
+    console.log('this.state.muteMyCamera', this.state.muteMyCamera)
     return (
       <div>
         <Draggable style={{
@@ -543,78 +544,53 @@ class Room extends Component {
           <Video
             videoType='localVideo'
             videoStyles={{
-              // zIndex:2,
-              // position: 'absolute',
-              // right:0,
               width: 200,
-              height: 200,
-              // margin: 5,
-              // backgroundColor: 'black'
+              borderRadius: 10,
+              maxHeight: 200
             }}
             frameStyle={{
-              width: 200,
-              margin: 5,
-              borderRadius: 5,
+              display: 'inline-block',
               backgroundColor: 'black',
             }}
-            showMuteControls={true}
-            // ref={this.localVideoref}
+            mutecamera={this.state.muteMyCamera}
+            mutemic={this.state.muteMyMic}
+            showMuteControls={false}
             videoStream={localStream}
             autoPlay muted>
           </Video>
         </Draggable>
-        {/* <Video
-          frameStyle={{
-            zIndex: 1,
-            position: 'fixed',
-            bottom: 0,
-            minWidth: '100%', minHeight: '100%',
-            backgroundColor: 'black'
-          }}
-        videoStyles={{
-          // zIndex: 1,
-          // position: 'fixed',
-          // bottom: 0,
-          minWidth: '100%',
-          minHeight: '100%',
-          // backgroundColor: 'black'
-        }}
-        // ref={ this.remoteVideoref }
-        videoStream={this.state.selectedVideo && this.state.selectedVideo.stream}
-        // autoPlay
-      ></Video> */}
         <br />
         <div style={{
           zIndex: 3,
           position: 'absolute',
           bottom: 20,
           textAlign: 'center',
+          width: '50%',
           left: `50%`, transform: `translate(-50%, -50%)`
         }}>
-          {/* <i onClick={(e) => {this.setState({disconnected: true})}} style={{ cursor: 'pointer', paddingLeft: 15, color: 'red' }} className='material-icons'>highlight_off</i> */}
-          <div onClick={(e) => { this.setState({ disconnected: true }) }} style={{
+          <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+            <i onClick={ () => this.setState({muteMyMic: !this.state.muteMyMic}) }
+              style={{ cursor: 'pointer', padding: 5, fontSize: 25, color: 'white' }} className='material-icons'>{true && 'mic' || 'mic_off'}</i>
+            <i onClick={ () => this.setState({muteMyCamera: !this.state.muteMyCamera}) }
+            style={{ cursor: 'pointer', padding: 5, fontSize: 25, color: 'white' }} className='material-icons'>{true && 'videocam' || 'videocam_off'}</i>
+            <div onClick={(e) => { this.setState({ disconnected: true }) }} style={{
+              borderRadius: 20,
+              width: 40,
+              height: 40,
+              backgroundColor: 'red'
+            }}>
 
-          }}> <CallEndIcon style={{ fontSize: 50, color: 'red' }} /> </div>
+              <CallEndIcon style={{ fontSize: 25, color: 'white', marginTop: 7 }} />
+            </div>
+          </div>
         </div>
         <div>
           <Videos
             switchVideo={this.switchVideo}
             remoteStreams={remoteStreams}
-          // videoStream={this.state.selectedVideo && this.state.selectedVideo.stream}
           ></Videos>
         </div>
         <br />
-
-        {/* <div style={{zIndex: 1, position: 'fixed'}} >
-          <button onClick={this.createOffer}>Offer</button>
-          <button onClick={this.createAnswer}>Answer</button>
-
-          <br />
-          <textarea style={{ width: 450, height:40 }} ref={ref => { this.textref = ref }} />
-        </div> */}
-        {/* <br />
-        <button onClick={this.setRemoteDescription}>Set Remote Desc</button>
-        <button onClick={this.addCandidate}>Add Candidate</button> */}
       </div>
     )
   }
