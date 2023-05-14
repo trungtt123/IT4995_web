@@ -41,6 +41,8 @@ const Profile = (props) => {
     const [isShowModal, setIsShowModal] = useState(false);
     const [expand, setExpand] = useState(false);
     const inputAvatar = useRef();
+    const modalExpand = useRef();
+    const iconOpenModal = useRef();
     const handleChangeAvatar = (e) => {
         console.log(e.target.files);
         setFileAvatar(e.target.files[0]);
@@ -84,6 +86,27 @@ const Profile = (props) => {
             console.log(e);
         })
     }, []);
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            console.log('iconOpenModal.current', iconOpenModal.current);
+            console.log('iconOpenModal.current.contains(event.target)', iconOpenModal.current?.contains(event.target));
+            if (iconOpenModal.current && iconOpenModal.current.contains(event.target)) {
+                console.log("Click vào icon modal");
+                return;
+            }
+            if (modalExpand.current && !modalExpand.current.contains(event.target)) {
+                setExpand(false);
+                console.log("Không click vào phần tử div");
+            }
+        };
+
+        document.addEventListener("click", handleClickOutside);
+
+        return () => {
+            document.removeEventListener("click", handleClickOutside);
+        };
+    }, []);
+
     return (
         <>
             {
@@ -96,17 +119,23 @@ const Profile = (props) => {
             }
             <div style={{ position: 'relative', width: '100%', zIndex: 9999 }}>
                 <div style={{ position: 'absolute', top: 0, right: 0, width: '100%' }}>
-                    {!expand && <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-end' }}>
+                    {<div ref={iconOpenModal}
+                        style={{ flexDirection: 'row', justifyContent: 'flex-end', display: expand ? 'none' : 'flex' }}>
                         <MoreHorizIcon onClick={() => setExpand(true)}
                             style={{ margin: 5, color: '#666666' }} />
                     </div>}
-                    {expand && <div className="element" style={{ backgroundColor: '#4da6ff', marginLeft: '50%', height: 200, padding: 10, borderBottomLeftRadius: 10, textAlign: 'center' }}>
+                    {<div ref={modalExpand}
+                        className="element"
+                        style={{
+                            display: expand ? '' : 'none',
+                            backgroundColor: '#4da6ff', marginLeft: '50%', height: 200, padding: 10, borderBottomLeftRadius: 10, textAlign: 'center'
+                        }}>
                         <img src={soict} style={{ width: 100, height: 100, borderRadius: 50 }} />
-                        <Button onClick={() => history.push('/changePassword')} variant="text" style={{color: 'white'}}>
-                            <span style={{marginRight: 5}}>{`Đổi mật khẩu`}</span> <SyncLockIcon style={{fontSize: 17, marginTop: -3}}/>
+                        <Button onClick={() => history.push('/changePassword')} variant="text" style={{ color: 'white' }}>
+                            <span style={{ marginRight: 5 }}>{`Đổi mật khẩu`}</span> <SyncLockIcon style={{ fontSize: 17, marginTop: -3 }} />
                         </Button>
-                        <Button onClick={() => handleLogout()} variant="text" style={{color: 'white'}}>
-                        <span style={{marginRight: 5}}>{`Đăng xuất`}</span> <LogoutIcon style={{fontSize: 17, marginTop: -3}}/>
+                        <Button onClick={() => handleLogout()} variant="text" style={{ color: 'white' }}>
+                            <span style={{ marginRight: 5 }}>{`Đăng xuất`}</span> <LogoutIcon style={{ fontSize: 17, marginTop: -3 }} />
                         </Button>
                     </div>}
                 </div>
