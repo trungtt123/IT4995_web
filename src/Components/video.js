@@ -62,8 +62,8 @@ class Video extends Component {
       }
     }
     console.log('nextProps.mutecamera', nextProps.mutecamera);
-    this.video.srcObject && this.mutecamera(nextProps.mutecamera);
-    this.video.srcObject && this.mutemic(nextProps.mutemic);
+    this.video.srcObject && this.props.myVideo && this.mutecamera(nextProps.mutecamera);
+    this.video.srcObject && this.props.myVideo && this.mutemic(nextProps.mutemic);
   }
 
   mutemic = (mutemic) => {

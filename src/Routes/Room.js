@@ -224,8 +224,8 @@ class Room extends Component {
   }
 
   componentDidMount = () => {
-    const { location } = this.props;
-    this.state.roomId = location.state?.roomId;
+    const { location, roomId } = this.props;
+    this.state.roomId = roomId;
     if (!this.state.roomId) window.location.href = '/'
     this.socket = io(
       this.serviceIP,
@@ -505,7 +505,11 @@ class Room extends Component {
   stopTracks = (stream) => {
     stream.getTracks().forEach(track => track.stop())
   }
-
+  componentDidUpdate (prevProps, prevState){
+    if (this.state.disconnected){
+      this.props.handleEndCall();
+    }
+  }
   render() {
     const {
       status,
@@ -527,14 +531,21 @@ class Room extends Component {
 
       // stop all remote peerconnections
       peerConnections && Object.values(peerConnections).forEach(pc => pc.close())
-
-      return;
+      // this.props.handleEndCall()
+      return null;
     }
 
     const statusText = <div style={{ color: 'yellow', padding: 5 }}>{status}</div>
     console.log('this.state.muteMyCamera', this.state.muteMyCamera)
     return (
-      <div>
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        zIndex: 100,
+        height: '100vh',
+        width: '100%',
+        backgroundColor: 'black'
+      }}>
         <Draggable style={{
           zIndex: 101,
           position: 'absolute',
@@ -545,15 +556,16 @@ class Room extends Component {
             videoType='localVideo'
             videoStyles={{
               width: 200,
-              borderRadius: 10,
+              borderRadius: '10%',
               maxHeight: 200
             }}
             frameStyle={{
               display: 'inline-block',
-              backgroundColor: 'black',
+              // backgroundColor: 'black',
             }}
             mutecamera={this.state.muteMyCamera}
             mutemic={this.state.muteMyMic}
+            myVideo={true}
             showMuteControls={false}
             videoStream={localStream}
             autoPlay muted>
@@ -569,17 +581,16 @@ class Room extends Component {
           left: `50%`, transform: `translate(-50%, -50%)`
         }}>
           <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-            <i onClick={ () => this.setState({muteMyMic: !this.state.muteMyMic}) }
-              style={{ cursor: 'pointer', padding: 5, fontSize: 25, color: 'white' }} className='material-icons'>{true && 'mic' || 'mic_off'}</i>
-            <i onClick={ () => this.setState({muteMyCamera: !this.state.muteMyCamera}) }
-            style={{ cursor: 'pointer', padding: 5, fontSize: 25, color: 'white' }} className='material-icons'>{true && 'videocam' || 'videocam_off'}</i>
-            <div onClick={(e) => { this.setState({ disconnected: true }) }} style={{
+            <i onClick={() => this.setState({ muteMyMic: !this.state.muteMyMic })}
+              style={{ cursor: 'pointer', padding: 5, fontSize: 25, color: 'white' }} className='material-icons'>{!this.state.muteMyMic && 'mic' || 'mic_off'}</i>
+            <i onClick={() => this.setState({ muteMyCamera: !this.state.muteMyCamera })}
+              style={{ cursor: 'pointer', padding: 5, fontSize: 25, color: 'white' }} className='material-icons'>{!this.state.muteMyCamera && 'videocam' || 'videocam_off'}</i>
+            <div onClick={(e) => { this.setState({ disconnected: true }); }} style={{
               borderRadius: 20,
               width: 40,
               height: 40,
               backgroundColor: 'red'
             }}>
-
               <CallEndIcon style={{ fontSize: 25, color: 'white', marginTop: 7 }} />
             </div>
           </div>

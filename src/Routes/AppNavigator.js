@@ -38,7 +38,7 @@ function AppNavigator(props) {
                     <Route path="/conversation" exact render={() => <Conversation socket={socket} />}/>
                     <Route path="/profile" exact component={Profile}/>
                     <Route path="/createRoom" exact component={CreateRoom} />
-                    <Route path="/room" exact component={Room} />
+                    {/* <Route path="/room" exact component={Room} /> */}
                     <Route path="/changePassword" exact component={ChangePassword}/>
                     <Route path="/" render={() => <Home socket={socket}/>} />
                 </Switch>

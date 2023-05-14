@@ -11,6 +11,7 @@ import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
 import CallIcon from '@mui/icons-material/Call';
 import InfoIcon from '@mui/icons-material/Info';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import Room from "./Room";
 function MessageItem(props) {
     if (props.idSender != props.idUser)
         return (
@@ -70,6 +71,7 @@ export default function Conversation({ socket }) {
     const [showAddMember, setShowAddMember] = useState(false);
     const [listMember, setListMember] = useState([]);
     const [avatar, setAvatar] = useState({});
+    const [isCall, setIsCall] = useState(false);
     const conversation = location.state?.conversation;
     //tin nhắn muốn gửi
     const [textMessage, setTextMessage] = useState("");
@@ -95,10 +97,8 @@ export default function Conversation({ socket }) {
         // navigation.goBack();
     }
     const handleCall = () => {
-        history.push({
-            pathname: '/room',
-            state: { roomId: conversation._id }
-        });
+        document.body.classList.add('off-scroll')
+        setIsCall(true);
     }
 
     const scrollToBottom = () => {
@@ -136,6 +136,7 @@ export default function Conversation({ socket }) {
         <>
             {showAddMember && <ModalAddMember conversationId={conversation._id}
                 socket={socket} closeModal={() => setShowAddMember(false)} />}
+            {isCall && <Room roomId={conversation._id} handleEndCall={() => setIsCall(false)}/>}
             <div>
                 <div style={{
                     height: 50, width: '100%', position: 'fixed', backgroundColor: 'white', zIndex: 10, top: -2,

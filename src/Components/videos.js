@@ -1,4 +1,4 @@
-import React, {Component} from 'react'
+import React, { Component } from 'react'
 import Video from './video'
 
 class Videos extends Component {
@@ -25,7 +25,7 @@ class Videos extends Component {
       else {
         selectedVideo = this.state.selectedVideo && nextProps.remoteStreams.filter(stream => stream.id === this.state.selectedVideo.id) || []
 
-        selectedVideo = selectedVideo.length ? {} : { selectedVideo: nextProps.remoteStreams[NoOfRemoteStreams-1] }
+        selectedVideo = selectedVideo.length ? {} : { selectedVideo: nextProps.remoteStreams[NoOfRemoteStreams - 1] }
       }
 
       let _rVideos = nextProps.remoteStreams.map((rVideo, index) => {
@@ -60,7 +60,7 @@ class Videos extends Component {
           <div
             id={rVideo.name}
             onClick={() => this.switchVideo(rVideo)}
-            style={{ 
+            style={{
               cursor: 'pointer', display: 'inline-block'
             }}
             key={index}
@@ -98,8 +98,11 @@ class Videos extends Component {
 
   render() {
     return (
-      <div>
-        <Video
+      <div style={{
+        height: '100vh', position: 'absolute',
+        top: 0
+      }}>
+        {/* <Video
           videoType='previewVideo'
           frameStyle={{
             zIndex: 1,
@@ -113,23 +116,17 @@ class Videos extends Component {
             visibility: this.state.videoVisible && 'visible' || 'hidden',
           }}
           videoStream={this.state.selectedVideo && this.state.selectedVideo.stream}
-        />
+        /> */}
         <div
           style={{
-            zIndex: 3,
-            position: 'fixed',
-            padding: '6px 3px',
-            backgroundColor: 'rgba(0,0,0,0.3)',
-            maxHeight: 120,
-            top: 'auto',
-            right: 10,
-            left: 10,
-            bottom: 10,
             overflowX: 'scroll',
-            whiteSpace: 'nowrap'
+            whiteSpace: 'nowrap',
+            display: 'flex',
+            alignItems: 'center',
+            height: '100%'
           }}
         >
-          { this.state.rVideos }
+          {this.state.rVideos}
         </div>
       </div>
     )
