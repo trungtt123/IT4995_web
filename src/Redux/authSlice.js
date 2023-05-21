@@ -5,6 +5,7 @@ import { delay } from '../Services/Helper/common'
 export const login = createAsyncThunk("auth/login", async (data, thunkAPI) => {
   try {
     const { phonenumber, password } = data;
+    localStorage.setItem('tabIndex', 1)
     return await authService.login(phonenumber, password);
   } catch (e) {
     console.log("error", e);
@@ -16,6 +17,7 @@ export const verifyToken = createAsyncThunk(
   async (_, thunkAPI) => {
     try {
       // await delay(3000);
+      localStorage.setItem('tabIndex', 1)
       return await authService.verifyToken();
     } catch (e) {
       console.log("error", e);

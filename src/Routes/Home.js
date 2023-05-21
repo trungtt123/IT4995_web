@@ -14,6 +14,7 @@ import EmailIcon from '@mui/icons-material/Email';
 import PersonPinIcon from '@mui/icons-material/PersonPin';
 import Conversations from "./Conversations";
 import Profile from "./Profile";
+import Friend from "./Friend";
 
 const Home = ({ socket }) => {
     const dispatch = useDispatch();
@@ -55,6 +56,7 @@ const Home = ({ socket }) => {
                 tabIndex !== undefined &&
                 <>
                     <div style={{ marginBottom: 60 }}>
+                        {tabIndex === 0 && <Friend />}
                         {tabIndex === 1 && <Conversations socket={socket} />}
                         {tabIndex === 2 && <Profile />}
                     </div>
