@@ -7,7 +7,9 @@ const getAllUsers = () => {
 const getUserInfor = (user_id) => {
   return axios.post(`/user/get_user_info?user_id=${user_id}`);
 }
-
+const getUserFromPhoneNumber = (phoneNumber) => {
+  return axios.post(`/user/get_user_from_phone?phoneNumber=${phoneNumber}`);
+}
 const setUserDescription = (descrtiption, userId) => {
   return axios.post(`/user/set_user_info?user_id=${userId}&description=${descrtiption}`);
 }
@@ -86,7 +88,8 @@ const userService = {
   setCoverImage,
   setUserCity,
   setUserCountry,
-  getUserInforWithToken
+  getUserInforWithToken,
+  getUserFromPhoneNumber
 };
 
 

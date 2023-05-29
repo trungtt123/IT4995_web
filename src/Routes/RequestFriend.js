@@ -16,15 +16,15 @@ const RequestFriend = ({ socket }) => {
     const { user } = useSelector(
         (state) => state.auth
     );
-    const history = useHistory();
     const [friends, setFriends] = useState([]);
     const [total, setTotal] = useState(0);
-    const [keyword, setKeyword] = useState('');
-    const handleAcceptFriend = (userId, type) => {
-        userService.setAcceptFriend(userId, type).then((result) => {
-            
+    const handleAcceptFriend = (userId, isAccept) => {
+        userService.setAcceptFriend(userId, isAccept).then((result) => {
+            console.log(result);
         }).catch((e) => {
             console.log(e);
+        }).finally(() => {
+            getListRequestFriend();
         })
     }
     const getListRequestFriend = () => {
@@ -32,6 +32,7 @@ const RequestFriend = ({ socket }) => {
             setFriends(result.data.request);
             setTotal(result.data.total);
         }).catch((e) => {
+            setFriends([]);
             console.log(e);
         })
     }
@@ -51,7 +52,7 @@ const RequestFriend = ({ socket }) => {
             <div>
                 <List sx={{ width: '100%' }}>
                     {
-                        friends?.filter((o) => o.username.includes(keyword))?.map((item, index) => {
+                        friends?.map((item, index) => {
                             let secondary = +item?.same_friends + " bạn chung";
                             return <ListItem style={{ boxShadow: '2px 2px 4px rgba(0,0,0,0.1)' }}
                                 key={item.id} onClick={() => goToFriendProfile(item)}
@@ -67,9 +68,9 @@ const RequestFriend = ({ socket }) => {
                                     </div>
                                     <div style={{ position: 'absolute', right: 15, top: `50%`, transform: `translateY(-50%)` }}>
                                         <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                            <Button style={{ fontSize: 10, marginBottom: 5 }}
+                                            <Button style={{ fontSize: 10, marginBottom: 5 }} onClick={() => handleAcceptFriend(item?.id, 1)}
                                                 variant="contained" size="small">{`Chấp nhận`}</Button>
-                                            <Button style={{ fontSize: 10 }}
+                                            <Button style={{ fontSize: 10 }} onClick={() => handleAcceptFriend(item?.id, 0)}
                                                 variant="contained" color="inherit" size="small">{`Hủy bỏ`}</Button>
                                         </div>
                                     </div>
