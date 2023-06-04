@@ -60,7 +60,9 @@ function MessageItem(props) {
             </div>
         );
 }
-
+function NewMember({sender, newMember}){
+    return <div style={{fontSize: 14, textAlign: 'center'}}>{`${sender?.name} đã thêm ${newMember?.name}`}</div>
+}
 export default function Conversation({ socket }) {
     const location = useLocation();
     const history = useHistory();
@@ -75,6 +77,7 @@ export default function Conversation({ socket }) {
     const conversation = location.state?.conversation;
     //tin nhắn muốn gửi
     const [textMessage, setTextMessage] = useState("");
+    const [news, setNews] = useState();
     const [lastSeenMessage, setLastSeenMessage] = useState();
     const mess = useRef();
     const messageEndRef = useRef(null);
@@ -97,19 +100,20 @@ export default function Conversation({ socket }) {
         // navigation.goBack();
     }
     const handleCall = () => {
-        document.body.classList.add('off-scroll')
         setIsCall(true);
     }
-
+    const handleEndCall = () => {
+        document.body.classList.remove('off-scroll');
+        setIsCall(false)
+    }
     const scrollToBottom = () => {
         messageEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
-
     useEffect(() => {
         conversation && socket && socket.emit('join_conversation', {
             conversationId: conversation._id,
             token: user.token
-        })
+        });
         socket && socket.on('new_message', (result) => {
             setListMember(result.data.participants);
             const memTmp = result.data.participants;
@@ -123,7 +127,12 @@ export default function Conversation({ socket }) {
             if (result.code == '1000') {
                 setListMessage(result.data.messages);
             };
-        })
+        });
+        socket && socket.on('conversation_add_member', (result) => {
+            if (result.code == "1000") {
+                setNews(<NewMember sender={result.sender} newMember={result.newMember} />)
+            }
+          })
     }, [socket])
     useEffect(() => {
         scrollToBottom();
@@ -134,9 +143,9 @@ export default function Conversation({ socket }) {
     console.log(conversation);
     return (
         <>
-            {showAddMember && <ModalAddMember conversationId={conversation._id}
+            {showAddMember && <ModalAddMember conversation={conversation}
                 socket={socket} closeModal={() => setShowAddMember(false)} />}
-            {isCall && <Room roomId={conversation._id} handleEndCall={() => setIsCall(false)}/>}
+            {isCall && <Room roomId={conversation._id} handleEndCall={() => handleEndCall()}/>}
             <div>
                 <div style={{
                     height: 50, width: '100%', position: 'fixed', backgroundColor: 'white', zIndex: 10, top: -2,

@@ -9,7 +9,6 @@ import ListItemText from '@mui/material/ListItemText';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Avatar from '@mui/material/Avatar'; import { Button } from "@mui/material";
 import HeaderScreen from "../Components/HeaderScreen";
-;
 
 const RequestFriend = ({ socket }) => {
     const dispatch = useDispatch();

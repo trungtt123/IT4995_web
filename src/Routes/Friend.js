@@ -85,7 +85,7 @@ const Friend = ({ socket }) => {
                                             </ListItemAvatar>
                                             <ListItemText primary={item.username} primaryTypographyProps={{
                                                 style: {
-                                                    fontWeight: 'bold', width: '90%',
+                                                    fontWeight: 'bold', width: '80%',
                                                     textOverflow: 'ellipsis',
                                                     whiteSpace: 'nowrap',
                                                     overflow: 'hidden'
