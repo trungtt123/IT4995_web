@@ -60,8 +60,8 @@ function MessageItem(props) {
             </div>
         );
 }
-function NewMember({sender, newMember}){
-    return <div style={{fontSize: 14, textAlign: 'center'}}>{`${sender?.name} đã thêm ${newMember?.name}`}</div>
+function NewMember({ sender, newMember }) {
+    return <div style={{ fontSize: 14, textAlign: 'center' }}>{`${sender?.name} đã thêm ${newMember?.name}`}</div>
 }
 export default function Conversation({ socket }) {
     const location = useLocation();
@@ -101,6 +101,10 @@ export default function Conversation({ socket }) {
     }
     const handleCall = () => {
         setIsCall(true);
+        socket.emit('call', {
+            conversationId: conversation._id,
+            token: user.token
+        })
     }
     const handleEndCall = () => {
         document.body.classList.remove('off-scroll');
@@ -132,7 +136,7 @@ export default function Conversation({ socket }) {
             if (result.code == "1000") {
                 setNews(<NewMember sender={result.sender} newMember={result.newMember} />)
             }
-          })
+        })
     }, [socket])
     useEffect(() => {
         scrollToBottom();
@@ -145,7 +149,7 @@ export default function Conversation({ socket }) {
         <>
             {showAddMember && <ModalAddMember conversation={conversation}
                 socket={socket} closeModal={() => setShowAddMember(false)} />}
-            {isCall && <Room roomId={conversation._id} handleEndCall={() => handleEndCall()}/>}
+            
             <div>
                 <div style={{
                     height: 50, width: '100%', position: 'fixed', backgroundColor: 'white', zIndex: 10, top: -2,
@@ -154,16 +158,16 @@ export default function Conversation({ socket }) {
                     boxShadow: '2px 2px 4px rgba(0, 0, 0, 0.2)'
                 }}>
                     <div style={{
-                        marginTop: 13, marginLeft: 10, 
+                        marginTop: 13, marginLeft: 10,
                         textOverflow: 'ellipsis',
                         whiteSpace: 'nowrap', width: '50%',
                         overflow: 'hidden',
-                        position:'relative'
+                        position: 'relative'
                     }}>
-                        <ArrowBackIcon style={{marginRight: 10}}
+                        <ArrowBackIcon style={{ marginRight: 10 }}
                             onClick={() => history.goBack()} />
 
-                        <span style={{position: 'absolute', top: -2}}>{conversation?.conversationName}</span>
+                        <span style={{ position: 'absolute', top: -2 }}>{conversation?.conversationName}</span>
                     </div>
                     <div style={{ position: 'relative' }}>
                         <PersonAddAlt1Icon style={{ position: 'absolute', top: 13, right: 90 }}

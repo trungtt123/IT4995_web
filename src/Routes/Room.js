@@ -226,7 +226,7 @@ class Room extends Component {
   componentDidMount = () => {
     const { location, roomId } = this.props;
     this.state.roomId = roomId;
-    if (!this.state.roomId) window.location.href = '/'
+    // if (!this.state.roomId) window.location.href = '/'
     this.socket = io(
       this.serviceIP,
       {
@@ -607,4 +607,4 @@ class Room extends Component {
   }
 }
 
-export default withRouter(Room);
+export default Room;
