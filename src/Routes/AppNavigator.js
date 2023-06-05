@@ -17,29 +17,22 @@ import ChangePassword from './ChangePassword';
 import RequestFriend from './RequestFriend';
 import OtherProfile from './OtherProfile';
 import CallNotification from './CallNotification';
-import { createBrowserHistory } from 'history';
+import { createHashHistory } from 'history';
 const socket = io(`${CHAT_SERVER_URL}`);
-const customHistory = createBrowserHistory();
+const customHistory = createHashHistory();
 function AppNavigator(props) {
     const { isLoading, isAuthenticated } = useSelector(
         (state) => state.auth
     );
-    const history = useHistory();
-    // const [isCall, setIsCall] = useState(false);
-    const [roomCall, setRoomCall] = useState();
-    const roomElm = useRef();
     const dispatch = useDispatch();
     useEffect(() => {
         dispatch(verifyToken());
     }, []);
-    const handleEndCall = () => {
-        // setIsCall(false);
-    }
     useEffect(() => {
         socket.on('call', (data) => {
             if (data.code === "1000") {
-                // customHistory.push('/callNotification')
-                window.location.href = '/callNotification';
+                console.log(data);
+                customHistory.push(`/callNotification?converationId=${data.converationId}&converationName=${data.converationName}&senderId=${data.senderId}`)
             }
         })
     }, [socket])

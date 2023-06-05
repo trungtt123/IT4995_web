@@ -225,6 +225,7 @@ class Room extends Component {
 
   componentDidMount = () => {
     const { location, roomId } = this.props;
+    console.log('roomId', roomId);
     this.state.roomId = roomId;
     // if (!this.state.roomId) window.location.href = '/'
     this.socket = io(
