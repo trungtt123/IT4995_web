@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector,  } from "react-redux";
+import { useDispatch, useSelector, } from "react-redux";
 import { login } from "../Redux/authSlice";
 import { OutlinedInput, TextField, Button } from "@mui/material";
 import { VisibilityOffOutlined } from '@mui/icons-material';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import soict from '../Assets/images/soict.png'
-import { useHistory,useLocation } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 import Room from "./Room";
 const CallNotification = ({ roomCall, socket }) => {
     const dispatch = useDispatch();
@@ -18,9 +18,9 @@ const CallNotification = ({ roomCall, socket }) => {
     const { pathname, search } = location;
     const searchParams = new URLSearchParams(search);
     const senderId = searchParams.get('senderId');
-    const converationId = searchParams.get('converationId');
-    const converationName = searchParams.get('converationName');
-    console.log(senderId, converationId, converationName);
+    const conversationId = searchParams.get('conversationId');
+    const conversationName = searchParams.get('conversationName');
+    console.log(senderId, conversationId, conversationName);
     const handleCancelCall = () => {
         history.goBack();
     }
@@ -32,20 +32,35 @@ const CallNotification = ({ roomCall, socket }) => {
         history.goBack();
     }
     useEffect(() => {
-        if (senderId === user.id){
+        if (senderId === user.id) {
             setIsCall(true);
         }
-    }, []) 
+    }, []);
+    useEffect(() => {
+        // Đăng ký sự kiện "endcall" khi component mount
+        const endCallHandler = () => {
+            console.log('run');
+            history.goBack();
+        };
+        socket && socket.on('endcall', endCallHandler);
+
+        // Cleanup function để gỡ bỏ sự kiện "endcall" khi component unmount
+        return () => {
+            socket && socket.off('endcall', endCallHandler);
+        };
+    }, [socket])
     return (
         <>
-            {isCall && <Room roomId={converationId} handleEndCall={() => handleEndCall()}/>}
-            <div style={{ backgroundColor: 'black', height: '100vh' }}>
-                <div style={{ textAlign: 'center', color: 'white' }}>{`${converationName} đang gọi...`}</div>                
-                <div style={{ textAlign: 'center' }}>
-                    <button onClick={() => handleCancelCall()}>Cancel</button>
-                    <button onClick={() => handleAcceptCall()}>Accept</button>
+            {isCall && <Room roomId={conversationId} handleEndCall={() => handleEndCall()} />}
+            {
+                (senderId !== user.id) && <div style={{ backgroundColor: 'black', height: '100vh' }}>
+                    <div style={{ textAlign: 'center', color: 'white' }}>{`${conversationName} đang gọi...`}</div>
+                    <div style={{ textAlign: 'center' }}>
+                        <button onClick={() => handleCancelCall()}>Cancel</button>
+                        <button onClick={() => handleAcceptCall()}>Accept</button>
+                    </div>
                 </div>
-            </div>
+            }
         </>
     );
 };

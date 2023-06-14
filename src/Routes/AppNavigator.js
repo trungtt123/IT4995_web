@@ -32,7 +32,7 @@ function AppNavigator(props) {
         socket.on('call', (data) => {
             if (data.code === "1000") {
                 console.log(data);
-                customHistory.push(`/callNotification?converationId=${data.converationId}&converationName=${data.converationName}&senderId=${data.senderId}`)
+                customHistory.push(`/callNotification?conversationId=${data.conversationId}&conversationName=${data.conversationName}&senderId=${data.senderId}`)
             }
         })
     }, [socket])

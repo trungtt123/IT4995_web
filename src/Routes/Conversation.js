@@ -144,7 +144,7 @@ export default function Conversation({ socket }) {
     useEffect(() => {
         if (!conversation) history.push('/')
     }, [conversation])
-    console.log(conversation);
+    // console.log(conversation);
     return (
         <>
             {showAddMember && <ModalAddMember conversation={conversation}
