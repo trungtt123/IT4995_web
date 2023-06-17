@@ -15,9 +15,6 @@ const CallNotification = ({ roomCall, socket }) => {
     const { user } = useSelector(
         (state) => state.auth
     );
-    const { isCall } = useSelector(
-        (state) => state.call
-    );
     const history = useHistory();
     const location = useLocation();
     const { pathname, search } = location;
@@ -32,7 +29,7 @@ const CallNotification = ({ roomCall, socket }) => {
     }
     const handleAcceptCall = () => {
         dispatch(callAction(true))
-        history.push(`/conversation/${conversationId}`)
+        history.replace({pathname: `/conversation/${conversationId}`});
     }
     useEffect(() => {
     }, []);
@@ -49,6 +46,9 @@ const CallNotification = ({ roomCall, socket }) => {
             socket && socket.off('endcall', endCallHandler);
         };
     }, [socket]);
+    useEffect(() => {
+
+    }, [])
     return (
         <>
             {

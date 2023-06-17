@@ -147,7 +147,8 @@ export default function Conversation({ socket }) {
         <>
             {showAddMember && <ModalAddMember conversation={conversation}
                 socket={socket} closeModal={() => setShowAddMember(false)} />}
-            {isCall && <Room roomId={conversationId} handleEndCall={() => handleEndCall()} />}
+            {isCall && <Room user={user}
+            roomId={conversationId} handleEndCall={() => handleEndCall()} />}
             <div>
                 <div style={{
                     height: 50, width: '100%', position: 'fixed', backgroundColor: 'white', zIndex: 10, top: -2,

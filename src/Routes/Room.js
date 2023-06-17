@@ -98,10 +98,11 @@ class Room extends Component {
 
   whoisOnline = () => {
     // let all peers know I am joining
-    this.sendToPeer('onlinePeers', null, { local: this.socket.id })
+    this.sendToPeer('onlinePeers', {userId: this.props?.user?.id}, { local: this.socket.id })
   }
 
   sendToPeer = (messageType, payload, socketID) => {
+    console.log('payload', payload)
     this.socket.emit(messageType, {
       socketID,
       payload

@@ -18,26 +18,43 @@ import RequestFriend from './RequestFriend';
 import OtherProfile from './OtherProfile';
 import CallNotification from './CallNotification';
 import { createHashHistory } from 'history';
+import { callAction } from '../Redux/callSlice';
 const socket = io(`${CHAT_SERVER_URL}`);
 const customHistory = createHashHistory();
 function AppNavigator(props) {
+    const dispatch = useDispatch();
+    const { isCall } = useSelector(
+        (state) => state.call
+    );
     const { isLoading, isAuthenticated, user } = useSelector(
         (state) => state.auth
     );
-    const dispatch = useDispatch();
     useEffect(() => {
         dispatch(verifyToken());
     }, []);
     useEffect(() => {
-        socket && user && socket.on('call', (data) => {
+        console.log('isCall', isCall);
+    }, [isCall])
+    useEffect(() => {
+        let callListener = (data) => {
             console.log(data);
             if (data.code === "1000") {
                 console.log('data', user);
                 if (data.senderId !== user.id)
-                customHistory.push(`/callNotification?conversationId=${data.conversationId}&conversationName=${data.conversationName}&senderId=${data.senderId}`)
+                    customHistory.push(`/callNotification?conversationId=${data.conversationId}&conversationName=${data.conversationName}&senderId=${data.senderId}`)
             }
-        })
-    }, [socket, user])
+        };
+        
+        if (!isCall && socket && user) {
+            socket.on('call', callListener);
+        }
+        
+        return () => {
+            if (socket) {
+                socket.off('call', callListener);
+            }
+        };
+    }, [socket, user, isCall])
     console.log('isAuthen', isAuthenticated);
     return (
         <>
@@ -56,7 +73,7 @@ function AppNavigator(props) {
                         <Route path="/otherProfile" exact component={OtherProfile} />
                         <Route path="/createRoom" exact component={CreateRoom} />
                         <Route path="/requestFriend" exact component={RequestFriend} />
-                        <Route path="/callNotification" exact render={() => <CallNotification socket={socket}/>} />
+                        <Route path="/callNotification" exact render={() => <CallNotification socket={socket} />} />
                         <Route path="/changePassword" exact component={ChangePassword} />
                         <Route path="/" render={() => <Home socket={socket} />} />
                     </Switch>
