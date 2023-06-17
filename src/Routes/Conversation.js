@@ -11,7 +11,9 @@ import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
 import CallIcon from '@mui/icons-material/Call';
 import InfoIcon from '@mui/icons-material/Info';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { useParams } from 'react-router-dom';
 import Room from "./Room";
+import { callAction } from "../Redux/callSlice";
 function MessageItem(props) {
     if (props.idSender != props.idUser)
         return (
@@ -64,17 +66,21 @@ function NewMember({ sender, newMember }) {
     return <div style={{ fontSize: 14, textAlign: 'center' }}>{`${sender?.name} đã thêm ${newMember?.name}`}</div>
 }
 export default function Conversation({ socket }) {
+    const dispatch = useDispatch();
     const location = useLocation();
     const history = useHistory();
     const { user } = useSelector(
         (state) => state.auth
     );
+    const { isCall } = useSelector(
+        (state) => state.call
+    );
+    const { conversationId } = useParams();
     const [listMessage, setListMessage] = useState([]);
     const [showAddMember, setShowAddMember] = useState(false);
+    const [conversation, setConversation] = useState({});
     const [listMember, setListMember] = useState([]);
     const [avatar, setAvatar] = useState({});
-    const [isCall, setIsCall] = useState(false);
-    const conversation = location.state?.conversation;
     //tin nhắn muốn gửi
     const [textMessage, setTextMessage] = useState("");
     const [news, setNews] = useState();
@@ -86,51 +92,43 @@ export default function Conversation({ socket }) {
         socket && socket.emit('new_message', {
             token: user.token,
             userId: user.id,
-            conversationId: conversation._id,
+            conversationId: conversationId,
             content: textMessage
         });
         setTextMessage('');
     }
-    const handleBack = () => {
-        // socket?.emit('client_leave_conversation', {
-        //   token: user.token,
-        //   thisUserId: user.id,
-        //   targetUserId: userId
-        // })
-        // navigation.goBack();
-    }
     const handleCall = () => {
-        setIsCall(true);
+        dispatch(callAction(true))
         socket.emit('call', {
-            conversationId: conversation._id,
+            conversationId: conversationId,
             token: user.token
         })
     }
     const handleEndCall = () => {
         document.body.classList.remove('off-scroll');
-        setIsCall(false)
+        dispatch(callAction(false))
     }
     const scrollToBottom = () => {
         messageEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
     useEffect(() => {
-        conversation && socket && socket.emit('join_conversation', {
-            conversationId: conversation._id,
+        conversationId && socket && socket.emit('join_conversation', {
+            conversationId: conversationId,
             token: user.token
         });
         socket && socket.on('new_message', (result) => {
-            setListMember(result.data.participants);
-            const memTmp = result.data.participants;
-            // xử lý avatar
-            let avt = avatar;
-            for (let i = 0; i < memTmp.length; i++) {
-                const mem = memTmp[i];
-                avt[mem.user._id] = mem.user.avatar;
-            }
-            setAvatar(avt);
-            if (result.code == '1000') {
+            if (result.code === '1000') {
+                setConversation(result.data);
+                const memTmp = result.data.participants;
+                // xử lý avatar
+                let avt = avatar;
+                for (let i = 0; i < memTmp.length; i++) {
+                    const mem = memTmp[i];
+                    avt[mem.user._id] = mem.user.avatar;
+                }
+                setAvatar(avt);
                 setListMessage(result.data.messages);
-            };
+            }
         });
         socket && socket.on('conversation_add_member', (result) => {
             if (result.code == "1000") {
@@ -142,14 +140,14 @@ export default function Conversation({ socket }) {
         scrollToBottom();
     }, [listMessage]);
     useEffect(() => {
-        if (!conversation) history.push('/')
-    }, [conversation])
+        if (!conversationId) history.push('/')
+    }, [conversationId]);
     // console.log(conversation);
     return (
         <>
             {showAddMember && <ModalAddMember conversation={conversation}
                 socket={socket} closeModal={() => setShowAddMember(false)} />}
-            
+            {isCall && <Room roomId={conversationId} handleEndCall={() => handleEndCall()} />}
             <div>
                 <div style={{
                     height: 50, width: '100%', position: 'fixed', backgroundColor: 'white', zIndex: 10, top: -2,
@@ -161,7 +159,7 @@ export default function Conversation({ socket }) {
                         marginTop: 13, marginLeft: 10,
                         textOverflow: 'ellipsis',
                         whiteSpace: 'nowrap', width: '50%',
-                        overflow: 'hidden',
+                        // overflow: 'hidden',
                         position: 'relative'
                     }}>
                         <ArrowBackIcon style={{ marginRight: 10 }}

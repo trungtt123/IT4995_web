@@ -5,16 +5,21 @@ import { OutlinedInput, TextField, Button } from "@mui/material";
 import { VisibilityOffOutlined } from '@mui/icons-material';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import soict from '../Assets/images/soict.png'
+import CallEndIcon from '@mui/icons-material/CallEnd';
+import PhoneEnabledIcon from '@mui/icons-material/PhoneEnabled';
 import { useHistory, useLocation } from "react-router-dom";
 import Room from "./Room";
+import { callAction } from "../Redux/callSlice";
 const CallNotification = ({ roomCall, socket }) => {
     const dispatch = useDispatch();
     const { user } = useSelector(
         (state) => state.auth
     );
+    const { isCall } = useSelector(
+        (state) => state.call
+    );
     const history = useHistory();
     const location = useLocation();
-    const [isCall, setIsCall] = useState(false);
     const { pathname, search } = location;
     const searchParams = new URLSearchParams(search);
     const senderId = searchParams.get('senderId');
@@ -22,19 +27,14 @@ const CallNotification = ({ roomCall, socket }) => {
     const conversationName = searchParams.get('conversationName');
     console.log(senderId, conversationId, conversationName);
     const handleCancelCall = () => {
+        dispatch(callAction(false))
         history.goBack();
     }
     const handleAcceptCall = () => {
-        setIsCall(true);
-    }
-    const handleEndCall = () => {
-        setIsCall(false);
-        history.goBack();
+        dispatch(callAction(true))
+        history.push(`/conversation/${conversationId}`)
     }
     useEffect(() => {
-        if (senderId === user.id) {
-            setIsCall(true);
-        }
     }, []);
     useEffect(() => {
         // Đăng ký sự kiện "endcall" khi component mount
@@ -48,16 +48,30 @@ const CallNotification = ({ roomCall, socket }) => {
         return () => {
             socket && socket.off('endcall', endCallHandler);
         };
-    }, [socket])
+    }, [socket]);
     return (
         <>
-            {isCall && <Room roomId={conversationId} handleEndCall={() => handleEndCall()} />}
             {
-                (senderId !== user.id) && <div style={{ backgroundColor: 'black', height: '100vh' }}>
-                    <div style={{ textAlign: 'center', color: 'white' }}>{`${conversationName} đang gọi...`}</div>
-                    <div style={{ textAlign: 'center' }}>
-                        <button onClick={() => handleCancelCall()}>Cancel</button>
-                        <button onClick={() => handleAcceptCall()}>Accept</button>
+                (senderId !== user.id) && <div style={{ backgroundColor: 'black', height: '100vh', display: 'flex',
+                justifyContent: 'end', flexDirection: 'column' }}>
+                    <div style={{ textAlign: 'center', color: 'white', marginBottom: '50%' }}>{`${conversationName} đang gọi...`}</div>
+                    <div style={{ display: 'flex', flexDirection: 'row', textAlign: 'center', padding: '20%', justifyContent: 'space-between' }}>
+                        <div onClick={(e) => handleCancelCall()} style={{
+                            borderRadius: 20,
+                            width: 40,
+                            height: 40,
+                            backgroundColor: 'red'
+                        }}>
+                            <CallEndIcon style={{ fontSize: 25, color: 'white', marginTop: 7 }} />
+                        </div>
+                        <div onClick={(e) => handleAcceptCall()} style={{
+                            borderRadius: 20,
+                            width: 40,
+                            height: 40,
+                            backgroundColor: '#33cc33'
+                        }}>
+                            <PhoneEnabledIcon style={{ fontSize: 25, color: 'white', marginTop: 7 }} />
+                        </div>
                     </div>
                 </div>
             }

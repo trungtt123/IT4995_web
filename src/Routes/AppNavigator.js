@@ -21,7 +21,7 @@ import { createHashHistory } from 'history';
 const socket = io(`${CHAT_SERVER_URL}`);
 const customHistory = createHashHistory();
 function AppNavigator(props) {
-    const { isLoading, isAuthenticated } = useSelector(
+    const { isLoading, isAuthenticated, user } = useSelector(
         (state) => state.auth
     );
     const dispatch = useDispatch();
@@ -29,13 +29,15 @@ function AppNavigator(props) {
         dispatch(verifyToken());
     }, []);
     useEffect(() => {
-        socket.on('call', (data) => {
+        socket && user && socket.on('call', (data) => {
+            console.log(data);
             if (data.code === "1000") {
-                console.log(data);
+                console.log('data', user);
+                if (data.senderId !== user.id)
                 customHistory.push(`/callNotification?conversationId=${data.conversationId}&conversationName=${data.conversationName}&senderId=${data.senderId}`)
             }
         })
-    }, [socket])
+    }, [socket, user])
     console.log('isAuthen', isAuthenticated);
     return (
         <>
@@ -49,7 +51,7 @@ function AppNavigator(props) {
                 }
                 {
                     isAuthenticated && <Switch>
-                        <Route path="/conversation" exact render={() => <Conversation socket={socket} />} />
+                        <Route path="/conversation/:conversationId" exact render={() => <Conversation socket={socket} />} />
                         <Route path="/profile" exact component={Profile} />
                         <Route path="/otherProfile" exact component={OtherProfile} />
                         <Route path="/createRoom" exact component={CreateRoom} />

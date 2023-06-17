@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk, createAction } from "@reduxjs/toolkit";
 
 export const callAction = createAction('callAction');
 
+
 const initialState = {
   isCall: false
 };
@@ -12,7 +13,7 @@ const callSlice = createSlice({
   reducers: {},
   extraReducers: {
     [callAction]: (state, action) => {
-      state.isCall = action?.payload?.data;
+      state.isCall = action?.payload;
     }
   },
 });

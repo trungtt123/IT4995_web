@@ -26,7 +26,7 @@ export default function Conversations({ socket }) {
     );
     const goToConversation = (conversation) => {
         history.push({
-            pathname: '/conversation',
+            pathname: `/conversation/${conversation._id}`,
             state: { conversation: conversation }
         });
     }
