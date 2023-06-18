@@ -33,19 +33,43 @@ export default function Conversations({ socket }) {
     const handleSearch = (keyword) => {
         setKeyword(keyword)
     }
+    // useEffect(() => {
+    //     socket.emit('me', { userId: user.id });
+    //     socket.emit('get_list_conversation', {
+    //         userId: user.id,
+    //         token: user.token
+    //     });
+    //     socket.on('conversation_change', (result) => {
+    //         console.log(result)
+    //         if (result.code == "1000") {
+    //             setConversations(result.data)
+    //         }
+    //     })
+    // }, [socket])
     useEffect(() => {
+        let isMounted = true; // Thêm biến isMounted để kiểm tra component có còn tồn tại hay không
+      
         socket.emit('me', { userId: user.id });
         socket.emit('get_list_conversation', {
-            userId: user.id,
-            token: user.token
+          userId: user.id,
+          token: user.token
         });
+      
+        // Lắng nghe sự kiện conversation_change
         socket.on('conversation_change', (result) => {
-            console.log(result)
-            if (result.code == "1000") {
-                setConversations(result.data)
+          if (isMounted) { // Kiểm tra component còn tồn tại trước khi cập nhật state
+            if (result.code === '1000') {
+              setConversations(result.data);
             }
-        })
-    }, [socket])
+          }
+        });
+      
+        return () => {
+          isMounted = false; // Đánh dấu component đã unmount
+          socket.off('conversation_change'); // Huỷ đăng ký sự kiện conversation_change
+        };
+      }, [socket, user.id, user.token]);
+      
     return (
         <>
             {showModalCreateConversation

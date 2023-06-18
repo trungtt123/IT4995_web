@@ -43,15 +43,14 @@ class Videos extends Component {
             videoStream={rVideo.stream}
             frameStyle={{
               backgroundColor: '#ffffff12',
-              maxWidth: 120, maxHeight: 120,
               borderRadius: 5,
-              float: 'left', margin: '0 3px'
+              float: 'left', 
+              margin: '0 3px'
             }}
             videoStyles={{
               objectFit: 'cover',
               borderRadius: 5,
-              width: 120, height: 120,
-              maxWidth: 120, maxHeight: 120,
+              width: '100%', height: '100%'
             }}
           />
         ) || <div></div>
@@ -61,7 +60,7 @@ class Videos extends Component {
             id={rVideo.name}
             onClick={() => this.switchVideo(rVideo)}
             style={{
-              cursor: 'pointer', display: 'inline-block'
+              cursor: 'pointer', display: 'inline-block', width: '100%'
             }}
             key={index}
           >

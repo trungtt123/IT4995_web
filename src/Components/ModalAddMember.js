@@ -50,20 +50,37 @@ const ModalAddMember = ({ socket, conversation, closeModal }) => {
     setFilterData([]);
   }
   useEffect(() => {
-    socket && socket.on('conversation_add_member', (result) => {
-      console.log(result)
-      if (result.code == "1000") {
+    const handleConversationAddMember = (result) => {
+      console.log(result);
+      if (result.code === "1000") {
+        let newMember = result.newMember;
+        socket.emit('new_message',
+            {
+              conversationId: conversation?._id,
+              userId: user.id,
+              token: user.token,
+              notification: true,
+              content: `${newMember?.name} đã được thêm vào đoạn chat`
+            }
+          )
         setStatus(1);
-      }
-      else if (result.code == "9999") {
+      } else if (result.code === "9999") {
         setStatus(2);
         let tmp;
         if (result.reason === 'USER NOT EXIST') tmp = 'Người dùng không tồn tại';
         else if (result.reason === 'USER ALREADY EXISTS IN CHAT') tmp = 'Người dùng này đã được thêm';
         setStatusDes(tmp);
       }
-    })
-  }, [socket])
+    };
+  
+    socket && socket.on('conversation_add_member', handleConversationAddMember);
+  
+    // Hàm cleanup
+    return () => {
+      socket && socket.off('conversation_add_member', handleConversationAddMember);
+    };
+  }, [socket, phoneNumber]);
+  
   useEffect(() => {
     getListFriend();
   }, [])

@@ -7,6 +7,7 @@ import Videos from '../Components/videos'
 import CallEndIcon from '@mui/icons-material/CallEnd';
 import Draggable from '../Components/draggable'
 import { CHAT_SERVER_URL } from '../Services/Helper/constant';
+import { delay } from '../Services/Helper/common';
 
 class Room extends Component {
   constructor(props) {
@@ -102,14 +103,13 @@ class Room extends Component {
   }
 
   sendToPeer = (messageType, payload, socketID) => {
-    console.log('payload', payload)
     this.socket.emit(messageType, {
       socketID,
       payload
     })
   }
 
-  createPeerConnection = (socketID, callback) => {
+  createPeerConnection = async (socketID, callback) => {
 
     try {
       let pc = new RTCPeerConnection(this.state.pc_config)
@@ -209,7 +209,7 @@ class Room extends Component {
 
       if (this.state.localStream)
         // pc.addStream(this.state.localStream)
-
+        // await delay(1000);
         this.state.localStream.getTracks().forEach(track => {
           pc.addTrack(track, this.state.localStream)
         })
@@ -504,7 +504,8 @@ class Room extends Component {
 
   // ************************************* //
   // ************************************* //
-  stopTracks = (stream) => {
+  stopTracks = async (stream) => {
+    // await delay(1000);
     stream.getTracks().forEach(track => track.stop())
   }
   componentDidUpdate (prevProps, prevState){
@@ -524,7 +525,7 @@ class Room extends Component {
 
     if (disconnected) {
       // disconnect socket
-      this.socket.close()
+      this.socket && this.socket.close()
       // stop local audio & video tracks
       this.stopTracks(localStream)
 

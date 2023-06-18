@@ -14,6 +14,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useParams } from 'react-router-dom';
 import Room from "./Room";
 import { callAction } from "../Redux/callSlice";
+import { updateConversation } from "../Redux/conversationSlice";
 function MessageItem(props) {
     if (props.idSender != props.idUser)
         return (
@@ -108,41 +109,88 @@ export default function Conversation({ socket }) {
         document.body.classList.remove('off-scroll');
         dispatch(callAction(false))
     }
+    const handleGotoConversationInfo = () => {
+        history.push('/conversationInfo');
+    }
     const scrollToBottom = () => {
         messageEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
+    // useEffect(() => {
+    //     conversationId && socket && socket.emit('join_conversation', {
+    //         conversationId: conversationId,
+    //         token: user.token
+    //     });
+    //     socket && socket.on('new_message', (result) => {
+    //         if (result.code === '1000') {
+    //             setConversation(result.data);
+    //             const memTmp = result.data.participants;
+    //             // xử lý avatar
+    //             let avt = avatar;
+    //             for (let i = 0; i < memTmp.length; i++) {
+    //                 const mem = memTmp[i];
+    //                 avt[mem.user._id] = mem.user.avatar;
+    //             }
+    //             setAvatar(avt);
+    //             setListMessage(result.data.messages);
+    //         }
+    //     });
+    //     socket && socket.on('conversation_add_member', (result) => {
+    //         if (result.code == "1000") {
+    //             setNews(<NewMember sender={result.sender} newMember={result.newMember} />)
+    //         }
+    //     })
+    // }, [socket])
     useEffect(() => {
+        let isMounted = true; // Thêm biến isMounted để kiểm tra component có còn tồn tại hay không
+      
         conversationId && socket && socket.emit('join_conversation', {
-            conversationId: conversationId,
-            token: user.token
+          conversationId: conversationId,
+          token: user.token
         });
+      
+        // Lắng nghe sự kiện new_message
         socket && socket.on('new_message', (result) => {
+          if (isMounted) { // Kiểm tra component còn tồn tại trước khi cập nhật state
             if (result.code === '1000') {
-                setConversation(result.data);
-                const memTmp = result.data.participants;
-                // xử lý avatar
-                let avt = avatar;
-                for (let i = 0; i < memTmp.length; i++) {
-                    const mem = memTmp[i];
-                    avt[mem.user._id] = mem.user.avatar;
-                }
-                setAvatar(avt);
-                setListMessage(result.data.messages);
+              setConversation(result.data);
+              dispatch(updateConversation(result.data));
+              const memTmp = result.data.participants;
+      
+              // Xử lý avatar
+              let avt = avatar;
+              for (let i = 0; i < memTmp.length; i++) {
+                const mem = memTmp[i];
+                avt[mem.user._id] = mem.user.avatar;
+              }
+              setAvatar(avt);
+              setListMessage(result.data.messages);
             }
+          }
         });
+      
+        // Lắng nghe sự kiện conversation_add_member
         socket && socket.on('conversation_add_member', (result) => {
+          if (isMounted) { // Kiểm tra component còn tồn tại trước khi cập nhật state
             if (result.code == "1000") {
-                setNews(<NewMember sender={result.sender} newMember={result.newMember} />)
+              setNews(<NewMember sender={result.sender} newMember={result.newMember} />);
             }
-        })
-    }, [socket])
+          }
+        });
+      
+        return () => {
+          isMounted = false; // Đánh dấu component đã unmount
+          socket && socket.off('new_message'); // Huỷ đăng ký sự kiện new_message
+          socket && socket.off('conversation_add_member'); // Huỷ đăng ký sự kiện conversation_add_member
+        };
+      }, [socket]);
+      
     useEffect(() => {
         scrollToBottom();
     }, [listMessage]);
     useEffect(() => {
         if (!conversationId) history.push('/')
     }, [conversationId]);
-    // console.log(conversation);
+    console.log('conversation', conversation);
     return (
         <>
             {showAddMember && <ModalAddMember conversation={conversation}
@@ -174,7 +222,7 @@ export default function Conversation({ socket }) {
                         <CallIcon style={{ position: 'absolute', top: 13, right: 50 }}
                             onClick={() => handleCall()} />
                         <InfoIcon style={{ position: 'absolute', top: 13, right: 10 }}
-                            onClick={() => handleCall()} />
+                            onClick={() => handleGotoConversationInfo()} />
                     </div>
                 </div>
                 <div style={{ width: "100%", marginTop: 50 }}>

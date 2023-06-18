@@ -38,15 +38,21 @@ const Home = ({ socket }) => {
         <div style={{ fontSize: 11 }}>Cá nhân</div>
     </div>
     useEffect(() => {
-        try {
-            let tabIndexTmp = parseInt(localStorage.getItem('tabIndex'), 10);
-            if (isNaN(tabIndexTmp)) {
+        const switchTab = () => {
+            try {
+                let tabIndexTmp = parseInt(localStorage.getItem('tabIndex'), 10);
+                if (isNaN(tabIndexTmp)) {
+                    setTabIndex(1);
+                }
+                else setTabIndex(tabIndexTmp);
+            }
+            catch (e) {
                 setTabIndex(1);
             }
-            else setTabIndex(tabIndexTmp);
         }
-        catch (e) {
-            setTabIndex(1);
+        switchTab();
+        return () => {
+            switchTab()
         }
     }, [])
     console.log('tabIndex', tabIndex);

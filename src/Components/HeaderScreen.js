@@ -15,7 +15,7 @@ const HeaderScreen = ({ title = "" }) => {
                 marginTop: 13, marginLeft: 10,
                 textOverflow: 'ellipsis',
                 whiteSpace: 'nowrap', width: '50%',
-                overflow: 'hidden',
+                // overflow: 'hidden',
                 position: 'relative'
             }}>
                 <ArrowBackIcon style={{ marginRight: 10 }}

@@ -19,6 +19,7 @@ import OtherProfile from './OtherProfile';
 import CallNotification from './CallNotification';
 import { createHashHistory } from 'history';
 import { callAction } from '../Redux/callSlice';
+import ConversationInfo from './ConversationInfo';
 const socket = io(`${CHAT_SERVER_URL}`);
 const customHistory = createHashHistory();
 function AppNavigator(props) {
@@ -28,6 +29,9 @@ function AppNavigator(props) {
     );
     const { isLoading, isAuthenticated, user } = useSelector(
         (state) => state.auth
+    );
+    const { conversationData } = useSelector(
+        (state) => state.conversation
     );
     useEffect(() => {
         dispatch(verifyToken());
@@ -44,11 +48,11 @@ function AppNavigator(props) {
                     customHistory.push(`/callNotification?conversationId=${data.conversationId}&conversationName=${data.conversationName}&senderId=${data.senderId}`)
             }
         };
-        
+
         if (!isCall && socket && user) {
             socket.on('call', callListener);
         }
-        
+
         return () => {
             if (socket) {
                 socket.off('call', callListener);
@@ -69,6 +73,7 @@ function AppNavigator(props) {
                 {
                     isAuthenticated && <Switch>
                         <Route path="/conversation/:conversationId" exact render={() => <Conversation socket={socket} />} />
+                        <Route path="/conversationInfo" exact render={() => <ConversationInfo socket={socket} conversation={conversationData}/>} />
                         <Route path="/profile" exact component={Profile} />
                         <Route path="/otherProfile" exact component={OtherProfile} />
                         <Route path="/createRoom" exact component={CreateRoom} />

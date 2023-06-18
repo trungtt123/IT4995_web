@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { memo, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { login } from "../Redux/authSlice";
 import { OutlinedInput, TextField, Button } from "@mui/material";
@@ -54,4 +54,4 @@ const OtherProfile = () => {
     );
 };
 
-export default OtherProfile;
+export default memo(OtherProfile);
