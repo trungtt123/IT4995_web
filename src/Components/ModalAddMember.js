@@ -7,7 +7,9 @@ import { TextField, Button, Grid } from '@mui/material';
 import userService from '../Services/Api/userService';
 import ListItemText from '@mui/material/ListItemText';
 import Avatar from '@mui/material/Avatar';
+import { getConversation } from '../Redux/conversationSlice';
 const ModalAddMember = ({ socket, conversation, closeModal }) => {
+  const dispatch = useDispatch();
   const { user } = useSelector(
     (state) => state.auth
   );
@@ -55,14 +57,15 @@ const ModalAddMember = ({ socket, conversation, closeModal }) => {
       if (result.code === "1000") {
         let newMember = result.newMember;
         socket.emit('new_message',
-            {
-              conversationId: conversation?._id,
-              userId: user.id,
-              token: user.token,
-              notification: true,
-              content: `${newMember?.name} đã được thêm vào đoạn chat`
-            }
-          )
+          {
+            conversationId: conversation?._id,
+            userId: user.id,
+            token: user.token,
+            notification: true,
+            content: `${newMember?.name} đã được thêm vào đoạn chat`
+          }
+        )
+        dispatch(getConversation({ conversationId: conversation?._id }))
         setStatus(1);
       } else if (result.code === "9999") {
         setStatus(2);
@@ -72,15 +75,15 @@ const ModalAddMember = ({ socket, conversation, closeModal }) => {
         setStatusDes(tmp);
       }
     };
-  
+
     socket && socket.on('conversation_add_member', handleConversationAddMember);
-  
+
     // Hàm cleanup
     return () => {
       socket && socket.off('conversation_add_member', handleConversationAddMember);
     };
-  }, [socket, phoneNumber]);
-  
+  }, [socket]);
+
   useEffect(() => {
     getListFriend();
   }, [])

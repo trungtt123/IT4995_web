@@ -59,6 +59,7 @@ export default function Conversations({ socket }) {
         socket.on('conversation_change', (result) => {
           if (isMounted) { // Kiểm tra component còn tồn tại trước khi cập nhật state
             if (result.code === '1000') {
+                console.log('123');
               setConversations(result.data);
             }
           }

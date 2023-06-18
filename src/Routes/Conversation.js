@@ -142,48 +142,48 @@ export default function Conversation({ socket }) {
     // }, [socket])
     useEffect(() => {
         let isMounted = true; // Thêm biến isMounted để kiểm tra component có còn tồn tại hay không
-      
+
         conversationId && socket && socket.emit('join_conversation', {
-          conversationId: conversationId,
-          token: user.token
+            conversationId: conversationId,
+            token: user.token
         });
-      
+
         // Lắng nghe sự kiện new_message
         socket && socket.on('new_message', (result) => {
-          if (isMounted) { // Kiểm tra component còn tồn tại trước khi cập nhật state
-            if (result.code === '1000') {
-              setConversation(result.data);
-              dispatch(updateConversation(result.data));
-              const memTmp = result.data.participants;
-      
-              // Xử lý avatar
-              let avt = avatar;
-              for (let i = 0; i < memTmp.length; i++) {
-                const mem = memTmp[i];
-                avt[mem.user._id] = mem.user.avatar;
-              }
-              setAvatar(avt);
-              setListMessage(result.data.messages);
+            if (isMounted) { // Kiểm tra component còn tồn tại trước khi cập nhật state
+                if (result.code === '1000') {
+                    setConversation(result.data);
+                    dispatch(updateConversation(result.data));
+                    const memTmp = result.data.participants;
+
+                    // Xử lý avatar
+                    let avt = avatar;
+                    for (let i = 0; i < memTmp.length; i++) {
+                        const mem = memTmp[i];
+                        avt[mem.user._id] = mem.user.avatar;
+                    }
+                    setAvatar(avt);
+                    setListMessage(result.data.messages);
+                }
             }
-          }
         });
-      
+
         // Lắng nghe sự kiện conversation_add_member
         socket && socket.on('conversation_add_member', (result) => {
-          if (isMounted) { // Kiểm tra component còn tồn tại trước khi cập nhật state
-            if (result.code == "1000") {
-              setNews(<NewMember sender={result.sender} newMember={result.newMember} />);
+            if (isMounted) { // Kiểm tra component còn tồn tại trước khi cập nhật state
+                if (result.code == "1000") {
+                    setNews(<NewMember sender={result.sender} newMember={result.newMember} />);
+                }
             }
-          }
         });
-      
+
         return () => {
-          isMounted = false; // Đánh dấu component đã unmount
-          socket && socket.off('new_message'); // Huỷ đăng ký sự kiện new_message
-          socket && socket.off('conversation_add_member'); // Huỷ đăng ký sự kiện conversation_add_member
+            isMounted = false; // Đánh dấu component đã unmount
+            socket && socket.off('new_message'); // Huỷ đăng ký sự kiện new_message
+            socket && socket.off('conversation_add_member'); // Huỷ đăng ký sự kiện conversation_add_member
         };
-      }, [socket]);
-      
+    }, [socket]);
+
     useEffect(() => {
         scrollToBottom();
     }, [listMessage]);
@@ -196,7 +196,7 @@ export default function Conversation({ socket }) {
             {showAddMember && <ModalAddMember conversation={conversation}
                 socket={socket} closeModal={() => setShowAddMember(false)} />}
             {isCall && <Room user={user}
-            roomId={conversationId} handleEndCall={() => handleEndCall()} />}
+                roomId={conversationId} handleEndCall={() => handleEndCall()} />}
             <div>
                 <div style={{
                     height: 50, width: '100%', position: 'fixed', backgroundColor: 'white', zIndex: 10, top: -2,
@@ -228,7 +228,16 @@ export default function Conversation({ socket }) {
                 <div style={{ width: "100%", marginTop: 50 }}>
                     <div style={{ overflow: 'hidden', paddingTop: 20, marginBottom: 200 }}>
                         {listMessage.map((e, index) => {
-                            return <MessageItem
+                            if (e?.notification) {
+                                return <div style={{
+                                    textAlign: 'center',
+                                    fontSize: 12,
+                                    fontWeight: 500,
+                                    marginBottom: 10
+                                }}
+                                    key={e._id}>{e.content}</div>
+                            }
+                            else return <MessageItem
                                 key={e._id} avatar={avatar[e.sender]}
                                 mess={e.content} idSender={e.sender} idUser={user.id} keyExtractor={(e) => e._id} />
                         }
