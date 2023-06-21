@@ -5,6 +5,9 @@ import { io } from 'socket.io-client'
 import Video from '../Components/video'
 import Videos from '../Components/videos'
 import CallEndIcon from '@mui/icons-material/CallEnd';
+import CameraswitchIcon from '@mui/icons-material/Cameraswitch';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Draggable from '../Components/draggable'
 import { CHAT_SERVER_URL } from '../Services/Helper/constant';
 import { delay } from '../Services/Helper/common';
@@ -22,6 +25,8 @@ class Room extends Component {
       selectedVideo: null,
       muteMyCamera: false,
       muteMyMic: false,
+      expand: true,
+      typeCamera: 'user',
       status: 'Please wait...',
 
       pc_config: {
@@ -55,7 +60,7 @@ class Room extends Component {
     // this.candidates = []
   }
 
-  getLocalStream = () => {
+  getLocalStream = ({ typeCamera: typeCamera }) => {
     // called when getUserMedia() successfully returns - see below
     // getUserMedia() returns a MediaStream object (https://developer.mozilla.org/en-US/docs/Web/API/MediaStream)
     const success = (stream) => {
@@ -73,21 +78,10 @@ class Room extends Component {
     const failure = (e) => {
       console.log('getUserMedia Error: ', e)
     }
-
-    // https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia
-    // see the above link for more constraint options
     const constraints = {
       audio: true,
-      video: true,
-      // video: {
-      //   width: 1280,
-      //   height: 720
-      // },
-      // video: {
-      //   width: { min: 1280 },
-      // }
-      options: {
-        mirror: true,
+      video: {
+        facingMode: { exact: typeCamera }
       }
     }
 
@@ -96,10 +90,22 @@ class Room extends Component {
       .then(success)
       .catch(failure)
   }
-
+  switchCam = (typeCamera) => {
+    const tracks = this.state.localStream.getTracks();
+    // Duyệt qua từng track
+    tracks.forEach(track => {
+      // Kiểm tra track có phải là video track không
+      if (track.kind === 'video') {
+        // Dừng track (tắt camera)
+        track.stop();
+      }
+    });
+    this.setState({ typeCamera: typeCamera });
+    this.getLocalStream({ typeCamera: typeCamera });
+  }
   whoisOnline = () => {
     // let all peers know I am joining
-    this.sendToPeer('onlinePeers', {userId: this.props?.user?.id}, { local: this.socket.id })
+    this.sendToPeer('onlinePeers', { userId: this.props?.user?.id }, { local: this.socket.id })
   }
 
   sendToPeer = (messageType, payload, socketID) => {
@@ -241,7 +247,7 @@ class Room extends Component {
 
     this.socket.on('connection-success', data => {
 
-      this.getLocalStream()
+      this.getLocalStream({ typeCamera: 'user' })
 
       // console.log(data.success)
       const status = data.peerCount > 1 ? `Total Connected Peers to room ${this.state.roomId}: ${data.peerCount}` : `Waiting for other peers to connect ${this.state.roomId}`
@@ -287,14 +293,6 @@ class Room extends Component {
       )
     })
 
-    // this.socket.on('offerOrAnswer', (sdp) => {
-
-    //   this.textref.value = JSON.stringify(sdp)
-
-    //   // set sdp as remote description
-    //   this.pc.setRemoteDescription(new RTCSessionDescription(sdp))
-    // })
-
     this.socket.on('online-peer', socketID => {
       // console.log('connected peers ...', socketID)
 
@@ -318,7 +316,6 @@ class Room extends Component {
               sendChannels: [...prevState.sendChannels, sendChannel]
             }
           })
-
 
           // Receive Channels
           const handleReceiveMessage = (event) => {
@@ -508,8 +505,8 @@ class Room extends Component {
     // await delay(1000);
     stream.getTracks().forEach(track => track.stop())
   }
-  componentDidUpdate (prevProps, prevState){
-    if (this.state.disconnected){
+  componentDidUpdate(prevProps, prevState) {
+    if (this.state.disconnected) {
       this.props.handleEndCall();
     }
   }
@@ -545,15 +542,39 @@ class Room extends Component {
         position: 'fixed',
         top: 0,
         zIndex: 100,
-        height: '100vh',
+        height: this.state.expand ? '100vh': '7vh',
         width: '100%',
         backgroundColor: 'black'
       }}>
+        <div onClick={(e) => {
+          this.setState({expand: !this.state.expand})
+        }} style={{
+          borderRadius: 20,
+          width: 40,
+          height: 40,
+          margin: '5px 0px 0px 10px',
+          display: this.state.expand ? '' : 'none'
+        }}>
+          <ExpandLessIcon style={{ fontSize: 25, color: 'white', marginTop: 7 }} />
+        </div>
+        <div onClick={(e) => {
+          this.setState({expand: !this.state.expand})
+        }} style={{
+          borderRadius: 20,
+          width: 40,
+          height: 40,
+          margin: '5px 0px 0px 10px',
+          display: !this.state.expand ? '' : 'none'
+        }}>
+          <ExpandMoreIcon style={{ fontSize: 25, color: 'white', marginTop: 7 }} />
+        </div>
+        
         <Draggable style={{
           zIndex: 101,
           position: 'absolute',
           right: 0,
-          cursor: 'move'
+          cursor: 'move',
+          display: this.state.expand ? '' : 'none'
         }}>
           <Video
             videoType='localVideo'
@@ -580,10 +601,20 @@ class Room extends Component {
           position: 'absolute',
           bottom: 20,
           textAlign: 'center',
-          width: '50%',
-          left: `50%`, transform: `translate(-50%, -50%)`
+          width: '75%',
+          left: `50%`, transform: `translate(-50%, -50%)`,
+          display: this.state.expand ? '' : 'none'
         }}>
           <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+            {/* <div onClick={(e) => {
+              this.switchCam(this.state.typeCamera === 'user' ? 'environment' : 'user');
+            }} style={{
+              borderRadius: 20,
+              width: 40,
+              height: 40
+            }}>
+              <CameraswitchIcon style={{ fontSize: 25, color: 'white', marginTop: 7 }} />
+            </div> */}
             <i onClick={() => this.setState({ muteMyMic: !this.state.muteMyMic })}
               style={{ cursor: 'pointer', padding: 5, fontSize: 25, color: 'white' }} className='material-icons'>{!this.state.muteMyMic && 'mic' || 'mic_off'}</i>
             <i onClick={() => this.setState({ muteMyCamera: !this.state.muteMyCamera })}

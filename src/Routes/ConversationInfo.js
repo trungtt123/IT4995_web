@@ -4,6 +4,9 @@ import { useHistory, useLocation } from "react-router-dom";
 import ListItemText from '@mui/material/ListItemText';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Avatar from '@mui/material/Avatar';
+import ModeIcon from '@mui/icons-material/Mode';
+import DoneIcon from '@mui/icons-material/Done';
+import ClearIcon from '@mui/icons-material/Clear';
 import HeaderScreen from "../Components/HeaderScreen";
 import { getRandomColor } from "../Services/Helper/common";
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
@@ -12,6 +15,8 @@ import { Button } from "@mui/material";
 import { getConversation } from "../Redux/conversationSlice";
 const ConversationInfo = memo(({ socket, conversation }) => {
     const history = useHistory();
+    const [modeEditName, setModeEditName] = useState(false);
+    const [conversationName, setConversationName] = useState(conversation?.conversationName);
     const dispatch = useDispatch();
     const { user } = useSelector(
         (state) => state.auth
@@ -31,9 +36,19 @@ const ConversationInfo = memo(({ socket, conversation }) => {
             }
         )
     }
+    const handleUpdateConversationName = () => {
+        socket && socket.emit('conversation_change_name',
+            {
+                conversationId: conversation?._id,
+                newName: conversationName,
+                token: user.token
+            }
+        )
+    }
     useEffect(() => {
         console.log('conversation', conversation);
         if (!conversation) history.push('/');
+        setModeEditName(false);
     }, [conversation])
     console.log('user', user);
     useEffect(() => {
@@ -51,14 +66,30 @@ const ConversationInfo = memo(({ socket, conversation }) => {
                     }
                 );
             }
-            dispatch(getConversation({conversationId: conversation?._id}))
+            dispatch(getConversation({ conversationId: conversation?._id }))
         };
+        const handleConversationChangeName = (result) => {
+            console.log(result);
+            if (result.code === "1000") {
+                socket.emit('new_message',
+                    {
+                        conversationId: conversation?._id,
+                        userId: user.id,
+                        token: user.token,
+                        notification: true,
+                        content: `${result?.sender?.name} đã đổi tên đoạn chat thành ${result?.newName}`
+                    }
+                );
+            }
+            dispatch(getConversation({ conversationId: conversation?._id }));
+        }
 
         socket && socket.on('conversation_remove_member', handleConversationRemoveMember);
-
+        socket && socket.on('conversation_change_name', handleConversationChangeName);
         // Hàm cleanup
         return () => {
             socket && socket.off('conversation_remove_member', handleConversationRemoveMember);
+            socket && socket.off('conversation_change_name', handleConversationChangeName);
         };
     }, [socket]);
     return (
@@ -72,13 +103,34 @@ const ConversationInfo = memo(({ socket, conversation }) => {
                     }}>
                         {conversation?.conversationName && conversation?.conversationName[0]}
                     </Avatar>
-                    <div style={{ marginBottom: 10 }}>{conversation?.conversationName}</div>
+                    <div style={{ marginBottom: 10, marginTop: 5, display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
+                        <span style={{ display: !modeEditName ? '' : 'none', }}>{conversation?.conversationName}</span>
+                        <input type="text" value={conversationName}
+                        style={{
+                            border: 'none',
+                            outline: 'none',
+                            display: modeEditName ? '' : 'none',
+                            fontSize: 17,
+                            width: 150,
+                            borderRadius: 5
+                        }} onChange={(e) => setConversationName(e.target.value)}
+                        />
+                        <div style={{ marginLeft: 20 }}>
+                            {
+                                !modeEditName ? <ModeIcon style={{ fontSize: 15 }} onClick={() => setModeEditName(true)} />
+                                    : <div>
+                                        <DoneIcon style={{ fontSize: 15, marginRight: 10 }} onClick={() => handleUpdateConversationName(true)} />
+                                        <ClearIcon style={{ fontSize: 15 }} onClick={() => setModeEditName(false)} />
+                                    </div>
+                            }
+                        </div>
+                    </div>
                 </div>
 
                 {conversation?.participants?.map((item, index) => {
                     let secondary = item?.permissions === "owner" ? 'Quản trị viên' : 'Thành viên';
                     return <div key={index} style={{ position: 'relative', boxShadow: '2px 2px 4px rgba(0,0,0,0.1)', backgroundColor: 'white', borderRadius: 20, height: 60, display: 'flex', alignItems: 'center', marginBottom: 5 }}
-                        >
+                    >
                         <div style={{ display: 'flex', flexDirection: 'row' }} onClick={() => goToFriendProfile(item?.user?._id)}>
                             <ListItemAvatar>
                                 <Avatar style={{ marginTop: 10, marginLeft: 10 }} src={item?.user?.avatar?.url} />

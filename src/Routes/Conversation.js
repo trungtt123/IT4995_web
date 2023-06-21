@@ -260,7 +260,7 @@ export default function Conversation({ socket }) {
                             {/* <OutlinedInput 
                                  /> */}
                             <span style={{ position: 'relative', marginLeft: 5 }}>
-                                <SendRoundedIcon onClick={() => handleSendMessage()}
+                                <SendRoundedIcon onClick={() => textMessage && handleSendMessage()}
 
                                     color="primary" style={{ position: 'absolute', top: -2, fontSize: 30 }} />
                             </span>
