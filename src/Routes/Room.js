@@ -6,7 +6,12 @@ import Video from '../Components/video'
 import Videos from '../Components/videos'
 import CallEndIcon from '@mui/icons-material/CallEnd';
 import CameraswitchIcon from '@mui/icons-material/Cameraswitch';
+import MoodIcon from '@mui/icons-material/Mood';
+import EmojiEmotionsIcon from '@mui/icons-material/EmojiEmotions';
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
+import PanToolIcon from '@mui/icons-material/PanTool';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import FavoriteIcon from '@mui/icons-material/Favorite';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Draggable from '../Components/draggable'
 import { CHAT_SERVER_URL } from '../Services/Helper/constant';
@@ -81,10 +86,13 @@ class Room extends Component {
     const constraints = {
       audio: true,
       video: {
-        facingMode: { exact: typeCamera }
+        facingMode: {
+          exact: "user"
+        },
+        width: { max: 480 },
+        height: { max: 640 }
       }
     }
-
     // https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia
     navigator.mediaDevices.getUserMedia(constraints)
       .then(success)
@@ -112,6 +120,17 @@ class Room extends Component {
     this.socket.emit(messageType, {
       socketID,
       payload
+    })
+  }
+
+  sendEmoji = (emojiName, socketId) => {
+    this.socket.emit('sendEmoji', {
+      socketId,
+      user: {
+        emojiName,
+        name: this.props?.user?.username,
+        id: this.props?.user?.id
+      }
     })
   }
 
@@ -542,12 +561,12 @@ class Room extends Component {
         position: 'fixed',
         top: 0,
         zIndex: 100,
-        height: this.state.expand ? '100vh': '7vh',
+        height: this.state.expand ? '100vh' : '7vh',
         width: '100%',
         backgroundColor: 'black'
       }}>
         <div onClick={(e) => {
-          this.setState({expand: !this.state.expand})
+          this.setState({ expand: !this.state.expand })
         }} style={{
           borderRadius: 20,
           width: 40,
@@ -559,7 +578,7 @@ class Room extends Component {
           <ExpandLessIcon style={{ fontSize: 25, color: 'white', marginTop: 7 }} />
         </div>
         <div onClick={(e) => {
-          this.setState({expand: !this.state.expand})
+          this.setState({ expand: !this.state.expand })
         }} style={{
           borderRadius: 20,
           width: 40,
@@ -570,7 +589,7 @@ class Room extends Component {
         }}>
           <ExpandMoreIcon style={{ fontSize: 25, color: 'white', marginTop: 7 }} />
         </div>
-        
+
         <Draggable style={{
           zIndex: 101,
           position: 'absolute',
@@ -617,6 +636,56 @@ class Room extends Component {
             }}>
               <CameraswitchIcon style={{ fontSize: 25, color: 'white', marginTop: 7 }} />
             </div> */}
+
+            <div onClick={(e) => {
+
+            }} style={{
+              borderRadius: 20,
+              width: 40,
+              height: 40,
+              position: 'relative'
+            }}>
+              <div style={{ display: 'flex', flexDirection: 'row', position: 'absolute', top: -60 }}>
+                <div onClick={(e) => {
+
+                }} style={{
+                  borderRadius: 20,
+                  width: 40,
+                  height: 40,
+                }}>
+                  <ThumbUpIcon style={{ fontSize: 25, color: 'blue', marginTop: 7 }} />
+                </div>
+                <div onClick={(e) => {
+
+                }} style={{
+                  borderRadius: 20,
+                  width: 40,
+                  height: 40,
+                }}>
+                  <FavoriteIcon style={{ fontSize: 25, color: 'red', marginTop: 7 }} />
+                </div>
+                <div onClick={(e) => {
+
+                }} style={{
+                  borderRadius: 20,
+                  width: 40,
+                  height: 40,
+                }}>
+                  <EmojiEmotionsIcon style={{ fontSize: 25, color: 'yellow', marginTop: 7 }} />
+                </div>
+                {/* <div onClick={(e) => {
+
+                }} style={{
+                  borderRadius: 20,
+                  width: 40,
+                  height: 40,
+                }}>
+                  <PanToolIcon style={{ fontSize: 25, color: 'orange', marginTop: 7 }} />
+                </div> */}
+              </div>
+              <MoodIcon style={{ fontSize: 25, color: 'white', marginTop: 7 }} />
+
+            </div>
             <i onClick={() => this.setState({ muteMyMic: !this.state.muteMyMic })}
               style={{ cursor: 'pointer', padding: 5, fontSize: 25, color: 'white' }} className='material-icons'>{!this.state.muteMyMic && 'mic' || 'mic_off'}</i>
             <i onClick={() => this.setState({ muteMyCamera: !this.state.muteMyCamera })}

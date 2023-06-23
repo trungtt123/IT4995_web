@@ -61,7 +61,7 @@ const ModalAddMember = ({ socket, conversation, closeModal }) => {
             conversationId: conversation?._id,
             userId: user.id,
             token: user.token,
-            notification: true,
+            notification: 1,
             content: `${newMember?.name} đã được thêm vào đoạn chat`
           }
         )

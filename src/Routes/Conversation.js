@@ -104,6 +104,15 @@ export default function Conversation({ socket }) {
             conversationId: conversationId,
             token: user.token
         })
+        // socket.emit('new_message',
+        //     {
+        //         conversationId: conversation?._id,
+        //         userId: user.id,
+        //         token: user.token,
+        //         notification: 2,
+        //         content: `${user?.username} đã tạo cuộc gọi`
+        //     }
+        // );
     }
     const handleEndCall = () => {
         document.body.classList.remove('off-scroll');
@@ -236,6 +245,11 @@ export default function Conversation({ socket }) {
                                     marginBottom: 10
                                 }}
                                     key={e._id}>{e.content}</div>
+                            }
+                            else if (e?.notification === 2){
+                                return <MessageItem
+                                key={e._id} avatar={avatar[e.sender]}
+                                mess={e.content} idSender={e.sender} idUser={user.id} keyExtractor={(e) => e._id} />
                             }
                             else return <MessageItem
                                 key={e._id} avatar={avatar[e.sender]}

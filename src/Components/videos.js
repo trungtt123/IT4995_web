@@ -50,7 +50,7 @@ class Videos extends Component {
             videoStyles={{
               objectFit: 'cover',
               borderRadius: 5,
-              width: '100%', height: '100%'
+              width: '50%', height: '100%'
             }}
           />
         ) || <div></div>
