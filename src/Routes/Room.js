@@ -553,7 +553,8 @@ class Room extends Component {
           width: 40,
           height: 40,
           margin: '5px 0px 0px 10px',
-          display: this.state.expand ? '' : 'none'
+          display: this.state.expand ? '' : 'none',
+          position: 'absolute'
         }}>
           <ExpandLessIcon style={{ fontSize: 25, color: 'white', marginTop: 7 }} />
         </div>
@@ -564,7 +565,8 @@ class Room extends Component {
           width: 40,
           height: 40,
           margin: '5px 0px 0px 10px',
-          display: !this.state.expand ? '' : 'none'
+          display: !this.state.expand ? '' : 'none',
+          position: 'absolute'
         }}>
           <ExpandMoreIcon style={{ fontSize: 25, color: 'white', marginTop: 7 }} />
         </div>

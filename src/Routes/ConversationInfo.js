@@ -17,6 +17,7 @@ const ConversationInfo = memo(({ socket, conversation }) => {
     const history = useHistory();
     const [modeEditName, setModeEditName] = useState(false);
     const [conversationName, setConversationName] = useState(conversation?.conversationName);
+    const [validate, setValidate] = useState({});
     const dispatch = useDispatch();
     const { user } = useSelector(
         (state) => state.auth
@@ -37,6 +38,14 @@ const ConversationInfo = memo(({ socket, conversation }) => {
         )
     }
     const handleUpdateConversationName = () => {
+        if (!conversationName){
+            return;
+            let tmp = JSON.parse(JSON.stringify(validate));
+            tmp['conversationName'] = {
+                valid: false,
+                reason: 'Tên cuộc hội thoại không được để trống'
+            }
+        }
         socket && socket.emit('conversation_change_name',
             {
                 conversationId: conversation?._id,
