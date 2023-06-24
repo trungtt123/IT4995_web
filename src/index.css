@@ -110,6 +110,7 @@ main {
 		transform: translateX(0%);
 	}
 }
+
 @keyframes slide-back {
 	0% {
 		transform: translateX(0%);
@@ -126,6 +127,7 @@ main {
 	animation-duration: 0.5s;
 	animation-timing-function: ease-out;
 }
+
 .element-slide-back {
 	/* width: 80%; */
 	animation-name: slide-back;
@@ -133,11 +135,28 @@ main {
 	animation-timing-function: ease-out;
 	animation-fill-mode: forwards;
 }
+
 .MuiTabs-flexContainer {
 	display: flex !important;
 	width: 100% !important;
 	justify-content: space-between !important;
 }
+
 .off-scroll {
 	overflow: hidden;
+}
+
+
+@keyframes slideIn {
+	from {
+		transform: translateY(400%);
+	}
+
+	to {
+		transform: translateY(0%);
+	}
+}
+
+#showEmoji {
+	animation: slideIn 2s forwards;
 }

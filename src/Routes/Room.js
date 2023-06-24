@@ -31,6 +31,7 @@ class Room extends Component {
       muteMyCamera: false,
       muteMyMic: false,
       expand: true,
+      showEmoji: false,
       typeCamera: 'user',
       status: 'Please wait...',
 
@@ -123,15 +124,13 @@ class Room extends Component {
     })
   }
 
-  sendEmoji = (emojiName, socketId) => {
-    this.socket.emit('sendEmoji', {
-      socketId,
-      user: {
-        emojiName,
-        name: this.props?.user?.username,
-        id: this.props?.user?.id
-      }
-    })
+  sendEmoji = (emojiName) => {
+    this.socket.emit('send-emoji', {
+      emojiName,
+      name: this.props?.user?.username,
+      senderId: this.props?.user?.id
+    });
+    this.setState({ showEmoji: false });
   }
 
   createPeerConnection = async (socketID, callback) => {
@@ -263,7 +262,19 @@ class Room extends Component {
         }
       }
     )
-
+    this.socket.on('receive-emoji', data => {
+      let element = document.getElementById("showEmoji");
+      let emoji = '';
+      if (data.emojiName === 'smile') emoji = 'cười haha 😄';
+      else if (data.emojiName === 'heart') emoji = 'thả tim ❤️';
+      else if (data.emojiName === 'like') emoji = 'thích 👍';
+      element.innerHTML = `${data.name} đã ${emoji}`;
+      element.style.display = '';
+      element.addEventListener("animationend", function () {
+        // Xóa phần tử khỏi DOM sau khi hiệu ứng kết thúc
+        element.style.display = 'none';
+      });
+    })
     this.socket.on('connection-success', data => {
 
       this.getLocalStream({ typeCamera: 'user' })
@@ -565,6 +576,7 @@ class Room extends Component {
         width: '100%',
         backgroundColor: 'black'
       }}>
+        <div id="showEmoji" style={{ zIndex: 10000, color: 'white', position: 'absolute', top: 100, display: 'none', left: 20 }}></div>
         <div onClick={(e) => {
           this.setState({ expand: !this.state.expand })
         }} style={{
@@ -645,33 +657,21 @@ class Room extends Component {
               height: 40,
               position: 'relative'
             }}>
-              <div style={{ display: 'flex', flexDirection: 'row', position: 'absolute', top: -60 }}>
+              <div style={{ flexDirection: 'row', position: 'absolute', top: -50, display: this.state.showEmoji ? 'flex' : 'none' }}>
                 <div onClick={(e) => {
-
-                }} style={{
-                  borderRadius: 20,
-                  width: 40,
-                  height: 40,
-                }}>
-                  <ThumbUpIcon style={{ fontSize: 25, color: 'blue', marginTop: 7 }} />
+                  this.sendEmoji('like');
+                }} style={{marginRight: 15}}>
+                  👍
                 </div>
                 <div onClick={(e) => {
-
-                }} style={{
-                  borderRadius: 20,
-                  width: 40,
-                  height: 40,
-                }}>
-                  <FavoriteIcon style={{ fontSize: 25, color: 'red', marginTop: 7 }} />
+                  this.sendEmoji('heart');
+                }} style={{marginRight: 15}}>
+                  ❤️
                 </div>
                 <div onClick={(e) => {
-
-                }} style={{
-                  borderRadius: 20,
-                  width: 40,
-                  height: 40,
-                }}>
-                  <EmojiEmotionsIcon style={{ fontSize: 25, color: 'yellow', marginTop: 7 }} />
+                  this.sendEmoji('smile');
+                }} style={{marginRight: 15}}>
+                  😄
                 </div>
                 {/* <div onClick={(e) => {
 
@@ -683,7 +683,8 @@ class Room extends Component {
                   <PanToolIcon style={{ fontSize: 25, color: 'orange', marginTop: 7 }} />
                 </div> */}
               </div>
-              <MoodIcon style={{ fontSize: 25, color: 'white', marginTop: 7 }} />
+              <MoodIcon onClick={() => this.setState({ showEmoji: !this.state.showEmoji })}
+                style={{ fontSize: 25, color: 'white', marginTop: 7 }} />
 
             </div>
             <i onClick={() => this.setState({ muteMyMic: !this.state.muteMyMic })}
