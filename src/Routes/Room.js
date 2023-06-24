@@ -585,7 +585,8 @@ class Room extends Component {
           height: 40,
           margin: '5px 0px 0px 10px',
           display: this.state.expand ? '' : 'none',
-          position: 'absolute'
+          position: 'absolute',
+          zIndex: 10000
         }}>
           <ExpandLessIcon style={{ fontSize: 25, color: 'white', marginTop: 7 }} />
         </div>
@@ -597,7 +598,8 @@ class Room extends Component {
           height: 40,
           margin: '5px 0px 0px 10px',
           display: !this.state.expand ? '' : 'none',
-          position: 'absolute'
+          position: 'absolute',
+          zIndex: 10000
         }}>
           <ExpandMoreIcon style={{ fontSize: 25, color: 'white', marginTop: 7 }} />
         </div>
