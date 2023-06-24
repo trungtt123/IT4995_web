@@ -662,17 +662,17 @@ class Room extends Component {
               <div style={{ flexDirection: 'row', position: 'absolute', top: -50, display: this.state.showEmoji ? 'flex' : 'none' }}>
                 <div onClick={(e) => {
                   this.sendEmoji('like');
-                }} style={{marginRight: 15}}>
+                }} style={{ marginRight: 15 }}>
                   👍
                 </div>
                 <div onClick={(e) => {
                   this.sendEmoji('heart');
-                }} style={{marginRight: 15}}>
+                }} style={{ marginRight: 15 }}>
                   ❤️
                 </div>
                 <div onClick={(e) => {
                   this.sendEmoji('smile');
-                }} style={{marginRight: 15}}>
+                }} style={{ marginRight: 15 }}>
                   😄
                 </div>
                 {/* <div onClick={(e) => {
@@ -703,11 +703,11 @@ class Room extends Component {
             </div>
           </div>
         </div>
-        <div>
+        <div style={{ display: this.state.expand ? '' : 'none' }}>
           <Videos
             switchVideo={this.switchVideo}
             remoteStreams={remoteStreams}
-          ></Videos>
+          />
         </div>
         <br />
       </div>
