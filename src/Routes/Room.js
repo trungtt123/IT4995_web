@@ -94,10 +94,15 @@ class Room extends Component {
         height: { max: 640 }
       }
     }
-    // https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia
     navigator.mediaDevices.getUserMedia(constraints)
       .then(success)
       .catch(failure)
+    // navigator.mediaDevices.getDisplayMedia({
+    //   video: {
+    //     cursor: "always"
+    //   },
+    //   audio: false
+    // }).then(success).catch(failure);
   }
   switchCam = (typeCamera) => {
     const tracks = this.state.localStream.getTracks();
@@ -268,7 +273,11 @@ class Room extends Component {
       if (data.emojiName === 'smile') emoji = 'cười haha 😄';
       else if (data.emojiName === 'heart') emoji = 'thả tim ❤️';
       else if (data.emojiName === 'like') emoji = 'thích 👍';
-      element.innerHTML = `${data.name} đã ${emoji}`;
+      let name = data.name;
+      console.log('this.props?.user', this.props?.user);
+      console.log('data?.senderId', data?.senderId);
+      if (this.props?.user?.id === data?.senderId) name = 'Bạn';
+      element.innerHTML = `${name} đã ${emoji}`;
       element.style.display = '';
       element.addEventListener("animationend", function () {
         // Xóa phần tử khỏi DOM sau khi hiệu ứng kết thúc

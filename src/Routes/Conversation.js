@@ -7,6 +7,7 @@ import OutlinedInput from '@mui/material/OutlinedInput';
 import { Button } from "@mui/material";
 import ModalAddMember from "../Components/ModalAddMember";
 import SendRoundedIcon from '@mui/icons-material/SendRounded';
+import PhotoIcon from '@mui/icons-material/Photo';
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
 import CallIcon from '@mui/icons-material/Call';
 import InfoIcon from '@mui/icons-material/Info';
@@ -94,7 +95,9 @@ export default function Conversation({ socket }) {
             token: user.token,
             userId: user.id,
             conversationId: conversationId,
-            content: textMessage
+            content: {
+                body: textMessage
+            }
         });
         setTextMessage('');
     }
@@ -124,31 +127,62 @@ export default function Conversation({ socket }) {
     const scrollToBottom = () => {
         messageEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
-    // useEffect(() => {
-    //     conversationId && socket && socket.emit('join_conversation', {
-    //         conversationId: conversationId,
-    //         token: user.token
-    //     });
-    //     socket && socket.on('new_message', (result) => {
-    //         if (result.code === '1000') {
-    //             setConversation(result.data);
-    //             const memTmp = result.data.participants;
-    //             // xử lý avatar
-    //             let avt = avatar;
-    //             for (let i = 0; i < memTmp.length; i++) {
-    //                 const mem = memTmp[i];
-    //                 avt[mem.user._id] = mem.user.avatar;
-    //             }
-    //             setAvatar(avt);
-    //             setListMessage(result.data.messages);
-    //         }
-    //     });
-    //     socket && socket.on('conversation_add_member', (result) => {
-    //         if (result.code == "1000") {
-    //             setNews(<NewMember sender={result.sender} newMember={result.newMember} />)
-    //         }
-    //     })
-    // }, [socket])
+    const handleSelectMedia = () => {
+        console.log('run');
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.style.display = 'none';
+
+        // Xử lý sự kiện chọn file
+        input.addEventListener('change', function (event) {
+            const selectedFile = event.target.files[0];
+
+            // Xử lý thông tin file ở đây
+            console.log('Đã chọn file:', selectedFile);
+            const reader = new FileReader();
+
+            reader.onload = () => {
+                const base64Data = reader.result;
+                console.log('base64Data', base64Data);
+                if (selectedFile.type?.includes('image')) {
+                    socket && socket.emit('new_message',
+                        {
+                            conversationId: conversation?._id,
+                            userId: user.id,
+                            token: user.token,
+                            type: 'image',
+                            content: {
+                                body: [`${base64Data}`]
+                            }
+                        }
+                    );
+                }
+                else if (selectedFile.type?.includes('video')) {
+                    socket && socket.emit('new_message',
+                        {
+                            conversationId: conversation?._id,
+                            userId: user.id,
+                            token: user.token,
+                            type: 'video',
+                            content: {
+                                body: [`${base64Data}`]
+                            }
+                        }
+                    );
+                }
+            };
+
+            reader.readAsDataURL(selectedFile);
+
+
+            // Xóa thẻ input khỏi DOM
+            input.remove();
+        });
+
+        // Thêm thẻ input vào DOM
+        document.body.appendChild(input);
+        input.click();
+    }
     useEffect(() => {
         let isMounted = true; // Thêm biến isMounted để kiểm tra component có còn tồn tại hay không
 
@@ -237,23 +271,40 @@ export default function Conversation({ socket }) {
                 <div style={{ width: "100%", marginTop: 50 }}>
                     <div style={{ overflow: 'hidden', paddingTop: 20, marginBottom: 200 }}>
                         {listMessage.map((e, index) => {
-                            if (e?.notification) {
+                            if (e?.type === 'notification') {
                                 return <div style={{
                                     textAlign: 'center',
                                     fontSize: 12,
                                     fontWeight: 500,
                                     marginBottom: 10
                                 }}
-                                    key={e._id}>{e.content}</div>
+                                    key={e._id}>{e.content.body}</div>
                             }
-                            else if (e?.notification === 2){
-                                return <MessageItem
-                                key={e._id} avatar={avatar[e.sender]}
-                                mess={e.content} idSender={e.sender} idUser={user.id} keyExtractor={(e) => e._id} />
+                            else if (e?.type === 'image') {
+                                return <div style={{
+                                    textAlign: 'center',
+                                    fontSize: 12,
+                                    fontWeight: 500,
+                                    marginBottom: 10
+                                }}
+                                    key={e._id}>
+                                    <img src={e.content.body[0]} style={{ width: 200 }} />
+                                </div>
                             }
-                            else return <MessageItem
+                            else if (e?.type === 'video') {
+                                return <div style={{
+                                    textAlign: 'center',
+                                    fontSize: 12,
+                                    fontWeight: 500,
+                                    marginBottom: 10
+                                }}
+                                    key={e._id}>
+                                    <video src={e.content.body[0]} style={{ width: 200 }} controls/>
+                                </div>
+                            }
+                            else if (e?.type === 'text') return <MessageItem
                                 key={e._id} avatar={avatar[e.sender]}
-                                mess={e.content} idSender={e.sender} idUser={user.id} keyExtractor={(e) => e._id} />
+                                mess={e.content?.body} idSender={e.sender} idUser={user.id} keyExtractor={(e) => e._id} />
                         }
                         )}
                         <div ref={messageEndRef} />
@@ -268,15 +319,23 @@ export default function Conversation({ socket }) {
                                     "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
                                     sans-serif`,
                                     fontWeight: '500',
-                                    width: '80%', height: 40, border: 'none', outline: 'none', borderRadius: 20, padding: 5, fontSize: 18,
+                                    width: '70%', height: 40, border: 'none', outline: 'none', borderRadius: 20, padding: 5, fontSize: 18,
                                     marginLeft: -30
                                 }} placeholder="Nhập tin nhắn" onChange={(e) => setTextMessage(e.target.value)} />
                             {/* <OutlinedInput 
                                  /> */}
-                            <span style={{ position: 'relative', marginLeft: 5 }}>
+
+                            <span style={{ position: 'relative', marginLeft: 10 }}>
+                                <PhotoIcon onClick={() => handleSelectMedia()}
+
+                                    color="primary" style={{ position: 'absolute', top: -2, fontSize: 30 }} />
+
+                            </span>
+                            <span style={{ position: 'relative', marginLeft: 40 }}>
                                 <SendRoundedIcon onClick={() => textMessage && handleSendMessage()}
 
                                     color="primary" style={{ position: 'absolute', top: -2, fontSize: 30 }} />
+
                             </span>
                         </div>
                     </div>

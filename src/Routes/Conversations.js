@@ -87,7 +87,7 @@ export default function Conversations({ socket }) {
             </div>
             <List sx={{ width: '100%' }}>
                 {conversations?.filter((o) => o.conversationName.includes(keyword))?.map((item, index) => {
-                    let secondary = item?.messages[item?.messages.length - 1]?.content;
+                    let secondary = '123'; //item?.messages[item?.messages.length - 1]?.content;
                     if (!secondary) secondary = getTimeCreateConversation(item?.createdAt);
                     return <ListItem style={{ boxShadow: '2px 2px 4px rgba(0,0,0,0.1)' }}
                         key={item._id} onClick={() => goToConversation(item)}

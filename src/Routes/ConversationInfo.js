@@ -70,8 +70,10 @@ const ConversationInfo = memo(({ socket, conversation }) => {
                         conversationId: conversation?._id,
                         userId: user.id,
                         token: user.token,
-                        notification: 1,
-                        content: `${removeMember?.name} đã rời đoạn chat`
+                        type: 'notification',
+                        content:{
+                            body: `${removeMember?.name} đã rời đoạn chat`
+                        } 
                     }
                 );
             }
@@ -85,8 +87,10 @@ const ConversationInfo = memo(({ socket, conversation }) => {
                         conversationId: conversation?._id,
                         userId: user.id,
                         token: user.token,
-                        notification: 1,
-                        content: `${result?.sender?.name} đã đổi tên đoạn chat thành ${result?.newName}`
+                        type: 'notification',
+                        content: {
+                            body: `${result?.sender?.name} đã đổi tên đoạn chat thành ${result?.newName}`
+                        }
                     }
                 );
             }
