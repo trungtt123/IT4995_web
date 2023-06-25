@@ -29,7 +29,7 @@ function MessageItem(props) {
                     : <img src={default_avatar} style={{ width: 30, height: 30, borderRadius: 15 }} />}
                 </span>
                 <span style={{
-                    backgroundColor: '#ccc',
+                    backgroundColor: props?.messData?.type === 'text' ? '#ccc' : '',
                     minHeight: 20,
                     borderRadius: 10,
                     color: 'black',
@@ -38,7 +38,9 @@ function MessageItem(props) {
                     maxWidth: '80%',
                     wordBreak: 'break-word'
                 }}>
-                    {props.mess}
+                    {props?.messData?.type === 'text' && props?.messData?.content.body}
+                    {props?.messData?.type === 'image' && <img src={props?.messData?.content.body[0]} style={{width: 200, borderRadius: 10}}/>}
+                    {props?.messData?.type === 'video' && <video src={props?.messData?.content.body[0]} style={{width: 200, borderRadius: 10}} controls/>}
                 </span>
             </div>
         );
@@ -50,7 +52,7 @@ function MessageItem(props) {
             }}>
                 <span style={{
                     alignSelf: 'flex-end',
-                    backgroundColor: '#1976d2',
+                    backgroundColor: props?.messData?.type === 'text' ? '#1976d2' : '',
                     minHeight: 30,
                     borderRadius: 10,
                     color: 'white',
@@ -59,7 +61,9 @@ function MessageItem(props) {
                     wordBreak: 'break-word',
                     marginRight: 5
                 }}>
-                    {props.mess}
+                    {props?.messData?.type === 'text' && props?.messData?.content.body}
+                    {props?.messData?.type === 'image' && <img src={props?.messData?.content.body[0]} style={{width: 200, borderRadius: 10}}/>}
+                    {props?.messData?.type === 'video' && <video src={props?.messData?.content.body[0]} style={{width: 200, borderRadius: 10}} controls/>}
                 </span>
             </div>
         );
@@ -92,6 +96,7 @@ export default function Conversation({ socket }) {
 
     const handleSendMessage = (mess) => {
         socket && socket.emit('new_message', {
+            type: 'text',
             token: user.token,
             userId: user.id,
             conversationId: conversationId,
@@ -280,31 +285,9 @@ export default function Conversation({ socket }) {
                                 }}
                                     key={e._id}>{e.content.body}</div>
                             }
-                            else if (e?.type === 'image') {
-                                return <div style={{
-                                    textAlign: 'center',
-                                    fontSize: 12,
-                                    fontWeight: 500,
-                                    marginBottom: 10
-                                }}
-                                    key={e._id}>
-                                    <img src={e.content.body[0]} style={{ width: 200 }} />
-                                </div>
-                            }
-                            else if (e?.type === 'video') {
-                                return <div style={{
-                                    textAlign: 'center',
-                                    fontSize: 12,
-                                    fontWeight: 500,
-                                    marginBottom: 10
-                                }}
-                                    key={e._id}>
-                                    <video src={e.content.body[0]} style={{ width: 200 }} controls/>
-                                </div>
-                            }
-                            else if (e?.type === 'text') return <MessageItem
+                            else return <MessageItem
                                 key={e._id} avatar={avatar[e.sender]}
-                                mess={e.content?.body} idSender={e.sender} idUser={user.id} keyExtractor={(e) => e._id} />
+                                messData={e} idSender={e.sender} idUser={user.id} keyExtractor={(e) => e._id} />
                         }
                         )}
                         <div ref={messageEndRef} />

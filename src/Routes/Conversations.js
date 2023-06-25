@@ -87,7 +87,15 @@ export default function Conversations({ socket }) {
             </div>
             <List sx={{ width: '100%' }}>
                 {conversations?.filter((o) => o.conversationName.includes(keyword))?.map((item, index) => {
-                    let secondary = '123'; //item?.messages[item?.messages.length - 1]?.content;
+                    let secondary = '';
+                    if (item?.messages[item?.messages.length - 1]?.type === 'text') 
+                    secondary = item?.messages[item?.messages.length - 1]?.content?.body;
+                    else if (item?.messages[item?.messages.length - 1]?.type === 'image'){
+                        secondary = 'Hình ảnh';
+                    }
+                    else if (item?.messages[item?.messages.length - 1]?.type === 'video'){
+                        secondary = 'Video';
+                    }
                     if (!secondary) secondary = getTimeCreateConversation(item?.createdAt);
                     return <ListItem style={{ boxShadow: '2px 2px 4px rgba(0,0,0,0.1)' }}
                         key={item._id} onClick={() => goToConversation(item)}
