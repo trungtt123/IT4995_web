@@ -93,8 +93,8 @@ class Room extends Component {
         facingMode: {
           exact: "user"
         },
-        width: { max: 480 },
-        height: { max: 640 }
+        width: { ideal: 480 },
+        height: { ideal: 640 }
       }
     }
     navigator.mediaDevices.getUserMedia(constraints)
@@ -640,9 +640,8 @@ class Room extends Component {
           <Video
             videoType='localVideo'
             videoStyles={{
-              width: 200,
-              borderRadius: '10%',
-              maxHeight: 200
+              width: 120,
+              borderRadius: '10%'
             }}
             frameStyle={{
               display: 'inline-block',
