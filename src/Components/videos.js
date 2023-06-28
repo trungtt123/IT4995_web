@@ -44,13 +44,15 @@ class Videos extends Component {
             frameStyle={{
               backgroundColor: '#ffffff12',
               borderRadius: 5,
-              float: 'left', 
-              margin: '0 3px'
+              // float: 'left', 
+              display: 'flex',
+              flexDirection: 'row',
+              padding: 2
             }}
             videoStyles={{
               objectFit: 'cover',
               borderRadius: 5,
-              width: '50%', height: '100%'
+              width: '100%', height: '100%'
             }}
           />
         ) || <div></div>
@@ -60,7 +62,8 @@ class Videos extends Component {
             id={rVideo.name}
             onClick={() => this.switchVideo(rVideo)}
             style={{
-              cursor: 'pointer', display: 'inline-block', width: '100%'
+              // cursor: 'pointer', display: 'inline-block', width: '50%'
+              width: '100%'
             }}
             key={index}
           >
@@ -98,34 +101,28 @@ class Videos extends Component {
   render() {
     return (
       <div style={{
-        height: '100vh', position: 'absolute',
+        position: 'absolute',
+        height: '100vh',
+        width: '100%',
         top: 0
       }}>
-        {/* <Video
-          videoType='previewVideo'
-          frameStyle={{
-            zIndex: 1,
-            position: 'fixed',
-            bottom: 0,
-            minWidth: '100%', minHeight: '100%',
-            backgroundColor: 'black'
-          }}
-          videoStyles={{
-            minWidth: '100%', minHeight: '100%',
-            visibility: this.state.videoVisible && 'visible' || 'hidden',
-          }}
-          videoStream={this.state.selectedVideo && this.state.selectedVideo.stream}
-        /> */}
-        <div
-          style={{
-            overflowX: 'scroll',
-            whiteSpace: 'nowrap',
-            display: 'flex',
-            alignItems: 'center',
-            height: '100%'
-          }}
-        >
-          {this.state.rVideos}
+        <div style={{
+            marginTop: '60%'
+
+        }}>
+          <div
+            style={{
+              overflowX: 'scroll',
+              whiteSpace: 'nowrap',
+              display: 'flex',
+              alignItems: 'center',
+              height: '100%',
+              display: this.state.rVideos?.length >= 2 ? 'grid' : '',
+              gridTemplateColumns: 'auto auto'
+            }}
+          >
+            {this.state.rVideos}
+          </div>
         </div>
       </div>
     )

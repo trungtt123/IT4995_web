@@ -38,11 +38,11 @@ class Room extends Component {
       pc_config: {
         iceServers: [
           { urls: 'stun:stun.l.google.com:19302' },
-          {
-            urls: 'turn:relay1.expressturn.com:3478',
-            username: 'efTSII5PQ6XYTYGZ2J',
-            credential: 'N7zCQhVnoDYCa8oQ'
-          }
+          // {
+          //   urls: 'turn:relay1.expressturn.com:3478',
+          //   username: 'efTSII5PQ6XYTYGZ2J',
+          //   credential: 'N7zCQhVnoDYCa8oQ'
+          // }
         ]
       },
 
