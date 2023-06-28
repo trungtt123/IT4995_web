@@ -10,6 +10,8 @@ class Videos extends Component {
       remoteStreams: [],
       selectedVideo: null,
       videoVisible: false,
+      currentPage: 1,
+      totalPage: 1
     }
   }
 
@@ -27,7 +29,9 @@ class Videos extends Component {
 
         selectedVideo = selectedVideo.length ? {} : { selectedVideo: nextProps.remoteStreams[NoOfRemoteStreams - 1] }
       }
-
+      let cntVideos = nextProps.remoteStreams?.length || 0;
+      let tmpTotalPage = cntVideos % 4 ? Math.floor(cntVideos / 4) : Math.floor(cntVideos / 4) + 1;
+      this.state.setState({ totalPage: tmpTotalPage });
       let _rVideos = nextProps.remoteStreams.map((rVideo, index) => {
         console.log('nextProps.remoteStreams', nextProps.remoteStreams);
         const _videoTrack = rVideo.stream.getTracks().filter(track => track.kind === 'video')
@@ -107,7 +111,7 @@ class Videos extends Component {
         top: 0
       }}>
         <div style={{
-            marginTop: '60%'
+          marginTop: '60%'
 
         }}>
           <div
