@@ -1,7 +1,9 @@
 import React, { Component } from 'react'
 import Video from './video'
 
+const perVideoPage = 2;
 class Videos extends Component {
+
   constructor(props) {
     super(props)
 
@@ -14,7 +16,6 @@ class Videos extends Component {
       totalPage: 1
     }
   }
-
   componentWillReceiveProps(nextProps) {
     if (this.props.remoteStreams !== nextProps.remoteStreams) {
 
@@ -29,9 +30,9 @@ class Videos extends Component {
 
         selectedVideo = selectedVideo.length ? {} : { selectedVideo: nextProps.remoteStreams[NoOfRemoteStreams - 1] }
       }
-      let cntVideos = nextProps.remoteStreams?.length || 0;
-      let tmpTotalPage = cntVideos % 4 ? Math.floor(cntVideos / 4) : Math.floor(cntVideos / 4) + 1;
-      this.state.setState({ totalPage: tmpTotalPage });
+      let cntVideos = this.props.remoteStreams?.length || 0;
+      let tmpTotalPage = cntVideos % perVideoPage === 0 ? Math.floor(cntVideos / perVideoPage) : Math.floor(cntVideos / perVideoPage) + 1;
+      this.setState({ totalPage: tmpTotalPage });
       let _rVideos = nextProps.remoteStreams.map((rVideo, index) => {
         console.log('nextProps.remoteStreams', nextProps.remoteStreams);
         const _videoTrack = rVideo.stream.getTracks().filter(track => track.kind === 'video')
@@ -103,6 +104,8 @@ class Videos extends Component {
   }
 
   render() {
+    console.log('cntVideos', this.state.currentPage);
+    console.log('tmpTotalPage', this.state.totalPage);
     return (
       <div style={{
         position: 'absolute',
@@ -111,8 +114,8 @@ class Videos extends Component {
         top: 0
       }}>
         <div style={{
-          marginTop: '60%'
-
+          marginTop: 200,
+          position: 'relative'
         }}>
           <div
             style={{
@@ -120,12 +123,27 @@ class Videos extends Component {
               whiteSpace: 'nowrap',
               display: 'flex',
               alignItems: 'center',
-              height: '100%',
-              display: this.state.rVideos?.length >= 2 ? 'grid' : '',
+              height: this.state.rVideos.slice(perVideoPage * (this.state.currentPage - 1), perVideoPage * this.state.currentPage)?.length >= 2 ? '100%' : 300,
+              display: this.state.rVideos.slice(perVideoPage * (this.state.currentPage - 1), perVideoPage * this.state.currentPage)?.length >= 2 ? 'grid' : '',
               gridTemplateColumns: 'auto auto'
             }}
           >
-            {this.state.rVideos}
+            {this.state.rVideos.slice(perVideoPage * (this.state.currentPage - 1), perVideoPage * this.state.currentPage)}
+
+            {
+              this.state.totalPage > 1 && <div style={{
+                position: 'absolute', bottom: -80,
+                justifyContent: 'center',
+                width: '100%',
+                color: 'white',
+                display: 'flex',
+                flexDirection: 'row'
+              }}>
+                <p onClick={() => this.setState({currentPage: Math.min(this.state.currentPage--, 1)})}>⏪</p>
+                <p style={{marginLeft: 40, marginRight: 40}}>{`${this.state.currentPage} / ${this.state.totalPage}`}</p>
+                <p onClick={() => this.setState({currentPage: Math.max(this.state.currentPage++, this.state.totalPage)})}>⏩</p>
+              </div>
+            }
           </div>
         </div>
       </div>
