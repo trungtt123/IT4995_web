@@ -139,9 +139,9 @@ class Videos extends Component {
                 display: 'flex',
                 flexDirection: 'row'
               }}>
-                <p onClick={() => this.setState({currentPage: Math.min(this.state.currentPage--, 1)})}>⏪</p>
+                <p onClick={() => this.setState({currentPage: Math.max(this.state.currentPage--, 1)})}>⏪</p>
                 <p style={{marginLeft: 40, marginRight: 40}}>{`${this.state.currentPage} / ${this.state.totalPage}`}</p>
-                <p onClick={() => this.setState({currentPage: Math.max(this.state.currentPage++, this.state.totalPage)})}>⏩</p>
+                <p onClick={() => this.setState({currentPage: Math.min(this.state.currentPage++, this.state.totalPage)})}>⏩</p>
               </div>
             }
           </div>

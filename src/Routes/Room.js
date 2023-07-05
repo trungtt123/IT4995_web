@@ -38,11 +38,26 @@ class Room extends Component {
       pc_config: {
         iceServers: [
           { urls: 'stun:stun.l.google.com:19302' },
-          // {
-          //   urls: 'turn:relay1.expressturn.com:3478',
-          //   username: 'efTSII5PQ6XYTYGZ2J',
-          //   credential: 'N7zCQhVnoDYCa8oQ'
-          // }
+          {
+            urls: 'turn:hk-turn1.xirsys.com:80?transport=udp',
+            username: 'tSH4W-UfQFcDjiMRR8xlse_Cu92GD_ajaOzASFOstKbzliOBFUF--SdwY0ae3aKUAAAAAGSlE5hjcmFja2VydHZu',
+            credential: 'c1c8371a-1b00-11ee-ba7a-0242ac120004'
+          },
+          {
+            urls: 'turn:hk-turn1.xirsys.com:3478?transport=udp',
+            username: 'tSH4W-UfQFcDjiMRR8xlse_Cu92GD_ajaOzASFOstKbzliOBFUF--SdwY0ae3aKUAAAAAGSlE5hjcmFja2VydHZu',
+            credential: 'c1c8371a-1b00-11ee-ba7a-0242ac120004'
+          },
+          {
+            urls: 'turn:hk-turn1.xirsys.com:80?transport=tcp',
+            username: 'tSH4W-UfQFcDjiMRR8xlse_Cu92GD_ajaOzASFOstKbzliOBFUF--SdwY0ae3aKUAAAAAGSlE5hjcmFja2VydHZu',
+            credential: 'c1c8371a-1b00-11ee-ba7a-0242ac120004'
+          },
+          {
+            urls: 'turn:hk-turn1.xirsys.com:3478?transport=tcp',
+            username: 'tSH4W-UfQFcDjiMRR8xlse_Cu92GD_ajaOzASFOstKbzliOBFUF--SdwY0ae3aKUAAAAAGSlE5hjcmFja2VydHZu',
+            credential: 'c1c8371a-1b00-11ee-ba7a-0242ac120004'
+          }
         ]
       },
 
