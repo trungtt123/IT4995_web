@@ -17,6 +17,11 @@ import Room from "./Room";
 import { callAction } from "../Redux/callSlice";
 import { updateConversation } from "../Redux/conversationSlice";
 function MessageItem(props) {
+    const { user } = useSelector(
+        (state) => state.auth
+    );
+    console.log('props?.participants?', props?.participants);
+    console.log('test', props?.participants?.filter(o => o.lastSeen.messageId === props?.messData?._id));
     if (props.idSender != props.idUser)
         return (
             <div style={{
@@ -39,8 +44,8 @@ function MessageItem(props) {
                     wordBreak: 'break-word'
                 }}>
                     {props?.messData?.type === 'text' && props?.messData?.content.body}
-                    {props?.messData?.type === 'image' && <img src={props?.messData?.content.body[0]} style={{width: 200, borderRadius: 10}}/>}
-                    {props?.messData?.type === 'video' && <video src={props?.messData?.content.body[0]} style={{width: 200, borderRadius: 10}} controls/>}
+                    {props?.messData?.type === 'image' && <img src={props?.messData?.content.body[0]} style={{ width: 200, borderRadius: 10 }} />}
+                    {props?.messData?.type === 'video' && <video src={props?.messData?.content.body[0]} style={{ width: 200, borderRadius: 10 }} controls />}
                 </span>
             </div>
         );
@@ -49,6 +54,7 @@ function MessageItem(props) {
             <div style={{
                 width: '100%', display: 'flex',
                 justifyContent: 'flex-end', marginBottom: 20,
+                flexDirection: 'column'
             }}>
                 <span style={{
                     alignSelf: 'flex-end',
@@ -62,9 +68,18 @@ function MessageItem(props) {
                     marginRight: 5
                 }}>
                     {props?.messData?.type === 'text' && props?.messData?.content.body}
-                    {props?.messData?.type === 'image' && <img src={props?.messData?.content.body[0]} style={{width: 200, borderRadius: 10}}/>}
-                    {props?.messData?.type === 'video' && <video src={props?.messData?.content.body[0]} style={{width: 200, borderRadius: 10}} controls/>}
+                    {props?.messData?.type === 'image' && <img src={props?.messData?.content.body[0]} style={{ width: 200, borderRadius: 10 }} />}
+                    {props?.messData?.type === 'video' && <video src={props?.messData?.content.body[0]} style={{ width: 200, borderRadius: 10 }} controls />}
                 </span>
+                <div style={{
+                     alignSelf: 'flex-end',
+                }}>
+                    {props?.participants?.filter(o => o.lastSeen.messageId === props?.messData?._id && user.id !== o.user._id)?.map((item, index) => {
+                        return <span key={index}>
+                            <img src={item?.user?.avatar?.url} style={{height: 15, width: 15, borderRadius: '50%', marginRight: 5}}/>
+                        </span>
+                    })}
+                </div>
             </div>
         );
 }
@@ -87,6 +102,7 @@ export default function Conversation({ socket }) {
     const [conversation, setConversation] = useState({});
     const [listMember, setListMember] = useState([]);
     const [avatar, setAvatar] = useState({});
+    const [participants, setParticipants] = useState([]);
     //tin nhắn muốn gửi
     const [textMessage, setTextMessage] = useState("");
     const [news, setNews] = useState();
@@ -112,15 +128,6 @@ export default function Conversation({ socket }) {
             conversationId: conversationId,
             token: user.token
         })
-        // socket.emit('new_message',
-        //     {
-        //         conversationId: conversation?._id,
-        //         userId: user.id,
-        //         token: user.token,
-        //         notification: 2,
-        //         content: `${user?.username} đã tạo cuộc gọi`
-        //     }
-        // );
     }
     const handleEndCall = () => {
         document.body.classList.remove('off-scroll');
@@ -188,6 +195,13 @@ export default function Conversation({ socket }) {
         document.body.appendChild(input);
         input.click();
     }
+    const handleBack = () => {
+        history.goBack();
+        conversationId && socket && socket.emit('leave_conversation', {
+            conversationId: conversationId,
+            token: user.token
+        });
+    }
     useEffect(() => {
         let isMounted = true; // Thêm biến isMounted để kiểm tra component có còn tồn tại hay không
 
@@ -211,6 +225,7 @@ export default function Conversation({ socket }) {
                         avt[mem.user._id] = mem.user.avatar;
                     }
                     setAvatar(avt);
+                    setParticipants(result.data.participants);
                     setListMessage(result.data.messages);
                 }
             }
@@ -260,7 +275,7 @@ export default function Conversation({ socket }) {
                         position: 'relative'
                     }}>
                         <ArrowBackIcon style={{ marginRight: 10 }}
-                            onClick={() => history.goBack()} />
+                            onClick={() => handleBack()} />
 
                         <span style={{ position: 'absolute', top: -2 }}>{conversation?.conversationName}</span>
                     </div>
@@ -285,7 +300,7 @@ export default function Conversation({ socket }) {
                                 }}
                                     key={e._id}>{e.content.body}</div>
                             }
-                            else return <MessageItem
+                            else return <MessageItem participants={participants}
                                 key={e._id} avatar={avatar[e.sender]}
                                 messData={e} idSender={e.sender} idUser={user.id} keyExtractor={(e) => e._id} />
                         }

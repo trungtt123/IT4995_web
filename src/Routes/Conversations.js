@@ -34,19 +34,6 @@ export default function Conversations({ socket }) {
     const handleSearch = (keyword) => {
         setKeyword(keyword)
     }
-    // useEffect(() => {
-    //     socket.emit('me', { userId: user.id });
-    //     socket.emit('get_list_conversation', {
-    //         userId: user.id,
-    //         token: user.token
-    //     });
-    //     socket.on('conversation_change', (result) => {
-    //         console.log(result)
-    //         if (result.code == "1000") {
-    //             setConversations(result.data)
-    //         }
-    //     })
-    // }, [socket])
     useEffect(() => {
         let isMounted = true; // Thêm biến isMounted để kiểm tra component có còn tồn tại hay không
       
@@ -88,12 +75,15 @@ export default function Conversations({ socket }) {
             <List sx={{ width: '100%' }}>
                 {conversations?.filter((o) => o.conversationName.includes(keyword))?.map((item, index) => {
                     let secondary = '';
-                    if (item?.messages[item?.messages.length - 1]?.type === 'text') 
-                    secondary = item?.messages[item?.messages.length - 1]?.content?.body;
-                    else if (item?.messages[item?.messages.length - 1]?.type === 'image'){
+                    let userTmp = item.participants.find(o => o.user == user.id);
+                    let chuaXem = (item?.messages?.length - 1) - userTmp.lastSeen.index;
+                    let lastMessage = item?.messages[item?.messages.length - 1];
+                    if (lastMessage?.type === 'text') 
+                    secondary = lastMessage?.content?.body;
+                    else if (lastMessage?.type === 'image'){
                         secondary = 'Hình ảnh';
                     }
-                    else if (item?.messages[item?.messages.length - 1]?.type === 'video'){
+                    else if (lastMessage?.type === 'video'){
                         secondary = 'Video';
                     }
                     if (!secondary) secondary = getTimeCreateConversation(item?.createdAt);
@@ -109,6 +99,16 @@ export default function Conversations({ socket }) {
                         </ListItemAvatar>
                         <ListItemText primary={item.conversationName} primaryTypographyProps={{ style: { fontWeight: 'bold' } }}
                             secondary={secondary} />
+                        {chuaXem > 0 && <div style={{
+                            marginRight: 10,
+                            width: 12,
+                            height: 12,
+                            backgroundColor: 'red',
+                            color: 'white',
+                            borderRadius: '50%',
+                            padding: 5,
+                            position: 'relative'
+                        }}><span style={{position: 'absolute', left: 8, top: -1.5, fontSize: 15}}>{chuaXem}</span></div>}
                     </ListItem>
                 })}
 
