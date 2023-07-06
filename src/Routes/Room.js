@@ -57,6 +57,16 @@ class Room extends Component {
             urls: 'turn:hk-turn1.xirsys.com:3478?transport=tcp',
             username: 'tSH4W-UfQFcDjiMRR8xlse_Cu92GD_ajaOzASFOstKbzliOBFUF--SdwY0ae3aKUAAAAAGSlE5hjcmFja2VydHZu',
             credential: 'c1c8371a-1b00-11ee-ba7a-0242ac120004'
+          },
+          {
+            urls: 'turns:hk-turn1.xirsys.com:443?transport=tcp',
+            username: 'tSH4W-UfQFcDjiMRR8xlse_Cu92GD_ajaOzASFOstKbzliOBFUF--SdwY0ae3aKUAAAAAGSlE5hjcmFja2VydHZu',
+            credential: 'c1c8371a-1b00-11ee-ba7a-0242ac120004'
+          },
+          {
+            urls: 'turns:hk-turn1.xirsys.com:5349?transport=tcp',
+            username: 'tSH4W-UfQFcDjiMRR8xlse_Cu92GD_ajaOzASFOstKbzliOBFUF--SdwY0ae3aKUAAAAAGSlE5hjcmFja2VydHZu',
+            credential: 'c1c8371a-1b00-11ee-ba7a-0242ac120004'
           }
         ]
       },
