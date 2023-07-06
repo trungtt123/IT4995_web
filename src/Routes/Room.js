@@ -85,79 +85,101 @@ class Room extends Component {
   }
 
   getLocalStream = ({ typeCamera: typeCamera }) => {
-    // called when getUserMedia() successfully returns - see below
-    // getUserMedia() returns a MediaStream object (https://developer.mozilla.org/en-US/docs/Web/API/MediaStream)
-    const success = (stream) => {
-      window.localStream = stream
-      // this.localVideoref.current.srcObject = stream
-      // this.pc.addStream(stream);
-      this.setState({
-        localStream: stream
-      })
+    try {
+      const success = (stream) => {
+        window.localStream = stream
+        // this.localVideoref.current.srcObject = stream
+        // this.pc.addStream(stream);
+        this.setState({
+          localStream: stream
+        })
 
-      this.whoisOnline()
-    }
-
-    // called when getUserMedia() fails - see below
-    const failure = (e) => {
-      console.log('getUserMedia Error: ', e)
-    }
-    const constraints = {
-      audio: true,
-      video: {
-        facingMode: {
-          exact: "user"
-        },
-        width: { ideal: 480 },
-        height: { ideal: 640 }
+        this.whoisOnline()
       }
+
+      // called when getUserMedia() fails - see below
+      const failure = (e) => {
+        console.log('getUserMedia Error: ', e)
+      }
+      const constraints = {
+        audio: true,
+        video: {
+          facingMode: {
+            exact: "user"
+          },
+          width: { ideal: 480 },
+          height: { ideal: 640 }
+        }
+      }
+      navigator.mediaDevices.getUserMedia(constraints)
+        .then(success)
+        .catch(failure)
+      // navigator.mediaDevices.getDisplayMedia({
+      //   video: {
+      //     cursor: "always"
+      //   },
+      //   audio: false
+      // }).then(success).catch(failure);
     }
-    navigator.mediaDevices.getUserMedia(constraints)
-      .then(success)
-      .catch(failure)
-    // navigator.mediaDevices.getDisplayMedia({
-    //   video: {
-    //     cursor: "always"
-    //   },
-    //   audio: false
-    // }).then(success).catch(failure);
+    catch (e) {
+      console.error(e);
+    }
   }
   switchCam = (typeCamera) => {
-    const tracks = this.state.localStream.getTracks();
-    // Duyệt qua từng track
-    tracks.forEach(track => {
-      // Kiểm tra track có phải là video track không
-      if (track.kind === 'video') {
-        // Dừng track (tắt camera)
-        track.stop();
-      }
-    });
-    this.setState({ typeCamera: typeCamera });
-    this.getLocalStream({ typeCamera: typeCamera });
+    try {
+      const tracks = this.state.localStream.getTracks();
+      // Duyệt qua từng track
+      tracks.forEach(track => {
+        // Kiểm tra track có phải là video track không
+        if (track.kind === 'video') {
+          // Dừng track (tắt camera)
+          track.stop();
+        }
+      });
+      this.setState({ typeCamera: typeCamera });
+      this.getLocalStream({ typeCamera: typeCamera });
+    }
+    catch (e) {
+      console.error(e);
+    }
   }
   whoisOnline = () => {
     // let all peers know I am joining
-    this.sendToPeer('onlinePeers', { userId: this.props?.user?.id }, { local: this.socket.id })
+    try {
+      this.sendToPeer('onlinePeers', { userId: this.props?.user?.id }, { local: this.socket.id })
+    }
+    catch (e) {
+      console.error(e);
+    }
   }
 
   sendToPeer = (messageType, payload, socketID) => {
-    this.socket.emit(messageType, {
-      socketID,
-      payload
-    })
+    try {
+      this.socket.emit(messageType, {
+        socketID,
+        payload
+      })
+    }
+    catch (e) {
+      console.error(e);
+    }
   }
 
   sendEmoji = (emojiName) => {
-    this.socket.emit('send-emoji', {
-      emojiName,
-      name: this.props?.user?.username,
-      senderId: this.props?.user?.id
-    });
-    this.setState({ showEmoji: false });
+    try {
+      this.socket.emit('send-emoji', {
+        emojiName,
+        name: this.props?.user?.username,
+        senderId: this.props?.user?.id
+      });
+      this.setState({ showEmoji: false });
+    }
+    catch (e) {
+      console.error(e);
+    }
   }
 
   createPeerConnection = async (socketID, callback) => {
-
     try {
       let pc = new RTCPeerConnection(this.state.pc_config)
 
@@ -272,97 +294,175 @@ class Room extends Component {
   }
 
   componentDidMount = () => {
-    const { location, roomId } = this.props;
-    console.log('roomId', roomId);
-    this.state.roomId = roomId;
-    // if (!this.state.roomId) window.location.href = '/'
-    this.socket = io(
-      this.serviceIP,
-      {
-        path: '/io/webrtc',
-        query: {
-          room: this.state.roomId,
-        }
-      }
-    )
-    this.socket.on('receive-emoji', data => {
-      let element = document.getElementById("showEmoji");
-      let emoji = '';
-      if (data.emojiName === 'smile') emoji = 'cười haha 😄';
-      else if (data.emojiName === 'heart') emoji = 'thả tim ❤️';
-      else if (data.emojiName === 'like') emoji = 'thích 👍';
-      let name = data.name;
-      console.log('this.props?.user', this.props?.user);
-      console.log('data?.senderId', data?.senderId);
-      if (this.props?.user?.id === data?.senderId) name = 'Bạn';
-      element.innerHTML = `${name} đã ${emoji}`;
-      element.style.display = '';
-      element.addEventListener("animationend", function () {
-        // Xóa phần tử khỏi DOM sau khi hiệu ứng kết thúc
-        element.style.display = 'none';
-      });
-    })
-    this.socket.on('connection-success', data => {
-
-      this.getLocalStream({ typeCamera: 'user' })
-
-      // console.log(data.success)
-      const status = data.peerCount > 1 ? `Total Connected Peers to room ${this.state.roomId}: ${data.peerCount}` : `Waiting for other peers to connect ${this.state.roomId}`
-
-      this.setState({
-        status: status,
-        messages: data.messages
-      })
-    })
-
-    this.socket.on('joined-peers', data => {
-
-      this.setState({
-        status: data.peerCount > 1 ? `Total Connected Peers to room ${this.state.roomId}: ${data.peerCount}` : `Waiting for other peers to connect ${this.state.roomId}`
-      })
-    })
-
-    // ************************************* //
-    // ************************************* //
-    this.socket.on('peer-disconnected', data => {
-      try {
-        // close peer-connection with this peer
-        this.state.peerConnections[data.socketID].close()
-
-        // get and stop remote audio and video tracks of the disconnected peer
-        const rVideo = this.state.remoteStreams.filter(stream => stream.id === data.socketID)
-        rVideo && this.stopTracks(rVideo[0]?.stream)
-
-        // filter out the disconnected peer stream
-        const remoteStreams = this.state.remoteStreams.filter(stream => stream.id !== data.socketID)
-
-        this.setState(prevState => {
-          // check if disconnected peer is the selected video and if there still connected peers, then select the first
-          const selectedVideo = prevState.selectedVideo.id === data.socketID && remoteStreams.length ? { selectedVideo: remoteStreams[0] } : null
-
-          return {
-            // remoteStream: remoteStreams.length > 0 && remoteStreams[0].stream || null,
-            remoteStreams,
-            ...selectedVideo,
-            status: data.peerCount > 1 ? `Total Connected Peers to room ${this.state.roomId}: ${data.peerCount}` : `Waiting for other peers to connect room ${this.state.roomId}`
+    try {
+      const { roomId } = this.props;
+      console.log('roomId', roomId);
+      this.state.roomId = roomId;
+      // if (!this.state.roomId) window.location.href = '/'
+      this.socket = io(
+        this.serviceIP,
+        {
+          path: '/io/webrtc',
+          query: {
+            room: this.state.roomId,
           }
         }
-        )
-      }
-      catch (e) {
-        console.error(e);
-      }
-    })
+      )
+      this.socket.on('receive-emoji', data => {
+        try {
+          let element = document.getElementById("showEmoji");
+          let emoji = '';
+          if (data.emojiName === 'smile') emoji = 'cười haha 😄';
+          else if (data.emojiName === 'heart') emoji = 'thả tim ❤️';
+          else if (data.emojiName === 'like') emoji = 'thích 👍';
+          let name = data.name;
+          console.log('this.props?.user', this.props?.user);
+          console.log('data?.senderId', data?.senderId);
+          if (this.props?.user?.id === data?.senderId) name = 'Bạn';
+          element.innerHTML = `${name} đã ${emoji}`;
+          element.style.display = '';
+          element.addEventListener("animationend", function () {
+            // Xóa phần tử khỏi DOM sau khi hiệu ứng kết thúc
+            element.style.display = 'none';
+          });
+        }
+        catch (e) {
+          console.error(e);
+        }
+      })
+      this.socket.on('connection-success', data => {
+        try {
+          this.getLocalStream({ typeCamera: 'user' })
 
-    this.socket.on('online-peer', socketID => {
-      try {
-        // console.log('connected peers ...', socketID)
+          // console.log(data.success)
+          const status = data.peerCount > 1 ? `Total Connected Peers to room ${this.state.roomId}: ${data.peerCount}` : `Waiting for other peers to connect ${this.state.roomId}`
 
-        // create and send offer to the peer (data.socketID)
-        // 1. Create new pc
-        this.createPeerConnection(socketID, pc => {
-          // 2. Create Offer
-          if (pc) {
+          this.setState({
+            status: status,
+            messages: data.messages
+          })
+        }
+        catch (e) {
+          console.error(e)
+        }
+      })
+
+      this.socket.on('joined-peers', data => {
+        try {
+          this.setState({
+            status: data.peerCount > 1 ? `Total Connected Peers to room ${this.state.roomId}: ${data.peerCount}` : `Waiting for other peers to connect ${this.state.roomId}`
+          })
+        }
+        catch (e) {
+          console.error(e);
+        }
+      })
+
+      // ************************************* //
+      // ************************************* //
+      this.socket.on('peer-disconnected', data => {
+        try {
+          // close peer-connection with this peer
+          this.state.peerConnections[data.socketID].close()
+
+          // get and stop remote audio and video tracks of the disconnected peer
+          const rVideo = this.state.remoteStreams.filter(stream => stream.id === data.socketID)
+          rVideo && this.stopTracks(rVideo[0]?.stream)
+
+          // filter out the disconnected peer stream
+          const remoteStreams = this.state.remoteStreams.filter(stream => stream.id !== data.socketID)
+
+          this.setState(prevState => {
+            // check if disconnected peer is the selected video and if there still connected peers, then select the first
+            const selectedVideo = prevState.selectedVideo.id === data.socketID && remoteStreams.length ? { selectedVideo: remoteStreams[0] } : null
+
+            return {
+              // remoteStream: remoteStreams.length > 0 && remoteStreams[0].stream || null,
+              remoteStreams,
+              ...selectedVideo,
+              status: data.peerCount > 1 ? `Total Connected Peers to room ${this.state.roomId}: ${data.peerCount}` : `Waiting for other peers to connect room ${this.state.roomId}`
+            }
+          }
+          )
+        }
+        catch (e) {
+          console.error(e);
+        }
+      })
+
+      this.socket.on('online-peer', socketID => {
+        try {
+          // console.log('connected peers ...', socketID)
+
+          // create and send offer to the peer (data.socketID)
+          // 1. Create new pc
+          this.createPeerConnection(socketID, pc => {
+            // 2. Create Offer
+            if (pc) {
+
+              // Send Channel
+              const handleSendChannelStatusChange = (event) => {
+                console.log('send channel status: ' + this.state.sendChannels[0].readyState)
+              }
+
+              const sendChannel = pc.createDataChannel('sendChannel')
+              sendChannel.onopen = handleSendChannelStatusChange
+              sendChannel.onclose = handleSendChannelStatusChange
+
+              this.setState(prevState => {
+                return {
+                  sendChannels: [...prevState.sendChannels, sendChannel]
+                }
+              })
+
+              // Receive Channels
+              const handleReceiveMessage = (event) => {
+                const message = JSON.parse(event.data)
+                // console.log(message)
+                this.setState(prevState => {
+                  return {
+                    messages: [...prevState.messages, message]
+                  }
+                })
+              }
+
+              const handleReceiveChannelStatusChange = (event) => {
+                if (this.receiveChannel) {
+                  console.log("receive channel's status has changed to " + this.receiveChannel.readyState);
+                }
+              }
+
+              const receiveChannelCallback = (event) => {
+                const receiveChannel = event.channel
+                receiveChannel.onmessage = handleReceiveMessage
+                receiveChannel.onopen = handleReceiveChannelStatusChange
+                receiveChannel.onclose = handleReceiveChannelStatusChange
+              }
+
+              pc.ondatachannel = receiveChannelCallback
+
+
+              pc.createOffer(this.state.sdpConstraints)
+                .then(sdp => {
+                  pc.setLocalDescription(sdp)
+
+                  this.sendToPeer('offer', sdp, {
+                    local: this.socket.id,
+                    remote: socketID
+                  })
+                })
+            }
+          })
+        }
+        catch (e) {
+          console.error(e);
+        }
+      })
+
+      this.socket.on('offer', data => {
+        try {
+          this.createPeerConnection(data.socketID, pc => {
+            pc.addStream(this.state.localStream)
 
             // Send Channel
             const handleSendChannelStatusChange = (event) => {
@@ -405,176 +505,89 @@ class Room extends Component {
 
             pc.ondatachannel = receiveChannelCallback
 
+            pc.setRemoteDescription(new RTCSessionDescription(data.sdp)).then(() => {
+              // 2. Create Answer
+              pc.createAnswer(this.state.sdpConstraints)
+                .then(sdp => {
+                  pc.setLocalDescription(sdp)
 
-            pc.createOffer(this.state.sdpConstraints)
-              .then(sdp => {
-                pc.setLocalDescription(sdp)
-
-                this.sendToPeer('offer', sdp, {
-                  local: this.socket.id,
-                  remote: socketID
+                  this.sendToPeer('answer', sdp, {
+                    local: this.socket.id,
+                    remote: data.socketID
+                  })
                 })
-              })
-          }
-        })
-      }
-      catch (e) {
-        console.error(e);
-      }
-    })
-
-    this.socket.on('offer', data => {
-      try {
-        this.createPeerConnection(data.socketID, pc => {
-          pc.addStream(this.state.localStream)
-
-          // Send Channel
-          const handleSendChannelStatusChange = (event) => {
-            console.log('send channel status: ' + this.state.sendChannels[0].readyState)
-          }
-
-          const sendChannel = pc.createDataChannel('sendChannel')
-          sendChannel.onopen = handleSendChannelStatusChange
-          sendChannel.onclose = handleSendChannelStatusChange
-
-          this.setState(prevState => {
-            return {
-              sendChannels: [...prevState.sendChannels, sendChannel]
-            }
-          })
-
-          // Receive Channels
-          const handleReceiveMessage = (event) => {
-            const message = JSON.parse(event.data)
-            // console.log(message)
-            this.setState(prevState => {
-              return {
-                messages: [...prevState.messages, message]
-              }
             })
-          }
-
-          const handleReceiveChannelStatusChange = (event) => {
-            if (this.receiveChannel) {
-              console.log("receive channel's status has changed to " + this.receiveChannel.readyState);
-            }
-          }
-
-          const receiveChannelCallback = (event) => {
-            const receiveChannel = event.channel
-            receiveChannel.onmessage = handleReceiveMessage
-            receiveChannel.onopen = handleReceiveChannelStatusChange
-            receiveChannel.onclose = handleReceiveChannelStatusChange
-          }
-
-          pc.ondatachannel = receiveChannelCallback
-
-          pc.setRemoteDescription(new RTCSessionDescription(data.sdp)).then(() => {
-            // 2. Create Answer
-            pc.createAnswer(this.state.sdpConstraints)
-              .then(sdp => {
-                pc.setLocalDescription(sdp)
-
-                this.sendToPeer('answer', sdp, {
-                  local: this.socket.id,
-                  remote: data.socketID
-                })
-              })
           })
-        })
-      }
-      catch (e) {
-        console.error(e);
-      }
-    })
+        }
+        catch (e) {
+          console.error(e);
+        }
+      })
 
-    this.socket.on('answer', data => {
-      // get remote's peerConnection
-      const pc = this.state.peerConnections[data.socketID]
-      // console.log(data.sdp)
-      pc.setRemoteDescription(new RTCSessionDescription(data.sdp)).then(() => { })
-    })
+      this.socket.on('answer', data => {
+        try {
+          // get remote's peerConnection
+          const pc = this.state.peerConnections[data.socketID]
+          // console.log(data.sdp)
+          pc.setRemoteDescription(new RTCSessionDescription(data.sdp)).then(() => { })
+        }
+        catch (e) {
+          console.error(e);
+        }
+      })
 
-    this.socket.on('candidate', (data) => {
-      // get remote's peerConnection
-      const pc = this.state.peerConnections[data.socketID]
-
-      if (pc)
-        pc.addIceCandidate(new RTCIceCandidate(data.candidate))
-    })
-
-    // const pc_config = null
-
-    // const pc_config = {
-    //   "iceServers": [
-    //     // {
-    //     //   urls: 'stun:[STUN_IP]:[PORT]',
-    //     //   'credentials': '[YOR CREDENTIALS]',
-    //     //   'username': '[USERNAME]'
-    //     // },
-    //     {
-    //       urls : 'stun:stun.l.google.com:19302'
-    //     }
-    //   ]
-    // }
-
-    // https://developer.mozilla.org/en-US/docs/Web/API/RTCPeerConnection
-    // create an instance of RTCPeerConnection
-    // this.pc = new RTCPeerConnection(this.state.pc_config)
-
-    // triggered when a new candidate is returned
-    // this.pc.onicecandidate = (e) => {
-    //   // send the candidates to the remote peer
-    //   // see addCandidate below to be triggered on the remote peer
-    //   if (e.candidate) {
-    //     // console.log(JSON.stringify(e.candidate))
-    //     this.sendToPeer('candidate', e.candidate)
-    //   }
-    // }
-
-    // triggered when there is a change in connection state
-    // this.pc.oniceconnectionstatechange = (e) => {
-    //   console.log(e)
-    // }
-
-    // triggered when a stream is added to pc, see below - this.pc.addStream(stream)
-    // this.pc.onaddstream = (e) => {
-    //   this.remoteVideoref.current.srcObject = e.stream
-    // }
-
-    // this.pc.ontrack = (e) => {
-    //   debugger
-    //   // this.remoteVideoref.current.srcObject = e.streams[0]
-
-    //   this.setState({
-    //     remoteStream: e.streams[0]
-    //   })
-    // }
-
+      this.socket.on('candidate', (data) => {
+        // get remote's peerConnection
+        try {
+          const pc = this.state.peerConnections[data.socketID]
+          if (pc)
+            pc.addIceCandidate(new RTCIceCandidate(data.candidate))
+        }
+        catch (e) {
+          console.error(e);
+        }
+      })
+    }
+    catch (e) {
+      console.error(e);
+    }
   }
 
   // ************************************* //
   // NOT REQUIRED
   // ************************************* //
   disconnectSocket = (socketToDisconnect) => {
-    this.sendToPeer('socket-to-disconnect', null, {
-      local: this.socket.id,
-      remote: socketToDisconnect
-    })
+    try {
+      this.sendToPeer('socket-to-disconnect', null, {
+        local: this.socket.id,
+        remote: socketToDisconnect
+      })
+    }
+    catch (e) {
+      console.error(e);
+    }
   }
 
   switchVideo = (_video) => {
-    // console.log(_video)
-    this.setState({
-      selectedVideo: _video
-    })
+    try {
+      this.setState({
+        selectedVideo: _video
+      })
+    }
+    catch (e) {
+      console.error(e);
+    }
   }
 
   // ************************************* //
   // ************************************* //
   stopTracks = async (stream) => {
-    // await delay(1000);
-    stream.getTracks().forEach(track => track.stop())
+    try {
+      stream.getTracks().forEach(track => track.stop())
+    }
+    catch (e) {
+      console.error(e);
+    }
   }
   componentDidUpdate(prevProps, prevState) {
     if (this.state.disconnected) {
@@ -592,22 +605,24 @@ class Room extends Component {
     } = this.state
 
     if (disconnected) {
-      // disconnect socket
-      this.socket && this.socket.close()
-      // stop local audio & video tracks
-      this.stopTracks(localStream)
+      try {
+        // disconnect socket
+        this.socket && this.socket.close()
+        // stop local audio & video tracks
+        this.stopTracks(localStream)
 
-      // stop all remote audio & video tracks
-      remoteStreams.forEach(rVideo => this.stopTracks(rVideo.stream))
+        // stop all remote audio & video tracks
+        remoteStreams.forEach(rVideo => this.stopTracks(rVideo.stream))
 
-      // stop all remote peerconnections
-      peerConnections && Object.values(peerConnections).forEach(pc => pc.close())
-      // this.props.handleEndCall()
-      return null;
+        // stop all remote peerconnections
+        peerConnections && Object.values(peerConnections).forEach(pc => pc.close())
+        // this.props.handleEndCall()
+        return null;
+      }
+      catch (e) {
+        console.error(e);
+      }
     }
-
-    const statusText = <div style={{ color: 'yellow', padding: 5 }}>{status}</div>
-    console.log('this.state.muteMyCamera', this.state.muteMyCamera)
     return (
       <div style={{
         position: 'fixed',

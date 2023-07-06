@@ -22,33 +22,50 @@ function MessageItem(props) {
     );
     console.log('props?.participants?', props?.participants);
     console.log('test', props?.participants?.filter(o => o.lastSeen.messageId === props?.messData?._id));
-    if (props.idSender != props.idUser)
+    if (props.idSender != props.idUser) {
+        let seenUser = props?.participants?.filter(o => o.lastSeen.messageId === props?.messData?._id && user.id !== o.user._id);
         return (
-            <div style={{
-                position: 'relative', width: '100%', marginLeft: 5, marginBottom: 20,
-                display: 'flex',
-                justifyContent: 'flex-start',
-            }}>
-                <span style={{ alignSelf: 'flex-start' }}>{props?.avatar?.url
-                    ? <img src={props?.avatar?.url} style={{ width: 30, height: 30, borderRadius: 15 }} />
-                    : <img src={default_avatar} style={{ width: 30, height: 30, borderRadius: 15 }} />}
-                </span>
-                <span style={{
-                    backgroundColor: props?.messData?.type === 'text' ? '#ccc' : '',
-                    minHeight: 20,
-                    borderRadius: 10,
-                    color: 'black',
-                    padding: 5,
-                    marginLeft: 5,
-                    maxWidth: '80%',
-                    wordBreak: 'break-word'
+            <div style={{marginBottom: 20}}>
+                <div style={{
+                    position: 'relative', width: '100%', marginLeft: 5,
+                    display: 'flex',
+                    justifyContent: 'flex-start',
                 }}>
-                    {props?.messData?.type === 'text' && props?.messData?.content.body}
-                    {props?.messData?.type === 'image' && <img src={props?.messData?.content.body[0]} style={{ width: 200, borderRadius: 10 }} />}
-                    {props?.messData?.type === 'video' && <video src={props?.messData?.content.body[0]} style={{ width: 200, borderRadius: 10 }} controls />}
-                </span>
+                    <span style={{ alignSelf: 'flex-start' }}>{props?.avatar?.url
+                        ? <img src={props?.avatar?.url} style={{ width: 30, height: 30, borderRadius: 15 }} />
+                        : <img src={default_avatar} style={{ width: 30, height: 30, borderRadius: 15 }} />}
+                    </span>
+                    <span style={{
+                        backgroundColor: props?.messData?.type === 'text' ? '#ccc' : '',
+                        minHeight: 20,
+                        borderRadius: 10,
+                        color: 'black',
+                        padding: 5,
+                        marginLeft: 5,
+                        maxWidth: '80%',
+                        wordBreak: 'break-word'
+                    }}>
+                        {props?.messData?.type === 'text' && props?.messData?.content.body}
+                        {props?.messData?.type === 'image' && <img src={props?.messData?.content.body[0]} style={{ width: 200, borderRadius: 10 }} />}
+                        {props?.messData?.type === 'video' && <video src={props?.messData?.content.body[0]} style={{ width: 200, borderRadius: 10 }} controls />}
+                    </span>
+
+                </div>
+                <div style={{
+                    display: 'flex',
+                    justifyContent: 'flex-end'
+                }}>
+                    <div>
+                        {seenUser?.map((item, index) => {
+                            return <span key={index}>
+                                <img src={item?.user?.avatar?.url || default_avatar} style={{ height: 15, width: 15, borderRadius: '50%', marginRight: 5 }} />
+                            </span>
+                        })}
+                    </div>
+                </div>
             </div>
         );
+    }
     else
         return (
             <div style={{
@@ -72,12 +89,12 @@ function MessageItem(props) {
                     {props?.messData?.type === 'video' && <video src={props?.messData?.content.body[0]} style={{ width: 200, borderRadius: 10 }} controls />}
                 </span>
                 <div style={{
-                     alignSelf: 'flex-end',
+                    alignSelf: 'flex-end',
                 }}>
                     {props?.participants?.filter(o => o.lastSeen.messageId === props?.messData?._id && user.id !== o.user._id)?.map((item, index) => {
                         return <span key={index}>
-                            <img src={item?.user?.avatar?.url} style={{height: 15, width: 15, borderRadius: '50%', marginRight: 5}}/>
-                        </span>
+                            <img src={item?.user?.avatar?.url || default_avatar} style={{ height: 15, width: 15, borderRadius: '50%', marginRight: 5 }} />
+                        </span> 
                     })}
                 </div>
             </div>

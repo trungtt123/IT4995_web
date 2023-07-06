@@ -36,29 +36,29 @@ export default function Conversations({ socket }) {
     }
     useEffect(() => {
         let isMounted = true; // Thêm biến isMounted để kiểm tra component có còn tồn tại hay không
-      
+
         socket.emit('me', { userId: user.id });
         socket.emit('get_list_conversation', {
-          userId: user.id,
-          token: user.token
+            userId: user.id,
+            token: user.token
         });
-      
+
         // Lắng nghe sự kiện conversation_change
         socket.on('conversation_change', (result) => {
-          if (isMounted) { // Kiểm tra component còn tồn tại trước khi cập nhật state
-            if (result.code === '1000') {
-                console.log('123');
-              setConversations(result.data);
+            if (isMounted) { // Kiểm tra component còn tồn tại trước khi cập nhật state
+                if (result.code === '1000') {
+                    console.log('123');
+                    setConversations(result.data);
+                }
             }
-          }
         });
-      
+
         return () => {
-          isMounted = false; // Đánh dấu component đã unmount
-          socket.off('conversation_change'); // Huỷ đăng ký sự kiện conversation_change
+            isMounted = false; // Đánh dấu component đã unmount
+            socket.off('conversation_change'); // Huỷ đăng ký sự kiện conversation_change
         };
-      }, [socket, user.id, user.token]);
-      
+    }, [socket, user.id, user.token]);
+
     return (
         <>
             {showModalCreateConversation
@@ -69,8 +69,8 @@ export default function Conversations({ socket }) {
                     onClick={() => setShowModalCreateConversation(true)}
                     variant="contained">TẠO MỚI</Button>
             </div>
-            <div style={{marginTop: 0}}>
-            <SearchBar onSearch={(keyword) => handleSearch(keyword)}/>
+            <div style={{ marginTop: 0 }}>
+                <SearchBar onSearch={(keyword) => handleSearch(keyword)} />
             </div>
             <List sx={{ width: '100%' }}>
                 {conversations?.filter((o) => o.conversationName.includes(keyword))?.map((item, index) => {
@@ -78,12 +78,12 @@ export default function Conversations({ socket }) {
                     let userTmp = item.participants.find(o => o.user == user.id);
                     let chuaXem = (item?.messages?.length - 1) - userTmp.lastSeen.index;
                     let lastMessage = item?.messages[item?.messages.length - 1];
-                    if (lastMessage?.type === 'text') 
-                    secondary = lastMessage?.content?.body;
-                    else if (lastMessage?.type === 'image'){
+                    if (lastMessage?.type === 'text')
+                        secondary = lastMessage?.content?.body;
+                    else if (lastMessage?.type === 'image') {
                         secondary = 'Hình ảnh';
                     }
-                    else if (lastMessage?.type === 'video'){
+                    else if (lastMessage?.type === 'video') {
                         secondary = 'Video';
                     }
                     if (!secondary) secondary = getTimeCreateConversation(item?.createdAt);
@@ -108,7 +108,23 @@ export default function Conversations({ socket }) {
                             borderRadius: '50%',
                             padding: 5,
                             position: 'relative'
-                        }}><span style={{position: 'absolute', left: 8, top: -1.5, fontSize: 15}}>{chuaXem}</span></div>}
+                        }}>
+                            {
+                                chuaXem <= 9 ?
+                                    <span style={{ position: 'absolute', left: 8, top: -5 }}>
+                                        <span style={{ fontSize: 12, textAlign: 'center' }}>
+                                            {chuaXem}
+                                        </span>
+
+                                    </span>
+                                    : <span style={{ position: 'absolute', left: 5, top: -4.5 }}>
+                                        <span style={{ fontSize: 12, textAlign: 'center' }}>
+                                            {'9+'}
+                                        </span>
+
+                                    </span>
+                            }
+                        </div>}
                     </ListItem>
                 })}
 
