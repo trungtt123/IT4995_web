@@ -71,14 +71,14 @@ const Friend = ({ socket }) => {
                     variant="contained">Thêm bạn</Button>
             </div>
             <div style={{ margin: '0 10px' }}>
-                <Grid container spacing={2} >
+                <div style={{width: '100%', display: 'grid', gridTemplateColumns: 'auto auto'}}>
                     {
                         friends?.filter((o) => o.username.includes(keyword))?.map((item, index) => {
                             let secondary = +item?.same_friends + " bạn chung";
-                            return <Grid item xs={6} key={item.id}>
+                            return <div key={item.id} style={{padding: 3}}>
                                 <div style={{ boxShadow: '2px 2px 4px rgba(0,0,0,0.1)', backgroundColor: 'white', borderRadius: 10, height: 80, display: 'flex', alignItems: 'center' }}
                                     onClick={() => goToFriendProfile(item.id)}>
-                                    <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+                                    <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', width: '150px' }}>
                                         <div style={{ display: 'flex', flexDirection: 'row' }}>
                                             <ListItemAvatar>
                                                 <Avatar style={{ marginTop: 10, marginLeft: 10 }} src={item?.avatar} />
@@ -95,10 +95,10 @@ const Friend = ({ socket }) => {
                                         </div>
                                     </div>
                                 </div>
-                            </Grid>
+                            </div>
                         })
                     }
-                </Grid>
+                </div>
             </div>
         </>
     );
