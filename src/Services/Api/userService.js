@@ -19,34 +19,31 @@ const setUserName = (userName) => {
 }
 
 const setAvatar = async (data) => {
-  const {formData, userId} = data;
-  let response =  axios.post(`/user/set_user_info?user_id=${userId}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+  const { formData, userId } = data;
+  let response = axios.post(`/user/set_user_info?user_id=${userId}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
   return response;
 }
 
 const setCoverImage = async (data) => {
-  const {formData, userId} = data;
+  const { formData, userId } = data;
   return axios.post(`/user/set_user_info?user_id=${userId}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
 }
 
 const setUserCity = async (data) => {
-  const {city, userId} = data;
+  const { city, userId } = data;
   return axios.post(`/user/set_user_info?user_id=${userId}&city=${city}`);
 }
 
 const setUserCountry = async (data) => {
-  const {country, userId} = data;
+  const { country, userId } = data;
   return axios.post(`/user/set_user_info?user_id=${userId}&country=${country}`);
 }
 
-// const userService = {
-//   getAllUsers,
-//   getUserInfor,
-//   setUserDescription,
-//   setAvatar,
-//   setCoverImage,
-//   setUserCity,
-//   setUserCountry
+const uploadMedia = async (data) => {
+  const { formData } = data;
+  return axios.post(`/user/upload_media?`, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+}
+
 const getListFriendRequest = (index, count) => {
   return axios.post(`/friend/get_requested_friends?index=${index}&count=${count}`);
 }
@@ -69,7 +66,7 @@ const unFriend = (userId) => {
   return axios.post(`/friend/unfriend?user_id=${userId}`);
 }
 
-const getUserInforWithToken = (userId, token) =>  {
+const getUserInforWithToken = (userId, token) => {
   return axios.post(`/user/get_user_info?user_id=${userId}&token=${token}`);
 }
 const userService = {
@@ -89,7 +86,8 @@ const userService = {
   setUserCity,
   setUserCountry,
   getUserInforWithToken,
-  getUserFromPhoneNumber
+  getUserFromPhoneNumber,
+  uploadMedia
 };
 
 

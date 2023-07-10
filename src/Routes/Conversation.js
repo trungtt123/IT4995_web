@@ -16,16 +16,16 @@ import { useParams } from 'react-router-dom';
 import Room from "./Room";
 import { callAction } from "../Redux/callSlice";
 import { updateConversation } from "../Redux/conversationSlice";
+import axios from "../setups/custom_axios";
+import userService from "../Services/Api/userService";
 function MessageItem(props) {
     const { user } = useSelector(
         (state) => state.auth
     );
-    console.log('props?.participants?', props?.participants);
-    console.log('test', props?.participants?.filter(o => o.lastSeen.messageId === props?.messData?._id));
     if (props.idSender != props.idUser) {
         let seenUser = props?.participants?.filter(o => o.lastSeen.messageId === props?.messData?._id && user.id !== o.user._id);
         return (
-            <div style={{marginBottom: 20}}>
+            <div style={{ marginBottom: 20 }}>
                 <div style={{
                     position: 'relative', width: '100%', marginLeft: 5,
                     display: 'flex',
@@ -94,7 +94,7 @@ function MessageItem(props) {
                     {props?.participants?.filter(o => o.lastSeen.messageId === props?.messData?._id && user.id !== o.user._id)?.map((item, index) => {
                         return <span key={index}>
                             <img src={item?.user?.avatar?.url || default_avatar} style={{ height: 15, width: 15, borderRadius: '50%', marginRight: 5 }} />
-                        </span> 
+                        </span>
                     })}
                 </div>
             </div>
@@ -163,17 +163,18 @@ export default function Conversation({ socket }) {
         input.style.display = 'none';
 
         // Xử lý sự kiện chọn file
-        input.addEventListener('change', function (event) {
+        input.addEventListener('change', async function (event) {
             const selectedFile = event.target.files[0];
-
-            // Xử lý thông tin file ở đây
-            console.log('Đã chọn file:', selectedFile);
-            const reader = new FileReader();
-
-            reader.onload = () => {
-                const base64Data = reader.result;
-                console.log('base64Data', base64Data);
-                if (selectedFile.type?.includes('image')) {
+            const formData = new FormData();
+            if (selectedFile.type?.includes('image')) {
+                formData.append("image", selectedFile);
+            }
+            if (selectedFile.type?.includes('video')) {
+                formData.append("video", selectedFile);
+            }
+            userService.uploadMedia({ formData }).then((result) => {
+                console.log('result', result);
+                if (result?.data?.image?.length > 0) {
                     socket && socket.emit('new_message',
                         {
                             conversationId: conversation?._id,
@@ -181,12 +182,12 @@ export default function Conversation({ socket }) {
                             token: user.token,
                             type: 'image',
                             content: {
-                                body: [`${base64Data}`]
+                                body: [`${result?.data?.image[0]?.url}`]
                             }
                         }
                     );
                 }
-                else if (selectedFile.type?.includes('video')) {
+                if (result?.data?.video?.length > 0) {
                     socket && socket.emit('new_message',
                         {
                             conversationId: conversation?._id,
@@ -194,17 +195,15 @@ export default function Conversation({ socket }) {
                             token: user.token,
                             type: 'video',
                             content: {
-                                body: [`${base64Data}`]
+                                body: [`${result?.data?.video[0]?.url}`]
                             }
                         }
                     );
                 }
-            };
 
-            reader.readAsDataURL(selectedFile);
-
-
-            // Xóa thẻ input khỏi DOM
+            }).catch(e => {
+                console.log(e);
+            })
             input.remove();
         });
 
