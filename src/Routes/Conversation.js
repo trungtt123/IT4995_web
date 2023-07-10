@@ -18,6 +18,7 @@ import { callAction } from "../Redux/callSlice";
 import { updateConversation } from "../Redux/conversationSlice";
 import axios from "../setups/custom_axios";
 import userService from "../Services/Api/userService";
+import ConfirmModal from "../Components/ConfirmModal";
 function MessageItem(props) {
     const { user } = useSelector(
         (state) => state.auth
@@ -122,10 +123,13 @@ export default function Conversation({ socket }) {
     const [participants, setParticipants] = useState([]);
     //tin nhắn muốn gửi
     const [textMessage, setTextMessage] = useState("");
+    const [isShowModal, setIsShowModal] = useState(false);
+
     const [news, setNews] = useState();
     const [lastSeenMessage, setLastSeenMessage] = useState();
     const mess = useRef();
     const messageEndRef = useRef(null);
+    const textNoti = useRef("");
 
     const handleSendMessage = (mess) => {
         socket && socket.emit('new_message', {
@@ -166,6 +170,20 @@ export default function Conversation({ socket }) {
         input.addEventListener('change', async function (event) {
             const selectedFile = event.target.files[0];
             const formData = new FormData();
+            console.log('selectedFile', selectedFile);
+            let fileSize = +selectedFile?.size / (1024 * 1024);
+            const fileExtension = '.' + selectedFile.name.split('.').pop();
+            const supportedExtensions = ['.png', '.jpeg', '.jpg', '.mp4'];
+            if (!supportedExtensions.includes(fileExtension)) {
+                textNoti.current = 'Ứng dụng không hỗ trợ định dạng file này';
+                setIsShowModal(true);
+                return;
+            }
+            if (fileSize > 10) {
+                textNoti.current = 'Không thể gửi file lớn hơn 10mb';
+                setIsShowModal(true);
+                return;
+            }
             if (selectedFile.type?.includes('image')) {
                 formData.append("image", selectedFile);
             }
@@ -272,6 +290,14 @@ export default function Conversation({ socket }) {
     console.log('conversation', conversation);
     return (
         <>
+            {
+                isShowModal && <ConfirmModal
+                    isShowReject={false}
+                    onAccept={() => setIsShowModal(false)}
+                    // onReject={() => window.location.reload()}
+                    primary={textNoti.current}
+                />
+            }
             {showAddMember && <ModalAddMember conversation={conversation}
                 socket={socket} closeModal={() => setShowAddMember(false)} />}
             {isCall && <Room user={user}
