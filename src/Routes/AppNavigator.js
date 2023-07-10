@@ -18,7 +18,6 @@ import RequestFriend from './RequestFriend';
 import OtherProfile from './OtherProfile';
 import CallNotification from './CallNotification';
 import { createHashHistory } from 'history';
-import { callAction } from '../Redux/callSlice';
 import ConversationInfo from './ConversationInfo';
 const socket = io(`${CHAT_SERVER_URL}`);
 const customHistory = createHashHistory();

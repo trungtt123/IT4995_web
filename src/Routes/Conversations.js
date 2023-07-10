@@ -24,7 +24,6 @@ export default function Conversations({ socket }) {
     const { user } = useSelector(
         (state) => state.auth
     );
-    console.log('user', user);
     const goToConversation = (conversation) => {
         history.push({
             pathname: `/conversation/${conversation._id}`,

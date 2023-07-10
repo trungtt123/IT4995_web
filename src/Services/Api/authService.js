@@ -5,7 +5,6 @@ const login = async (phonenumber, password) => {
   return axios.post(`/auth/login?phonenumber=${phonenumber}&password=${password}`);
 };
 const signup = async (phonenumber, password, name, birthday,) => {
-  console.log(password, phonenumber);
   return axios.post(`/auth/signup?phonenumber=${phonenumber}&password=${password}&name=${name}&birthday=${birthday}`);
 };
 const changePassword = async (password, newPassword) => {

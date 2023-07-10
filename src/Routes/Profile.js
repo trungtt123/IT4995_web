@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { memo, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { login } from "../Redux/authSlice";
 import { OutlinedInput, TextField, Button } from "@mui/material";
@@ -22,8 +22,7 @@ import soict from '../Assets/images/soict.png';
 import SyncLockIcon from '@mui/icons-material/SyncLock';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { delay } from "../Services/Helper/common";
-const Profile = (props) => {
-    const dispatch = useDispatch();
+const Profile = memo((props) => {
     const history = useHistory();
     const { user } = useSelector(
         (state) => state.auth
@@ -211,6 +210,6 @@ const Profile = (props) => {
             </div>
         </>
     );
-};
+});
 
 export default Profile;

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, memo } from "react";
+import React, { useEffect, useRef, useState, memo, useMemo } from "react";
 import default_avatar from '../Assets/images/default_avatar.jpg'
 import { useHistory, useLocation } from "react-router-dom";
 import ListItemText from '@mui/material/ListItemText';
@@ -16,6 +16,9 @@ import { getConversation } from "../Redux/conversationSlice";
 const ConversationInfo = memo(({ socket, conversation }) => {
     const history = useHistory();
     const [modeEditName, setModeEditName] = useState(false);
+    const avtColor = useMemo(() => {
+        return getRandomColor();
+    }, [])
     const [conversationName, setConversationName] = useState(conversation?.conversationName);
     const [validate, setValidate] = useState({});
     const dispatch = useDispatch();
@@ -59,7 +62,6 @@ const ConversationInfo = memo(({ socket, conversation }) => {
         if (!conversation) history.push('/');
         setModeEditName(false);
     }, [conversation])
-    console.log('user', user);
     useEffect(() => {
         const handleConversationRemoveMember = (result) => {
             console.log(result);
@@ -111,7 +113,7 @@ const ConversationInfo = memo(({ socket, conversation }) => {
             <div style={{ marginTop: 60, padding: '0 10px' }}>
                 <div style={{ textAlign: 'center' }}>
                     <Avatar style={{
-                        backgroundColor: getRandomColor(), margin: '0 auto', width: 100,
+                        backgroundColor: avtColor, margin: '0 auto', width: 100,
                         height: 100, fontSize: 40
                     }}>
                         {conversation?.conversationName && conversation?.conversationName[0]}

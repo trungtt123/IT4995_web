@@ -62,9 +62,9 @@ const Home = ({ socket }) => {
                 tabIndex !== undefined &&
                 <>
                     <div style={{ marginBottom: 60 }}>
-                        {tabIndex === 0 && <Friend />}
-                        {tabIndex === 1 && <Conversations socket={socket} />}
-                        {tabIndex === 2 && <Profile />}
+                        {<div style={{display: tabIndex === 0 ? '' : 'none'}}><Friend /></div>}
+                        {<div style={{display: tabIndex === 1 ? '' : 'none'}}><Conversations socket={socket} /> </div>}
+                        {<div style={{display: tabIndex === 2 ? '' : 'none'}}><Profile /></div>}
                     </div>
 
                     <div style={{ position: 'fixed', bottom: -1, width: '100%', height: 60 }}>

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, memo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getTextWithIcon } from "../Services/Helper/common";
 import default_avatar from '../Assets/images/default_avatar.jpg'
@@ -19,7 +19,7 @@ import { updateConversation } from "../Redux/conversationSlice";
 import axios from "../setups/custom_axios";
 import userService from "../Services/Api/userService";
 import ConfirmModal from "../Components/ConfirmModal";
-function MessageItem(props) {
+const MessageItem = memo((props) => {
     const { user } = useSelector(
         (state) => state.auth
     );
@@ -100,11 +100,11 @@ function MessageItem(props) {
                 </div>
             </div>
         );
-}
+})
 function NewMember({ sender, newMember }) {
     return <div style={{ fontSize: 14, textAlign: 'center' }}>{`${sender?.name} đã thêm ${newMember?.name}`}</div>
 }
-export default function Conversation({ socket }) {
+const Conversation = memo(({ socket }) => {
     const dispatch = useDispatch();
     const location = useLocation();
     const history = useHistory();
@@ -158,7 +158,7 @@ export default function Conversation({ socket }) {
         history.push('/conversationInfo');
     }
     const scrollToBottom = () => {
-        messageEndRef.current.scrollIntoView({ behavior: 'smooth' });
+        messageEndRef.current.scrollIntoView();
     }
     const handleSelectMedia = () => {
         console.log('run');
@@ -287,7 +287,7 @@ export default function Conversation({ socket }) {
     useEffect(() => {
         if (!conversationId) history.push('/')
     }, [conversationId]);
-    console.log('conversation', conversation);
+    console.log('conversation', conversation)
     return (
         <>
             {
@@ -383,5 +383,5 @@ export default function Conversation({ socket }) {
             </div>
         </>
     );
-}
-
+})
+export default Conversation;
