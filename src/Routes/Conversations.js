@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { _getCache, _setCache, getTimeCreateConversation, getRandomColor } from "../Services/Helper/common";
 import { useDispatch, useSelector } from "react-redux";
 import ModalCreateConversation from "../Components/ModalCreateConversation";
@@ -14,13 +14,17 @@ import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
 import CallIcon from '@mui/icons-material/Call';
 import InfoIcon from '@mui/icons-material/Info';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { TEXT_COMMON } from "../Services/Helper/constant";
+import ConfirmModal from "../Components/ConfirmModal";
 
 export default function Conversations({ socket }) {
     const dispatch = useDispatch();
     const history = useHistory();
     const [conversations, setConversations] = useState([]);
     const [showModalCreateConversation, setShowModalCreateConversation] = useState(false);
+    const [isShowModal, setIsShowModal] = useState(false);
     const [keyword, setKeyword] = useState('');
+    const textNoti = useRef('');
     const { user } = useSelector(
         (state) => state.auth
     );
@@ -46,8 +50,21 @@ export default function Conversations({ socket }) {
         socket.on('conversation_change', (result) => {
             if (isMounted) { // Kiểm tra component còn tồn tại trước khi cập nhật state
                 if (result.code === '1000') {
-                    console.log('123');
                     setConversations(result.data);
+                }
+            }
+        });
+        // Lắng nghe sự kiện create_conversation
+        socket.on('create_conversation', (result) => {
+            console.log('result', result);
+            if (isMounted) { // Kiểm tra component còn tồn tại trước khi cập nhật state
+                if (result.code === '1000') {
+                    textNoti.current = TEXT_COMMON.CREATE_NEW_CONVERSATION_SUCCESSFUL_LOWERCASE;
+                    setIsShowModal(true);
+                }
+                else {
+                    textNoti.current = TEXT_COMMON.CREATE_NEW_CONVERSATION_FAIL_LOWERCASE;
+                    setIsShowModal(true);
                 }
             }
         });
@@ -55,18 +72,26 @@ export default function Conversations({ socket }) {
         return () => {
             isMounted = false; // Đánh dấu component đã unmount
             socket.off('conversation_change'); // Huỷ đăng ký sự kiện conversation_change
+            socket.off('create_conversation'); // Huỷ đăng ký sự kiện create_conversation
         };
     }, [socket, user.id, user.token]);
 
     return (
         <>
+            {
+                isShowModal && <ConfirmModal
+                    isShowReject={false}
+                    onAccept={() => setIsShowModal(false)}
+                    primary={textNoti.current}
+                />
+            }
             {showModalCreateConversation
                 && <ModalCreateConversation socket={socket}
                     closeModal={() => setShowModalCreateConversation(false)} />}
             <div style={{ textAlign: 'center' }}>
                 <Button style={{ position: 'fixed', bottom: 80, right: 10, width: 60, height: 60, borderRadius: '50%', zIndex: 1000, fontSize: 11 }}
                     onClick={() => setShowModalCreateConversation(true)}
-                    variant="contained">TẠO MỚI</Button>
+                    variant="contained">{TEXT_COMMON.CREATE_UPPERCASE}</Button>
             </div>
             <div style={{ marginTop: 0 }}>
                 <SearchBar onSearch={(keyword) => handleSearch(keyword)} />

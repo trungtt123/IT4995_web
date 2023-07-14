@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from "react-redux";
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -9,7 +9,12 @@ const ModalCreateConversation = ({ socket, closeModal }) => {
     (state) => state.auth
   );
   const [name, setName] = useState('');
+  const [textNoti, setTextNoti] = useState('');
   const handleCreateNewConversation = () => {
+    if (name?.length > 200){
+      setTextNoti('Tên cuộc hội thoại không được vượt quá 200 ký tự');
+      return;
+    }
     socket && socket.emit('create_conversation', {
       userId: user.id,
       conversationName: name,
@@ -25,7 +30,6 @@ const ModalCreateConversation = ({ socket, closeModal }) => {
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-
         <Box sx={style}>
           <Grid
             container
@@ -34,12 +38,13 @@ const ModalCreateConversation = ({ socket, closeModal }) => {
             alignItems="center"
             justifyContent="center"
           >
-           <Grid item>
-              <TextField sx={{mb: 1}}
-               id="outlined-basic" label="Tên cuộc hội thoại" variant="outlined" onChange={(e) => setName(e.target.value)} />
+            <Grid item>
+              <TextField sx={{ mb: 1 }}
+                id="outlined-basic" label="Tên cuộc hội thoại" variant="outlined" onChange={(e) => setName(e.target.value)} />
+              <div style={{color: 'red', fontSize: 12, width: 220}}>{textNoti}</div>
               <div>
-                <Button sx={{width: '100%'}}
-                onClick={() => handleCreateNewConversation()}
+                <Button sx={{ width: '100%' }}
+                  onClick={() => handleCreateNewConversation()}
                   variant="contained">Gửi</Button>
               </div>
             </Grid>

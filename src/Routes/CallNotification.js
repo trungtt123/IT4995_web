@@ -10,6 +10,7 @@ import PhoneEnabledIcon from '@mui/icons-material/PhoneEnabled';
 import { useHistory, useLocation } from "react-router-dom";
 import Room from "./Room";
 import { callAction } from "../Redux/callSlice";
+import { TEXT_COMMON } from "../Services/Helper/constant";
 const CallNotification = ({ roomCall, socket }) => {
     const dispatch = useDispatch();
     const { user } = useSelector(
@@ -54,7 +55,7 @@ const CallNotification = ({ roomCall, socket }) => {
             {
                 (senderId !== user.id) && <div style={{ backgroundColor: 'black', height: '100vh', display: 'flex',
                 justifyContent: 'end', flexDirection: 'column' }}>
-                    <div style={{ textAlign: 'center', color: 'white', marginBottom: '50%' }}>{`${conversationName} đang gọi...`}</div>
+                    <div style={{ textAlign: 'center', color: 'white', marginBottom: '50%' }}>{`${conversationName} ${TEXT_COMMON.CALLING_LOWERCASE}...`}</div>
                     <div style={{ display: 'flex', flexDirection: 'row', textAlign: 'center', padding: '20%', justifyContent: 'space-between' }}>
                         <div onClick={(e) => handleCancelCall()} style={{
                             borderRadius: 20,
