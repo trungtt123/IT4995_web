@@ -107,15 +107,22 @@ const ModalAddMember = ({ socket, conversation, closeModal }) => {
           >
             <Grid item>
               <TextField sx={{ mb: 1 }} value={phoneNumber}
-                label="Người dùng" variant="outlined" onChange={(e) => handleChangeText(e.target.value)} />
+                inputProps={{
+                  pattern: '[0-9]*', // Chỉ chấp nhận các kí tự số
+                  inputMode: 'numeric', // Hiển thị bàn phím số trên các thiết bị di động
+                  maxLength: 20, // Giới hạn độ dài tối đa
+                }}
+                label="Số điện thoại" variant="outlined" onChange={(e) => handleChangeText(e.target.value)} />
               <div style={{ marginBottom: 5 }}>
-                {filterData?.map((item, index) => {
-                  return <div key={item.id} style={{ display: 'flex', flexDirection: 'row' }} onClick={(e) => handleSelectUser(item?.phoneNumber)}>
-                    <Avatar style={{ marginRight: 10 }} src={item?.avatar} />
-                    <ListItemText primary={item?.username} primaryTypographyProps={{ style: { fontWeight: 'bold', marginTop: 2 } }}
-                    />
-                  </div>
-                })}
+                <div style={{maxHeight: 100, overflow: 'scroll'}}>
+                  {filterData?.map((item, index) => {
+                    return <div key={item.id} style={{ display: 'flex', flexDirection: 'row' }} onClick={(e) => handleSelectUser(item?.phoneNumber)}>
+                      <Avatar style={{ marginRight: 10 }} src={item?.avatar} />
+                      <ListItemText primary={item?.username} primaryTypographyProps={{ style: { fontWeight: 'bold', marginTop: 2 } }}
+                      />
+                    </div>
+                  })}
+                </div>
               </div>
               {status === 1 && <div style={{ color: '#1976d2', fontSize: 14 }}>Thêm thành công</div>}
               {status === 2 && <div style={{ color: 'red', fontSize: 14 }}>{statusDes}</div>}

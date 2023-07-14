@@ -70,8 +70,8 @@ const Friend = ({ socket }) => {
                     onClick={() => setIsShowModalAddFriend(true)}
                     variant="contained">Thêm bạn</Button>
             </div>
-            <div style={{ margin: '0 10px' }}>
-                <div style={{width: '100%', display: 'grid', gridTemplateColumns: 'auto auto'}}>
+            <div style={{ margin: '0 8px' }}>
+                <div style={{width: '100%', display: 'grid', gridTemplateColumns: 'auto auto', overflow: 'hidden'}}>
                     {
                         friends?.filter((o) => o.username.includes(keyword))?.map((item, index) => {
                             let secondary = +item?.same_friends + " bạn chung";
