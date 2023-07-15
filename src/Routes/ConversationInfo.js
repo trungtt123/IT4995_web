@@ -41,7 +41,7 @@ const ConversationInfo = memo(({ socket, conversation }) => {
         )
     }
     const handleUpdateConversationName = () => {
-        if (!conversationName){
+        if (!conversationName) {
             return;
             let tmp = JSON.parse(JSON.stringify(validate));
             tmp['conversationName'] = {
@@ -73,9 +73,9 @@ const ConversationInfo = memo(({ socket, conversation }) => {
                         userId: user.id,
                         token: user.token,
                         type: 'notification',
-                        content:{
+                        content: {
                             body: `${removeMember?.name} đã rời đoạn chat`
-                        } 
+                        }
                     }
                 );
             }
@@ -119,16 +119,21 @@ const ConversationInfo = memo(({ socket, conversation }) => {
                         {conversation?.conversationName && conversation?.conversationName[0]}
                     </Avatar>
                     <div style={{ marginBottom: 10, marginTop: 5, display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
-                        <span style={{ display: !modeEditName ? '' : 'none', }}>{conversation?.conversationName}</span>
+                        <span style={{
+                            display: !modeEditName ? '' : 'none', whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            width: 200
+                        }}>{conversation?.conversationName}</span>
                         <input type="text" value={conversationName}
-                        style={{
-                            border: 'none',
-                            outline: 'none',
-                            display: modeEditName ? '' : 'none',
-                            fontSize: 17,
-                            width: 150,
-                            borderRadius: 5
-                        }} onChange={(e) => setConversationName(e.target.value)}
+                            style={{
+                                border: 'none',
+                                outline: 'none',
+                                display: modeEditName ? '' : 'none',
+                                fontSize: 17,
+                                width: 150,
+                                borderRadius: 5
+                            }} onChange={(e) => setConversationName(e.target.value)}
                         />
                         <div style={{ marginLeft: 20 }}>
                             {
