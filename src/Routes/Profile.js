@@ -14,7 +14,7 @@ import axios from '../setups/custom_axios';
 import { REST_API_URL } from "../Services/Helper/constant";
 import ConfirmModal from "../Components/ConfirmModal";
 import userService from "../Services/Api/userService";
-import { _setCache, getTimeUnixTimeStamp } from "../Services/Helper/common";
+import { _setCache, getTimeUnixTimeStamp, removeAccents } from "../Services/Helper/common";
 import CameraAltIcon from '@mui/icons-material/CameraAlt';
 import SettingsIcon from '@mui/icons-material/Settings';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
@@ -41,6 +41,7 @@ const Profile = memo((props) => {
     const [isShowModal, setIsShowModal] = useState(false);
     const [expand, setExpand] = useState(false);
     const inputAvatar = useRef();
+    const textNoti = useRef();
     const modalExpand = useRef();
     const iconOpenModal = useRef();
     const handleChangeAvatar = (e) => {
@@ -53,6 +54,14 @@ const Profile = memo((props) => {
             setError('Hãy nhập họ và tên');
             return;
         }
+        else {
+            let regex = /^[a-zA-Z\s]+$/;
+            if (!regex.test(removeAccents(name))) {
+                setError('Họ và tên chỉ được chứa chữ cái Latin');
+                return;       
+            }
+        }
+
         if (pass !== confirmPass) {
             setError('Xác nhận mật khẩu không khớp');
             return;
@@ -63,9 +72,17 @@ const Profile = memo((props) => {
         const dateString = birthday.$y + "-" + (birthday.$M + 1) + "-" + birthday.$D;
         const formData = new FormData();
         formData.append("avatar", fileAvatar);
-        axios.post(`/user/set_user_info?username=${name}&birthday=${dateString}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } }).then(() => {
+        axios.post(`/user/set_user_info?username=${name}&birthday=${dateString}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } }).then((result) => {
+            textNoti.current = 'Cập nhật thành công';
             setIsShowModal(true);
+            const userData = result.data;
+            initUserData.current = userData;
+            setName(userData.username);
+            setAvatar(userData.avatar);
+            setBirthday(dayjs(new Date(getTimeUnixTimeStamp(userData.birthday))));
         }).catch(e => {
+            textNoti.current = 'Có lỗi xảy ra';
+            setIsShowModal(true);
             console.error(e);
         })
     }
@@ -116,9 +133,10 @@ const Profile = memo((props) => {
             {
                 isShowModal && <ConfirmModal
                     isShowReject={false}
-                    onAccept={() => history.push('/')}
-                    onReject={() => window.location.reload()}
-                    primary={'Cập nhật thành công'}
+                    onAccept={() => {
+                        setIsShowModal(false);
+                    }}
+                    primary={textNoti.current}
                 />
             }
             <div style={{ position: 'relative', width: '100%', zIndex: 9999 }}>
@@ -160,14 +178,14 @@ const Profile = memo((props) => {
                     <TextField
                         value={phone}
                         style={{ width: '100%' }}
-                        id="outlined-basic" label="Số điện thoại" variant="outlined"
+                        label="Số điện thoại" variant="outlined"
                         onChange={(e) => setPhone(e.target.value)} disabled />
                 </div>
                 <div style={{ margin: 10 }}>
                     <TextField
                         value={name}
                         style={{ width: '100%' }}
-                        id="outlined-basic" label="Họ và tên" variant="outlined"
+                        label="Họ và tên" variant="outlined"
                         onChange={(e) => setName(e.target.value)} />
                 </div>
                 <LocalizationProvider dateAdapter={AdapterDayjs} >
@@ -197,7 +215,7 @@ const Profile = memo((props) => {
                 <div style={{ fontSize: 15, color: 'red', textAlign: 'left', marginLeft: 10 }}>{error}</div>
                 {
                     initUserData.current.username
-                    && (initUserData.current.username !== name
+                    && (initUserData.current.username !== name.trim()
                         || JSON.stringify(dayjs(new Date(getTimeUnixTimeStamp(initUserData.current.birthday)))) !== JSON.stringify(birthday)
                         || avatar != initUserData.current.avatar
                     )

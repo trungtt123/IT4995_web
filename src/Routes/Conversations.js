@@ -121,7 +121,12 @@ export default function Conversations({ socket }) {
                                 {item.conversationName[0]}
                             </Avatar>
                         </ListItemAvatar>
-                        <ListItemText primary={item.conversationName} primaryTypographyProps={{ style: { fontWeight: 'bold' } }}
+                        <ListItemText primary={item.conversationName} primaryTypographyProps={{
+                            style: {
+                                fontWeight: 'bold', width: 200, textOverflow: 'ellipsis',
+                                whiteSpace: 'nowrap', overflow: 'hidden'
+                            }
+                        }}
                             secondary={secondary} />
                         {chuaXem > 0 && <div style={{
                             marginRight: 10,
@@ -151,7 +156,6 @@ export default function Conversations({ socket }) {
                         </div>}
                     </ListItem>
                 })}
-
                 {/* <div 
                         style={{ padding: 5, height: 100, border: 'solid 1px #ccc', margin: 5, borderRadius: 20 }}>
                         <div>{item.conversationName}</div>

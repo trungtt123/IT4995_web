@@ -312,14 +312,17 @@ const Conversation = memo(({ socket }) => {
                     <div style={{
                         marginTop: 13, marginLeft: 10,
                         textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap', width: '50%',
-                        // overflow: 'hidden',
+                        whiteSpace: 'nowrap', width: 200,
+                        overflow: 'hidden',
                         position: 'relative'
                     }}>
                         <ArrowBackIcon style={{ marginRight: 10 }}
                             onClick={() => handleBack()} />
-
-                        <span style={{ position: 'absolute', top: -2 }}>{conversation?.conversationName}</span>
+                        <span style={{
+                            position: 'fixed', marginTop: -2, textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap', width: 200,
+                            overflow: 'hidden'
+                        }}>{conversation?.conversationName}</span>
                     </div>
                     <div style={{ position: 'relative' }}>
                         <PersonAddAlt1Icon style={{ position: 'absolute', top: 13, right: 90 }}

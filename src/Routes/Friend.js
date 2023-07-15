@@ -71,11 +71,11 @@ const Friend = ({ socket }) => {
                     variant="contained">Thêm bạn</Button>
             </div>
             <div style={{ margin: '0 8px' }}>
-                <div style={{width: '100%', display: 'grid', gridTemplateColumns: 'auto auto', overflow: 'hidden'}}>
+                <div style={{ width: '100%', display: 'grid', gridTemplateColumns: 'auto auto', overflow: 'hidden' }}>
                     {
                         friends?.filter((o) => o.username.includes(keyword))?.map((item, index) => {
                             let secondary = +item?.same_friends + " bạn chung";
-                            return <div key={item.id} style={{padding: 3}}>
+                            return <div key={item.id} style={{ padding: 3 }}>
                                 <div style={{ boxShadow: '2px 2px 4px rgba(0,0,0,0.1)', backgroundColor: 'white', borderRadius: 10, height: 80, display: 'flex', alignItems: 'center' }}
                                     onClick={() => goToFriendProfile(item.id)}>
                                     <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', width: '150px' }}>
@@ -98,6 +98,13 @@ const Friend = ({ socket }) => {
                             </div>
                         })
                     }
+                    <div style={{ padding: 3, visibility: 'hidden' }}>
+                        <div style={{ boxShadow: '2px 2px 4px rgba(0,0,0,0.1)', backgroundColor: 'white', borderRadius: 10, height: 80, display: 'flex', alignItems: 'center' }}>
+                            <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', width: '150px' }}>
+                                
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </>
