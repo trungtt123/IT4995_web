@@ -50,6 +50,7 @@ const Profile = memo((props) => {
         setAvatar(URL.createObjectURL(e.target.files[0]));
     }
     const handleSubmit = () => {
+        setError('');
         if (!name) {
             setError('Hãy nhập họ và tên');
             return;
