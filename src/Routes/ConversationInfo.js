@@ -123,7 +123,7 @@ const ConversationInfo = memo(({ socket, conversation }) => {
                             display: !modeEditName ? '' : 'none', whiteSpace: 'nowrap',
                             overflow: 'hidden',
                             textOverflow: 'ellipsis',
-                            width: 200
+                            maxWidth: 200
                         }}>{conversation?.conversationName}</span>
                         <input type="text" value={conversationName}
                             style={{
