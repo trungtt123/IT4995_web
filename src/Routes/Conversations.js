@@ -102,7 +102,7 @@ export default function Conversations({ socket }) {
                     let userTmp = item.participants.find(o => o.user == user.id);
                     let chuaXem = (item?.messages?.length - 1) - userTmp.lastSeen.index;
                     let lastMessage = item?.messages[item?.messages.length - 1];
-                    if (lastMessage?.type === 'text')
+                    if (lastMessage?.type === 'text' || lastMessage?.type === 'notification')
                         secondary = lastMessage?.content?.body;
                     else if (lastMessage?.type === 'image') {
                         secondary = 'Hình ảnh';
@@ -127,7 +127,12 @@ export default function Conversations({ socket }) {
                                 whiteSpace: 'nowrap', overflow: 'hidden'
                             }
                         }}
-                            secondary={secondary} />
+                            secondary={secondary} secondaryTypographyProps={{
+                                style: {
+                                    width: 200, textOverflow: 'ellipsis',
+                                    whiteSpace: 'nowrap', overflow: 'hidden'
+                                }
+                            }} />
                         {chuaXem > 0 && <div style={{
                             marginRight: 10,
                             width: 12,
