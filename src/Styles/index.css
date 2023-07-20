@@ -149,7 +149,7 @@ main {
 
 @keyframes slideIn {
 	from {
-		transform: translateY(400%);
+		transform: translateY(500%);
 	}
 
 	to {
@@ -157,6 +157,6 @@ main {
 	}
 }
 
-#showEmoji {
+.showEmoji {
 	animation: slideIn 2s forwards;
 }

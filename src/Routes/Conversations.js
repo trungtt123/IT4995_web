@@ -16,6 +16,7 @@ import InfoIcon from '@mui/icons-material/Info';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { TEXT_COMMON } from "../Services/Helper/constant";
 import ConfirmModal from "../Components/ConfirmModal";
+import { PullDownContent, ReleaseContent, RefreshContent, PullToRefresh } from "react-js-pull-to-refresh";
 
 export default function Conversations({ socket }) {
     const dispatch = useDispatch();
@@ -36,6 +37,14 @@ export default function Conversations({ socket }) {
     }
     const handleSearch = (keyword) => {
         setKeyword(keyword)
+    }
+    const simplePromiseFunction = () => {
+        return new Promise((resolve, reject) => {
+            setTimeout(() => {
+                const randomNumber = Math.random();
+                resolve(randomNumber);
+            }, 2000); // Giả lập một khoảng thời gian 2 giây
+        });
     }
     useEffect(() => {
         let isMounted = true; // Thêm biến isMounted để kiểm tra component có còn tồn tại hay không
@@ -96,76 +105,88 @@ export default function Conversations({ socket }) {
             <div style={{ marginTop: 0 }}>
                 <SearchBar onSearch={(keyword) => handleSearch(keyword)} />
             </div>
-            <List sx={{ width: '100%' }}>
-                {conversations?.filter((o) => o.conversationName.includes(keyword))?.map((item, index) => {
-                    let secondary = '';
-                    let userTmp = item.participants.find(o => o.user == user.id);
-                    let chuaXem = (item?.messages?.length - 1) - userTmp.lastSeen.index;
-                    let lastMessage = item?.messages[item?.messages.length - 1];
-                    if (lastMessage?.type === 'text' || lastMessage?.type === 'notification')
-                        secondary = lastMessage?.content?.body;
-                    else if (lastMessage?.type === 'image') {
-                        secondary = 'Hình ảnh';
-                    }
-                    else if (lastMessage?.type === 'video') {
-                        secondary = 'Video';
-                    }
-                    if (!secondary) secondary = getTimeCreateConversation(item?.createdAt);
-                    return <ListItem style={{ boxShadow: '2px 2px 4px rgba(0,0,0,0.1)' }}
-                        key={item._id} onClick={() => goToConversation(item)}
-                        sx={{ bgcolor: 'background.paper', m: 1, width: 'auto', borderRadius: 5, height: 80 }}
-                    >
-                        <ListItemAvatar>
-                            {/* style={{ background: `linear-gradient(to bottom right, ${getRandomColor()}, ${getRandomColor()}, ${getRandomColor()}, #000)`, color: '#fff'}} */}
-                            <Avatar style={{ backgroundColor: getRandomColor() }}>
-                                {item.conversationName[0]}
-                            </Avatar>
-                        </ListItemAvatar>
-                        <ListItemText primary={item.conversationName} primaryTypographyProps={{
-                            style: {
-                                fontWeight: 'bold', width: 200, textOverflow: 'ellipsis',
-                                whiteSpace: 'nowrap', overflow: 'hidden'
+            {/* <PullToRefresh
+                pullDownContent={<div style={{zIndex: 9999}}><PullDownContent height={100}/></div>}
+                // releaseContent={<div>123</div>}
+                refreshContent={<div style={{zIndex: 9999}}><RefreshContent /></div>}
+                pullDownThreshold={100}
+                onRefresh={() => simplePromiseFunction()}
+                triggerHeight={20}
+                startInvisible={true}
+            > */}
+                <div>
+                    <List sx={{ width: '100%' }}>
+                        {conversations?.filter((o) => o.conversationName.includes(keyword))?.map((item, index) => {
+                            let secondary = '';
+                            let userTmp = item.participants.find(o => o.user == user.id);
+                            let chuaXem = (item?.messages?.length - 1) - userTmp.lastSeen.index;
+                            let lastMessage = item?.messages[item?.messages.length - 1];
+                            if (lastMessage?.type === 'text' || lastMessage?.type === 'notification')
+                                secondary = lastMessage?.content?.body;
+                            else if (lastMessage?.type === 'image') {
+                                secondary = 'Hình ảnh';
                             }
-                        }}
-                            secondary={secondary} secondaryTypographyProps={{
-                                style: {
-                                    width: 200, textOverflow: 'ellipsis',
-                                    whiteSpace: 'nowrap', overflow: 'hidden'
-                                }
-                            }} />
-                        {chuaXem > 0 && <div style={{
-                            marginRight: 10,
-                            width: 12,
-                            height: 12,
-                            backgroundColor: 'red',
-                            color: 'white',
-                            borderRadius: '50%',
-                            padding: 5,
-                            position: 'relative'
-                        }}>
-                            {
-                                chuaXem <= 9 ?
-                                    <span style={{ position: 'absolute', left: 8, top: -5 }}>
-                                        <span style={{ fontSize: 12, textAlign: 'center' }}>
-                                            {chuaXem}
-                                        </span>
-
-                                    </span>
-                                    : <span style={{ position: 'absolute', left: 5, top: -4.5 }}>
-                                        <span style={{ fontSize: 12, textAlign: 'center' }}>
-                                            {'9+'}
-                                        </span>
-
-                                    </span>
+                            else if (lastMessage?.type === 'video') {
+                                secondary = 'Video';
                             }
-                        </div>}
-                    </ListItem>
-                })}
-                {/* <div 
+                            if (!secondary) secondary = getTimeCreateConversation(item?.createdAt);
+                            return <ListItem style={{ boxShadow: '2px 2px 4px rgba(0,0,0,0.1)' }}
+                                key={item._id} onClick={() => goToConversation(item)}
+                                sx={{ bgcolor: 'background.paper', m: 1, width: 'auto', borderRadius: 5, height: 80 }}
+                            >
+                                <ListItemAvatar>
+                                    {/* style={{ background: `linear-gradient(to bottom right, ${getRandomColor()}, ${getRandomColor()}, ${getRandomColor()}, #000)`, color: '#fff'}} */}
+                                    <Avatar style={{ backgroundColor: getRandomColor() }}>
+                                        {item.conversationName[0]}
+                                    </Avatar>
+                                </ListItemAvatar>
+                                <ListItemText primary={item.conversationName} primaryTypographyProps={{
+                                    style: {
+                                        fontWeight: 'bold', width: 200, textOverflow: 'ellipsis',
+                                        whiteSpace: 'nowrap', overflow: 'hidden'
+                                    }
+                                }}
+                                    secondary={secondary} secondaryTypographyProps={{
+                                        style: {
+                                            width: 200, textOverflow: 'ellipsis',
+                                            whiteSpace: 'nowrap', overflow: 'hidden'
+                                        }
+                                    }} />
+                                {chuaXem > 0 && <div style={{
+                                    marginRight: 10,
+                                    width: 12,
+                                    height: 12,
+                                    backgroundColor: 'red',
+                                    color: 'white',
+                                    borderRadius: '50%',
+                                    padding: 5,
+                                    position: 'relative'
+                                }}>
+                                    {
+                                        chuaXem <= 9 ?
+                                            <span style={{ position: 'absolute', left: 8, top: -5 }}>
+                                                <span style={{ fontSize: 12, textAlign: 'center' }}>
+                                                    {chuaXem}
+                                                </span>
+
+                                            </span>
+                                            : <span style={{ position: 'absolute', left: 5, top: -4.5 }}>
+                                                <span style={{ fontSize: 12, textAlign: 'center' }}>
+                                                    {'9+'}
+                                                </span>
+
+                                            </span>
+                                    }
+                                </div>}
+                            </ListItem>
+                        })}
+                        {/* <div 
                         style={{ padding: 5, height: 100, border: 'solid 1px #ccc', margin: 5, borderRadius: 20 }}>
                         <div>{item.conversationName}</div>
                         <div>{item?.messages[item?.messages.length - 1]?.content}</div>
                     </div> */}
-            </List>
+                    </List>
+                </div>
+            {/* </PullToRefresh> */}
         </>)
 }

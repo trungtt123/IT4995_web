@@ -115,7 +115,7 @@ class Room extends Component {
         audio: true,
         video: {
           facingMode: {
-            exact: "user"
+            exact: typeCamera
           },
           width: { ideal: 480 },
           height: { ideal: 640 }
@@ -146,7 +146,7 @@ class Room extends Component {
           track.stop();
         }
       });
-      this.setState({ typeCamera: typeCamera });
+      // this.setState({ typeCamera: typeCamera });
       this.getLocalStream({ typeCamera: typeCamera });
     }
     catch (e) {
@@ -320,7 +320,9 @@ class Room extends Component {
       )
       this.socket.on('receive-emoji', data => {
         try {
-          let element = document.getElementById("showEmoji");
+          let container = document.getElementById("containerShowEmoji");
+          let element = document.createElement('div');
+          element.classList.add('showEmoji')
           let emoji = '';
           if (data.emojiName === 'smile') emoji = 'cười haha 😄';
           else if (data.emojiName === 'heart') emoji = 'thả tim ❤️';
@@ -330,10 +332,9 @@ class Room extends Component {
           console.log('data?.senderId', data?.senderId);
           if (this.props?.user?.id === data?.senderId) name = 'Bạn';
           element.innerHTML = `${name} đã ${emoji}`;
-          element.style.display = '';
+          container.append(element);
           element.addEventListener("animationend", function () {
-            // Xóa phần tử khỏi DOM sau khi hiệu ứng kết thúc
-            element.style.display = 'none';
+            element.remove();
           });
         }
         catch (e) {
@@ -642,7 +643,7 @@ class Room extends Component {
         width: '100%',
         backgroundColor: 'black'
       }}>
-        <div id="showEmoji" style={{ zIndex: 10000, color: 'white', position: 'absolute', top: 100, display: 'none', left: 20 }}></div>
+        <div id="containerShowEmoji" style={{ zIndex: 10000, color: 'white', position: 'absolute', top: 100, left: 20 }}></div>
         <div onClick={(e) => {
           this.setState({ expand: !this.state.expand })
         }} style={{
