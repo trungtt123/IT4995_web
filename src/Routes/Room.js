@@ -32,7 +32,8 @@ class Room extends Component {
       muteMyMic: false,
       expand: true,
       showEmoji: false,
-      typeCamera: 'user',
+      cams: [],
+      camIndex: 0,
       status: 'Please wait...',
 
       pc_config: {
@@ -93,37 +94,33 @@ class Room extends Component {
     this.socket = null
     // this.candidates = []
   }
-
-  getLocalStream = ({ typeCamera: typeCamera }) => {
-    try {
-      const success = (stream) => {
-        window.localStream = stream
-        // this.localVideoref.current.srcObject = stream
-        // this.pc.addStream(stream);
-        this.setState({
-          localStream: stream
+  getVideoDevices = () => {
+    return new Promise((resolve, reject) => {
+      navigator.mediaDevices.enumerateDevices()
+        .then((devices) => {
+          const filtered = devices.filter((device) => device.kind === 'videoinput');
+          resolve(filtered);
         })
-
-        this.whoisOnline()
-      }
-
-      // called when getUserMedia() fails - see below
-      const failure = (e) => {
-        console.log('getUserMedia Error: ', e)
-      }
+        .catch((error) => {
+          reject(error);
+        });
+    });
+  }
+  getLocalStream = (device) => {
+    try {
       const constraints = {
         audio: true,
         video: {
-          facingMode: {
-            exact: typeCamera
+          deviceId: {
+            exact: device?.deviceId
           },
           width: { ideal: 480 },
           height: { ideal: 640 }
         }
       }
-      navigator.mediaDevices.getUserMedia(constraints)
-        .then(success)
-        .catch(failure)
+      return navigator.mediaDevices.getUserMedia(constraints)
+      // .then(success)
+      // .catch(failure)
       // navigator.mediaDevices.getDisplayMedia({
       //   video: {
       //     cursor: "always"
@@ -135,19 +132,25 @@ class Room extends Component {
       console.error(e);
     }
   }
-  switchCam = (typeCamera) => {
+  switchCam = async () => {
     try {
-      const tracks = this.state.localStream.getTracks();
-      // Duyệt qua từng track
-      tracks.forEach(track => {
-        // Kiểm tra track có phải là video track không
-        if (track.kind === 'video') {
-          // Dừng track (tắt camera)
-          track.stop();
-        }
+      this.state.localStream.getTracks().forEach(track => track.stop());
+      let camIndex = Math.min((this.state.camIndex + 1) % 2, this.state.cams.length);
+      this.setState({camIndex: camIndex});
+      let newStream = await this.getLocalStream(this.state.cams[camIndex]);
+      this.setState({localStream: newStream});
+      console.log('newStream', newStream);
+      const [videoTrack] = newStream.getVideoTracks();
+      let socketIds = Object.keys(this.state.peerConnections);
+      
+      socketIds.forEach((socketID) => {
+        let pc = this.state.peerConnections[socketID];
+        const sender = pc
+          .getSenders()
+          .find((s) => s.track.kind === videoTrack.kind);
+        console.log("Found sender:", sender);
+        sender.replaceTrack(videoTrack);
       });
-      // this.setState({ typeCamera: typeCamera });
-      this.getLocalStream({ typeCamera: typeCamera });
     }
     catch (e) {
       console.error(e);
@@ -208,17 +211,6 @@ class Room extends Component {
         }
       }
 
-      pc.oniceconnectionstatechange = (e) => {
-        // if (pc.iceConnectionState === 'disconnected') {
-        //   const remoteStreams = this.state.remoteStreams.filter(stream => stream.id !== socketID)
-
-        //   this.setState({
-        //     remoteStream: remoteStreams.length > 0 && remoteStreams[0].stream || null,
-        //   })
-        // }
-
-      }
-
       pc.ontrack = (e) => {
 
         let _remoteStream = null
@@ -253,12 +245,6 @@ class Room extends Component {
           }
           remoteStreams = [...this.state.remoteStreams, remoteVideo]
         }
-
-        // const remoteVideo = {
-        //   id: socketID,
-        //   name: socketID,
-        //   stream: e.streams[0]
-        // }
 
         this.setState(prevState => {
 
@@ -303,10 +289,12 @@ class Room extends Component {
     }
   }
 
-  componentDidMount = () => {
+  componentDidMount = async () => {
     try {
       const { roomId } = this.props;
       console.log('roomId', roomId);
+      let listCam = await this.getVideoDevices();
+      this.setState({ cams: listCam })
       this.state.roomId = roomId;
       // if (!this.state.roomId) window.location.href = '/'
       this.socket = io(
@@ -341,9 +329,17 @@ class Room extends Component {
           console.error(e);
         }
       })
-      this.socket.on('connection-success', data => {
+      this.socket.on('connection-success', async (data) => {
         try {
-          this.getLocalStream({ typeCamera: 'user' })
+
+          let stream = await this.getLocalStream(this.state.cams[this.state.camIndex]);
+          this.setState({
+            localStream: stream
+          })
+
+          this.whoisOnline()
+
+          // called when getUserMedia() fails - see below
 
           // console.log(data.success)
           const status = data.peerCount > 1 ? `Total Connected Peers to room ${this.state.roomId}: ${data.peerCount}` : `Waiting for other peers to connect ${this.state.roomId}`
@@ -681,8 +677,8 @@ class Room extends Component {
           <Video
             videoType='localVideo'
             videoStyles={{
-              width: 120,
-              borderRadius: '10%'
+              width: 200,
+              borderRadius: 20
             }}
             frameStyle={{
               display: 'inline-block',
@@ -758,7 +754,14 @@ class Room extends Component {
             <i onClick={() => this.setState({ muteMyMic: !this.state.muteMyMic })}
               style={{ cursor: 'pointer', padding: 5, fontSize: 25, color: 'white' }} className='material-icons'>{!this.state.muteMyMic && 'mic' || 'mic_off'}</i>
             <i onClick={() => this.setState({ muteMyCamera: !this.state.muteMyCamera })}
-              style={{ cursor: 'pointer', padding: 5, fontSize: 25, color: 'white' }} className='material-icons'>{!this.state.muteMyCamera && 'videocam' || 'videocam_off'}</i>
+              style={{ cursor: 'pointer', padding: 5, fontSize: 25, color: 'white', marginTop: 2 }} className='material-icons'>{!this.state.muteMyCamera && 'videocam' || 'videocam_off'}</i>
+            <div onClick={(e) => this.switchCam()} style={{
+              borderRadius: 20,
+              width: 40,
+              height: 40,
+            }}>
+              <CameraswitchIcon style={{ fontSize: 25, color: 'white', marginTop: 7 }} />
+            </div>
             <div onClick={(e) => { this.setState({ disconnected: true }); }} style={{
               borderRadius: 20,
               width: 40,
@@ -782,3 +785,20 @@ class Room extends Component {
 }
 
 export default Room;
+
+
+// const constraints = {
+//   audio: true,
+//   video: {
+//     deviceId: {
+//       exact: "b4da5ef104ce64f2d578e4ac48b91aa14e9467393d955d4c1fc79982b894ee69"
+//     },
+//     width: { ideal: 480 },
+//     height: { ideal: 640 }
+//   }
+// }
+// async function run (){
+//   let x = await navigator.mediaDevices.getUserMedia(constraints);
+//   console.log(x);
+// }
+// run()

@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import Video from './video'
 
-const perVideoPage = 6;
+const perVideoPage = 2;
 class Videos extends Component {
 
   constructor(props) {
