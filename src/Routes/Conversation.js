@@ -49,8 +49,8 @@ const MessageItem = memo((props) => {
                             wordBreak: 'break-word'
                         }}>
                             {props?.messData?.type === 'text' && props?.messData?.content.body}
-                            {props?.messData?.type === 'image' && <img src={props?.messData?.content.body[0]} style={{ width: 200, borderRadius: 10 }} />}
-                            {props?.messData?.type === 'video' && <video src={props?.messData?.content.body[0]} style={{ width: 200, borderRadius: 10 }} controls />}
+                            {props?.messData?.type === 'image' && <img src={props?.messData?.content.body[0]} style={{ height: 300, borderRadius: 10 }} />}
+                            {props?.messData?.type === 'video' && <video src={props?.messData?.content.body[0]} style={{ height: 300, borderRadius: 10 }} controls />}
                         </span>
                     </div>
                     <div style={{
@@ -88,8 +88,8 @@ const MessageItem = memo((props) => {
                     marginRight: 5
                 }}>
                     {props?.messData?.type === 'text' && props?.messData?.content.body}
-                    {props?.messData?.type === 'image' && <img src={props?.messData?.content.body[0]} style={{ width: 200, borderRadius: 10 }} />}
-                    {props?.messData?.type === 'video' && <video src={props?.messData?.content.body[0]} style={{ width: 200, borderRadius: 10 }} controls />}
+                    {props?.messData?.type === 'image' && <img src={props?.messData?.content.body[0]} style={{ height: 300, borderRadius: 10 }} />}
+                    {props?.messData?.type === 'video' && <video src={props?.messData?.content.body[0]} style={{ height: 300, borderRadius: 10 }} controls />}
                 </span>
                 <div style={{
                     alignSelf: 'flex-end',
@@ -293,7 +293,6 @@ const Conversation = memo(({ socket }) => {
     useEffect(() => {
         if (!conversationId) history.push('/')
     }, [conversationId]);
-    console.log('conversation', conversation)
     return (
         <>
             {
@@ -340,7 +339,7 @@ const Conversation = memo(({ socket }) => {
                     </div>
                 </div>
                 <div style={{ width: "100%", marginTop: 50 }}>
-                    <div style={{ overflow: 'hidden', paddingTop: 20, marginBottom: 200 }}>
+                    <div id="messageContainer" style={{ overflow: 'hidden', paddingTop: 20, marginBottom: 200 }}>
                         {listMessage.map((e, index) => {
                             if (e?.type === 'notification') {
                                 return <div style={{

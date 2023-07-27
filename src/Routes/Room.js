@@ -11,6 +11,7 @@ import EmojiEmotionsIcon from '@mui/icons-material/EmojiEmotions';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import PanToolIcon from '@mui/icons-material/PanTool';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import RadioButtonCheckedIcon from '@mui/icons-material/RadioButtonChecked';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Draggable from '../Components/draggable'
@@ -32,6 +33,7 @@ class Room extends Component {
       muteMyMic: false,
       expand: true,
       showEmoji: false,
+      recordedScreen: false,
       cams: [],
       camIndex: 0,
       status: 'Please wait...',
@@ -134,18 +136,18 @@ class Room extends Component {
   }
   stopCamera = async (type) => {
     try {
-      if (type){
+      if (type) {
         this.state.localStream.getTracks().forEach(track => track.stop());
-        this.setState({muteMyCamera: true});
+        this.setState({ muteMyCamera: true });
       }
       else {
         let newStream = await this.getLocalStream(this.state.cams[this.state.camIndex]);
-        this.setState({localStream: newStream});
-        this.setState({muteMyCamera: false});
+        this.setState({ localStream: newStream });
+        this.setState({ muteMyCamera: false });
         console.log('newStream', newStream);
         const [videoTrack] = newStream.getVideoTracks();
         let socketIds = Object.keys(this.state.peerConnections);
-        
+
         socketIds.forEach((socketID) => {
           let pc = this.state.peerConnections[socketID];
           const sender = pc
@@ -156,7 +158,7 @@ class Room extends Component {
         });
       }
     }
-    catch (e){
+    catch (e) {
 
     }
   }
@@ -164,13 +166,13 @@ class Room extends Component {
     try {
       this.state.localStream.getTracks().forEach(track => track.stop());
       let camIndex = Math.min((this.state.camIndex + 1) % 2, this.state.cams.length);
-      this.setState({camIndex: camIndex});
+      this.setState({ camIndex: camIndex });
       let newStream = await this.getLocalStream(this.state.cams[camIndex]);
-      this.setState({localStream: newStream});
+      this.setState({ localStream: newStream });
       console.log('newStream', newStream);
       const [videoTrack] = newStream.getVideoTracks();
       let socketIds = Object.keys(this.state.peerConnections);
-      
+
       socketIds.forEach((socketID) => {
         let pc = this.state.peerConnections[socketID];
         const sender = pc
@@ -182,6 +184,44 @@ class Room extends Component {
     }
     catch (e) {
       console.error(e);
+    }
+  }
+  recordScreen = async (type) => {
+    try {
+      if (type) {
+        const stream = await navigator.mediaDevices.getDisplayMedia({
+          video: true,
+          audio: false // You can set this to true if you want to capture audio as well.
+        });
+
+        let recordedStream = stream;
+        let recordedChunks = [];
+        let mediaRecorder = new MediaRecorder(stream);
+
+        mediaRecorder.ondataavailable = (event) => {
+          if (event.data.size > 0) {
+            recordedChunks.push(event.data);
+          }
+        };
+
+        mediaRecorder.onstop = () => {
+          const recordedBlob = new Blob(recordedChunks, { type: 'video/mp4' });
+          recordedChunks = [];
+
+          const downloadLink = document.createElement('a');
+          downloadLink.href = URL.createObjectURL(recordedBlob);
+          downloadLink.download = 'recorded_video.mp4';
+          downloadLink.click();
+
+          // recordedVideo.src = URL.createObjectURL(recordedBlob);
+        };
+
+        mediaRecorder.start();
+      }
+      this.setState({ recordedScreen: type });
+    }
+    catch (e) {
+      console.log(e);
     }
   }
   whoisOnline = () => {
@@ -693,6 +733,18 @@ class Room extends Component {
           zIndex: 10000
         }}>
           <ExpandMoreIcon style={{ fontSize: 25, color: 'white', marginTop: 7 }} />
+        </div>
+        <div onClick={(e) => {
+          this.recordScreen(!this.state.recordedScreen);
+        }} style={{
+          borderRadius: 20,
+          width: 40,
+          height: 40,
+          margin: '5px 0px 0px 60px',
+          position: 'absolute',
+          zIndex: 10000
+        }}>
+          <RadioButtonCheckedIcon style={{ fontSize: 25, color: this.state.recordedScreen ? 'red' : 'white', marginTop: 7 }} />
         </div>
 
         <Draggable style={{
