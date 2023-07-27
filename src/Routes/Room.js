@@ -114,8 +114,8 @@ class Room extends Component {
           deviceId: {
             exact: device?.deviceId
           },
-          width: { ideal: 480 },
-          height: { ideal: 640 }
+          // width: { ideal: 480 },
+          // height: { ideal: 640 }
         }
       }
       return navigator.mediaDevices.getUserMedia(constraints)
@@ -130,6 +130,34 @@ class Room extends Component {
     }
     catch (e) {
       console.error(e);
+    }
+  }
+  stopCamera = async (type) => {
+    try {
+      if (type){
+        this.state.localStream.getTracks().forEach(track => track.stop());
+        this.setState({muteMyCamera: true});
+      }
+      else {
+        let newStream = await this.getLocalStream(this.state.cams[this.state.camIndex]);
+        this.setState({localStream: newStream});
+        this.setState({muteMyCamera: false});
+        console.log('newStream', newStream);
+        const [videoTrack] = newStream.getVideoTracks();
+        let socketIds = Object.keys(this.state.peerConnections);
+        
+        socketIds.forEach((socketID) => {
+          let pc = this.state.peerConnections[socketID];
+          const sender = pc
+            .getSenders()
+            .find((s) => s.track.kind === videoTrack.kind);
+          console.log("Found sender:", sender);
+          sender.replaceTrack(videoTrack);
+        });
+      }
+    }
+    catch (e){
+
     }
   }
   switchCam = async () => {
@@ -677,7 +705,7 @@ class Room extends Component {
           <Video
             videoType='localVideo'
             videoStyles={{
-              width: 200,
+              width: 150,
               borderRadius: 20
             }}
             frameStyle={{
@@ -753,7 +781,7 @@ class Room extends Component {
             </div>
             <i onClick={() => this.setState({ muteMyMic: !this.state.muteMyMic })}
               style={{ cursor: 'pointer', padding: 5, fontSize: 25, color: 'white' }} className='material-icons'>{!this.state.muteMyMic && 'mic' || 'mic_off'}</i>
-            <i onClick={() => this.setState({ muteMyCamera: !this.state.muteMyCamera })}
+            <i onClick={() => this.stopCamera(!this.state.muteMyCamera)}
               style={{ cursor: 'pointer', padding: 5, fontSize: 25, color: 'white', marginTop: 2 }} className='material-icons'>{!this.state.muteMyCamera && 'videocam' || 'videocam_off'}</i>
             <div onClick={(e) => this.switchCam()} style={{
               borderRadius: 20,
