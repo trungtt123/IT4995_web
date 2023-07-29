@@ -19,6 +19,7 @@ import { updateConversation } from "../Redux/conversationSlice";
 import axios from "../setups/custom_axios";
 import userService from "../Services/Api/userService";
 import ConfirmModal from "../Components/ConfirmModal";
+import ModalDetailMedia from "../Components/ModalDetailMedia";
 const MessageItem = memo((props) => {
     const { user } = useSelector(
         (state) => state.auth
@@ -27,7 +28,7 @@ const MessageItem = memo((props) => {
         let seenUser = props?.participants?.filter(o => o.lastSeen.messageId === props?.messData?._id && user.id !== o.user._id);
         return (
             <>
-                <span style={{fontSize: 10, marginLeft: 45}}>{props.paName}</span>
+                <span style={{ fontSize: 10, marginLeft: 45 }}>{props.paName}</span>
                 <div style={{ marginBottom: 20 }}>
                     <div style={{
                         position: 'relative', width: '100%', marginLeft: 5,
@@ -127,12 +128,14 @@ const Conversation = memo(({ socket }) => {
     //tin nhắn muốn gửi
     const [textMessage, setTextMessage] = useState("");
     const [isShowModal, setIsShowModal] = useState(false);
+    const [isShowDetailMedia, setIsShowDetailMedia] = useState(false);
 
     const [news, setNews] = useState();
     const [lastSeenMessage, setLastSeenMessage] = useState();
     const mess = useRef();
     const messageEndRef = useRef(null);
     const textNoti = useRef("");
+    const mediaCurrent = useRef({ url: '', type: '' });
 
     const handleSendMessage = (mess) => {
         socket && socket.emit('new_message', {
@@ -296,6 +299,12 @@ const Conversation = memo(({ socket }) => {
     return (
         <>
             {
+                isShowDetailMedia && <ModalDetailMedia
+                    url={mediaCurrent.current.url}
+                    type={mediaCurrent.current.type}
+                    closeModal={() => setIsShowDetailMedia(false)} />
+            }
+            {
                 isShowModal && <ConfirmModal
                     isShowReject={false}
                     onAccept={() => setIsShowModal(false)}
@@ -305,7 +314,7 @@ const Conversation = memo(({ socket }) => {
             }
             {showAddMember && <ModalAddMember conversation={conversation}
                 socket={socket} closeModal={() => setShowAddMember(false)} />}
-            {isCall && <Room user={user}
+            {isCall && <Room user={user} chatSocket={socket}
                 roomId={conversationId} handleEndCall={() => handleEndCall()} />}
             <div>
                 <div style={{
@@ -339,7 +348,7 @@ const Conversation = memo(({ socket }) => {
                     </div>
                 </div>
                 <div style={{ width: "100%", marginTop: 50 }}>
-                    <div id="messageContainer" style={{ overflow: 'hidden', paddingTop: 20, marginBottom: 200 }}>
+                    <div style={{ overflow: 'hidden', paddingTop: 20, marginBottom: 200 }}>
                         {listMessage.map((e, index) => {
                             if (e?.type === 'notification') {
                                 return <div style={{
@@ -350,9 +359,20 @@ const Conversation = memo(({ socket }) => {
                                 }}
                                     key={e._id}>{e.content.body}</div>
                             }
-                            else return <MessageItem participants={participants}
-                                key={e._id} avatar={avatar[e.sender]} paName={paName[e.sender]}
-                                messData={e} idSender={e.sender} idUser={user.id} keyExtractor={(e) => e._id} />
+                            else return <div key={e._id} onClick={() => {
+                                console.log(' e?.type',  e?.type)
+                                if (e?.type === 'image') {
+                                    mediaCurrent.current = {
+                                        url: e?.content.body[0],
+                                        type: e?.type
+                                    }
+                                    setIsShowDetailMedia(true);
+                                }
+                            }}>
+                                <MessageItem participants={participants}
+                                    avatar={avatar[e.sender]} paName={paName[e.sender]}
+                                    messData={e} idSender={e.sender} idUser={user.id} keyExtractor={(e) => e._id} />
+                            </div>
                         }
                         )}
                         <div ref={messageEndRef} />

@@ -96,6 +96,7 @@ class Video extends Component {
       >
         {/* <audio id={this.props.id} muted={this.props.muted} ref={ (ref) => {this.video = ref }}></audio> */}
         <video
+          className='video-conferencing'
           id={this.props.id}
           muted={this.props.muted}
           autoPlay

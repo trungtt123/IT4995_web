@@ -150,5 +150,6 @@ const style = {
   borderRadius: 5,
   boxShadow: 24,
   p: 4,
+  outline: 'none'
 };
 export default ModalAddMember;

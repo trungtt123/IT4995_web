@@ -17,6 +17,9 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Draggable from '../Components/draggable'
 import { CHAT_SERVER_URL } from '../Services/Helper/constant';
 import { delay } from '../Services/Helper/common';
+import ConfirmModal from '../Components/ConfirmModal';
+import userService from '../Services/Api/userService';
+import Clock from '../Components/Clock';
 
 class Room extends Component {
   constructor(props) {
@@ -33,9 +36,12 @@ class Room extends Component {
       muteMyMic: false,
       expand: true,
       showEmoji: false,
-      recordedScreen: false,
       cams: [],
       camIndex: 0,
+      isShowModal: false,
+      confirmText: '',
+      recordedFile: null,
+      recording: false,
       status: 'Please wait...',
 
       pc_config: {
@@ -121,14 +127,6 @@ class Room extends Component {
         }
       }
       return navigator.mediaDevices.getUserMedia(constraints)
-      // .then(success)
-      // .catch(failure)
-      // navigator.mediaDevices.getDisplayMedia({
-      //   video: {
-      //     cursor: "always"
-      //   },
-      //   audio: false
-      // }).then(success).catch(failure);
     }
     catch (e) {
       console.error(e);
@@ -186,44 +184,6 @@ class Room extends Component {
       console.error(e);
     }
   }
-  recordScreen = async (type) => {
-    try {
-      if (type) {
-        const stream = await navigator.mediaDevices.getDisplayMedia({
-          video: true,
-          audio: false // You can set this to true if you want to capture audio as well.
-        });
-
-        let recordedStream = stream;
-        let recordedChunks = [];
-        let mediaRecorder = new MediaRecorder(stream);
-
-        mediaRecorder.ondataavailable = (event) => {
-          if (event.data.size > 0) {
-            recordedChunks.push(event.data);
-          }
-        };
-
-        mediaRecorder.onstop = () => {
-          const recordedBlob = new Blob(recordedChunks, { type: 'video/mp4' });
-          recordedChunks = [];
-
-          const downloadLink = document.createElement('a');
-          downloadLink.href = URL.createObjectURL(recordedBlob);
-          downloadLink.download = 'recorded_video.mp4';
-          downloadLink.click();
-
-          // recordedVideo.src = URL.createObjectURL(recordedBlob);
-        };
-
-        mediaRecorder.start();
-      }
-      this.setState({ recordedScreen: type });
-    }
-    catch (e) {
-      console.log(e);
-    }
-  }
   whoisOnline = () => {
     // let all peers know I am joining
     try {
@@ -259,7 +219,44 @@ class Room extends Component {
       console.error(e);
     }
   }
-
+  downloadRecordedVideo = (type) => {
+    try {
+      this.setState({
+        isShowModal: false
+      });
+      if (type) {
+        const selectedFile = this.state.recordedFile;
+        const formData = new FormData();
+        formData.append("video", selectedFile);
+        userService.uploadMedia({ formData }).then((result) => {
+          console.log('result', result);
+          if (result?.data?.video?.length > 0) {
+            this.props.chatSocket && this.props.chatSocket.emit('new_message',
+              {
+                conversationId: this.props.roomId,
+                userId: this.props.user.id,
+                token: this.props.user.token,
+                type: 'video',
+                content: {
+                  body: [`${result?.data?.video[0]?.url}`]
+                }
+              }
+            );
+          }
+          this.setState({ recordedFile: null });
+        }).catch(e => {
+          console.log(e);
+          this.setState({ recordedFile: null });
+        })
+      }
+      else {
+        this.setState({ recordedFile: null });
+      }
+    }
+    catch (e) {
+      console.log(e);
+    }
+  }
   createPeerConnection = async (socketID, callback) => {
     try {
       let pc = new RTCPeerConnection(this.state.pc_config)
@@ -359,6 +356,58 @@ class Room extends Component {
 
   componentDidMount = async () => {
     try {
+      const canvas = document.querySelector("#canvasElement");
+      const recordBtn = document.querySelector("#recordBtn");
+      const drawVideoOnCanvas = () => {
+        const videoElements = document.querySelectorAll('.video-conferencing');
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        for (let index = 0; index < videoElements.length; index++) {
+          let x = index % 3;
+          let y = Math.floor(index / 3);
+          ctx.drawImage(videoElements[index], x * 150, y * 150, 145, 145);
+        }
+        requestAnimationFrame(drawVideoOnCanvas);
+      }
+      drawVideoOnCanvas();
+
+      let recording = false;
+      let mediaRecorder;
+      let recordedChunks;
+
+      recordBtn.addEventListener("click", () => {
+        recording = !recording;
+        this.setState({ recording })
+        if (recording) {
+          const stream = canvas.captureStream(25);
+          mediaRecorder = new MediaRecorder(stream, {
+            mimeType: 'video/webm;codecs=vp9'
+          });
+          recordedChunks = [];
+          mediaRecorder.ondataavailable = e => {
+            if (e.data.size > 0) {
+              recordedChunks.push(e.data);
+            }
+          };
+          mediaRecorder.start();
+        } else {
+          mediaRecorder.stop();
+
+          setTimeout(() => {
+            const blob = new Blob(recordedChunks, {
+              type: "video/mp4"
+            });
+            const file = new File([blob], 'record.mp4', { type: blob.type });
+            console.log('file', file);
+            this.setState({
+              recordedFile: file,
+              confirmText: 'Bạn có muốn lưu file record không?',
+              isShowModal: true
+            });
+          }, 0);
+        }
+      });
+
       const { roomId } = this.props;
       console.log('roomId', roomId);
       let listCam = await this.getVideoDevices();
@@ -707,6 +756,16 @@ class Room extends Component {
         width: '100%',
         backgroundColor: 'black'
       }}>
+        <canvas id="canvasElement" width="500" height="500" style={{ display: 'none' }}></canvas>
+        {
+          this.state.isShowModal && <ConfirmModal
+            onAccept={() => {
+              this.downloadRecordedVideo(true);
+            }}
+            onReject={() => this.downloadRecordedVideo(false)}
+            primary={this.state.confirmText}
+          />
+        }
         <div id="containerShowEmoji" style={{ zIndex: 10000, color: 'white', position: 'absolute', top: 100, left: 20 }}></div>
         <div onClick={(e) => {
           this.setState({ expand: !this.state.expand })
@@ -734,18 +793,32 @@ class Room extends Component {
         }}>
           <ExpandMoreIcon style={{ fontSize: 25, color: 'white', marginTop: 7 }} />
         </div>
-        <div onClick={(e) => {
-          this.recordScreen(!this.state.recordedScreen);
-        }} style={{
+        <div style={{
           borderRadius: 20,
           width: 40,
           height: 40,
           margin: '5px 0px 0px 60px',
           position: 'absolute',
-          zIndex: 10000
+          zIndex: 10000,
+          top: 3
         }}>
-          <RadioButtonCheckedIcon style={{ fontSize: 25, color: this.state.recordedScreen ? 'red' : 'white', marginTop: 7 }} />
+          <button
+            id="recordBtn">{this.state.recording ? 'Stop' : 'Record'}</button>
+
         </div>
+        {
+          this.state.recording && <div style={{
+            borderRadius: 20,
+            width: 40,
+            height: 40,
+            margin: '7px 0px 0px 120px',
+            position: 'absolute',
+            zIndex: 10000,
+            top: 3
+          }}>
+            <Clock onFisish={() => { document.querySelector("#recordBtn").click() }} maxTime={60} />
+          </div>
+        }
 
         <Draggable style={{
           zIndex: 101,
@@ -783,19 +856,7 @@ class Room extends Component {
           display: this.state.expand ? '' : 'none'
         }}>
           <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-            {/* <div onClick={(e) => {
-              this.switchCam(this.state.typeCamera === 'user' ? 'environment' : 'user');
-            }} style={{
-              borderRadius: 20,
-              width: 40,
-              height: 40
-            }}>
-              <CameraswitchIcon style={{ fontSize: 25, color: 'white', marginTop: 7 }} />
-            </div> */}
-
-            <div onClick={(e) => {
-
-            }} style={{
+            <div style={{
               borderRadius: 20,
               width: 40,
               height: 40,

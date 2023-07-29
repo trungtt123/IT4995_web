@@ -30,14 +30,14 @@ const ConfirmModal = ({ primary, secondary, onAccept, onReject, isShowAccept = t
             justifyContent="center"
           >
             <Grid item>
-              <div style={{ fontSize: 20, fontWeight: 'bold',textAlign: 'center' }}>{primary.toUpperCase()}</div>
-              <div style={{ marginBottom: 20, marginTop: 10,textAlign: 'center' }}>{secondary}</div>
-              <div style={{ textAlign: 'center' }}>
-                {isShowAccept && <Button style={{ width: 150, fontSize: 15 }} onClick={() => handleOnAccept()}
-                  variant="text">OK</Button>}
+              <div style={{ fontSize: 20, fontWeight: 'bold', textAlign: 'center' }}>{primary.toUpperCase()}</div>
+              <div style={{ marginBottom: 20, marginTop: 10, textAlign: 'center' }}>{secondary}</div>
+              <div style={{ display: 'flex', justifyContent: 'center' }}>
                 {isShowReject && <Button style={{ width: 150, fontSize: 15 }} onClick={() => handleOnReject()}
                   color='error' variant="text">CANCEL</Button>
                 }
+                {isShowAccept && <Button style={{ width: 150, fontSize: 15 }} onClick={() => handleOnAccept()}
+                  variant="text">OK</Button>}
               </div>
             </Grid>
           </Grid>
@@ -58,5 +58,6 @@ const style = {
   borderRadius: 5,
   boxShadow: 24,
   p: 4,
+  outline: 'none'
 };
 export default ConfirmModal;
