@@ -33,10 +33,10 @@ const ConfirmModal = ({ primary, secondary, onAccept, onReject, isShowAccept = t
               <div style={{ fontSize: 20, fontWeight: 'bold', textAlign: 'center' }}>{primary.toUpperCase()}</div>
               <div style={{ marginBottom: 20, marginTop: 10, textAlign: 'center' }}>{secondary}</div>
               <div style={{ display: 'flex', justifyContent: 'center' }}>
-                {isShowReject && <Button style={{ width: 150, fontSize: 15 }} onClick={() => handleOnReject()}
+                {isShowReject && <Button style={{ width: '50%', fontSize: 15 }} onClick={() => handleOnReject()}
                   color='error' variant="text">CANCEL</Button>
                 }
-                {isShowAccept && <Button style={{ width: 150, fontSize: 15 }} onClick={() => handleOnAccept()}
+                {isShowAccept && <Button style={{ width: '50%', fontSize: 15 }} onClick={() => handleOnAccept()}
                   variant="text">OK</Button>}
               </div>
             </Grid>
