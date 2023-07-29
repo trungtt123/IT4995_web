@@ -752,7 +752,7 @@ class Room extends Component {
         position: 'fixed',
         top: 0,
         zIndex: 100,
-        height: this.state.expand ? '100vh' : '7vh',
+        height: this.state.expand ? '100vh' : '6vh',
         width: '100%',
         backgroundColor: 'black'
       }}>
@@ -800,6 +800,7 @@ class Room extends Component {
           margin: '5px 0px 0px 60px',
           position: 'absolute',
           zIndex: 10000,
+          display: this.state.expand ? '' : 'none',
           top: 3
         }}>
           <button
