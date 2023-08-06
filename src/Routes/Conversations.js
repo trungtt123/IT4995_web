@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { _getCache, _setCache, getTimeCreateConversation, getRandomColor } from "../Services/Helper/common";
+import { _getCache, _setCache, getTimeCreateConversation, getRandomColor, removeAccents } from "../Services/Helper/common";
 import { useDispatch, useSelector } from "react-redux";
 import ModalCreateConversation from "../Components/ModalCreateConversation";
 import Button from '@mui/material/Button';
@@ -116,7 +116,7 @@ export default function Conversations({ socket }) {
             > */}
                 <div>
                     <List sx={{ width: '100%' }}>
-                        {conversations?.filter((o) => o.conversationName.includes(keyword))?.map((item, index) => {
+                        {conversations?.filter((o) => removeAccents(o.conversationName.toUpperCase()).includes(removeAccents(keyword.toUpperCase())))?.map((item, index) => {
                             let secondary = '';
                             let userTmp = item.participants.find(o => o.user == user.id);
                             let chuaXem = (item?.messages?.length - 1) - userTmp.lastSeen.index;

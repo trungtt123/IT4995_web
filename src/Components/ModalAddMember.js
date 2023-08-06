@@ -28,13 +28,19 @@ const ModalAddMember = ({ socket, conversation, closeModal }) => {
     })
   }
   const handleAddMember = () => {
-    socket && socket.emit('add_member',
-      {
-        conversationId: conversation?._id,
-        phoneNumber: phoneNumber,
-        token: user.token
-      }
-    )
+    if (navigator.onLine) {
+      socket && socket.emit('add_member',
+        {
+          conversationId: conversation?._id,
+          phoneNumber: phoneNumber,
+          token: user.token
+        }
+      )
+    }
+    else {
+      setStatus(2);
+      setStatusDes('Có lỗi xảy ra');
+    }
     // closeModal();
   }
   const handleChangeText = (value) => {
@@ -42,7 +48,8 @@ const ModalAddMember = ({ socket, conversation, closeModal }) => {
     console.log(friends);
     let dataTmp = [];
     if (value)
-      dataTmp = friends?.filter(o => o.username.toUpperCase().includes(value.toUpperCase()) || o.phoneNumber.toUpperCase().includes(value.toUpperCase()));
+      dataTmp = friends?.filter(o => o.phoneNumber.toUpperCase().includes(value.toUpperCase()));
+    // dataTmp = friends?.filter(o => o.username.toUpperCase().includes(value.toUpperCase()) || o.phoneNumber.toUpperCase().includes(value.toUpperCase()));
     setFilterData(dataTmp);
     setPhoneNumber(value);
   }
@@ -56,19 +63,25 @@ const ModalAddMember = ({ socket, conversation, closeModal }) => {
       console.log(result);
       if (result.code === "1000") {
         let newMember = result.newMember;
-        socket.emit('new_message',
-          {
-            conversationId: conversation?._id,
-            userId: user.id,
-            token: user.token,
-            type: 'notification',
-            content: {
-              body: `${newMember?.name} đã được thêm vào đoạn chat`
+        if (navigator.onLine) {
+          socket.emit('new_message',
+            {
+              conversationId: conversation?._id,
+              userId: user.id,
+              token: user.token,
+              type: 'notification',
+              content: {
+                body: `${newMember?.name} đã được thêm vào đoạn chat`
+              }
             }
-          }
-        )
-        dispatch(getConversation({ conversationId: conversation?._id }))
-        setStatus(1);
+          )
+          dispatch(getConversation({ conversationId: conversation?._id }))
+          setStatus(1);
+        }
+        else {
+          setStatus(2);
+          setStatusDes('Có lỗi xảy ra');
+        }
       } else if (result.code === "9999") {
         setStatus(2);
         let tmp;
@@ -114,7 +127,7 @@ const ModalAddMember = ({ socket, conversation, closeModal }) => {
                 }}
                 label="Số điện thoại" variant="outlined" onChange={(e) => handleChangeText(e.target.value)} />
               <div style={{ marginBottom: 5 }}>
-                <div style={{maxHeight: 100, overflow: 'scroll'}}>
+                <div style={{ maxHeight: 100, overflow: 'scroll' }}>
                   {filterData?.map((item, index) => {
                     return <div key={item.id} style={{ display: 'flex', flexDirection: 'row' }} onClick={(e) => handleSelectUser(item?.phoneNumber)}>
                       <Avatar style={{ marginRight: 10 }} src={item?.avatar} />

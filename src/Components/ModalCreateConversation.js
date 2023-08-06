@@ -11,8 +11,12 @@ const ModalCreateConversation = ({ socket, closeModal }) => {
   const [name, setName] = useState('');
   const [textNoti, setTextNoti] = useState('');
   const handleCreateNewConversation = () => {
-    if (name?.length > 200){
+    if (name?.length > 200) {
       setTextNoti('Tên cuộc hội thoại không được vượt quá 200 ký tự');
+      return;
+    }
+    if (!navigator.onLine){
+      setTextNoti('Có lỗi xảy ra');
       return;
     }
     socket && socket.emit('create_conversation', {
@@ -27,28 +31,18 @@ const ModalCreateConversation = ({ socket, closeModal }) => {
       <Modal
         open={true}
         onClose={() => closeModal()}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
       >
         <Box sx={style}>
-          <Grid
-            container
-            spacing={0}
-            direction="column"
-            alignItems="center"
-            justifyContent="center"
-          >
-            <Grid item>
-              <TextField sx={{ mb: 1 }}
-                id="outlined-basic" label="Tên cuộc hội thoại" variant="outlined" onChange={(e) => setName(e.target.value)} />
-              <div style={{color: 'red', fontSize: 12, width: 220}}>{textNoti}</div>
-              <div>
-                <Button sx={{ width: '100%' }}
-                  onClick={() => handleCreateNewConversation()}
-                  variant="contained">Gửi</Button>
-              </div>
-            </Grid>
-          </Grid>
+          <div style={{ width: '80%', margin: '0 auto' }}>
+            <TextField sx={{ mb: 1, width: '100%' }}
+              label="Tên cuộc hội thoại" variant="outlined" onChange={(e) => setName(e.target.value)} />
+            <div style={{ color: 'red', fontSize: 14, width: 220 }}>{textNoti}</div>
+            <div>
+              <Button sx={{ width: '100%' }}
+                onClick={() => handleCreateNewConversation()}
+                variant="contained">Gửi</Button>
+            </div>
+          </div>
         </Box>
       </Modal>
     </div>
@@ -61,6 +55,7 @@ const style = {
   left: '50%',
   transform: 'translate(-50%, -50%)',
   width: '80%',
+  padding: '',
   bgcolor: 'background.paper',
   border: '2px solid #ccc',
   borderRadius: 5,

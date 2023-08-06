@@ -34,7 +34,7 @@ const ConfirmModal = ({ primary, secondary, onAccept, onReject, isShowAccept = t
               <div style={{ marginBottom: 20, marginTop: 10, textAlign: 'center' }}>{secondary}</div>
               <div style={{ display: 'flex', justifyContent: 'center' }}>
                 {isShowReject && <Button style={{ width: '50%', fontSize: 15 }} onClick={() => handleOnReject()}
-                  color='error' variant="text">CANCEL</Button>
+                  color='error' variant="text">HỦY</Button>
                 }
                 {isShowAccept && <Button style={{ width: '50%', fontSize: 15 }} onClick={() => handleOnAccept()}
                   variant="text">OK</Button>}

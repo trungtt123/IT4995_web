@@ -138,15 +138,21 @@ const Conversation = memo(({ socket }) => {
     const mediaCurrent = useRef({ url: '', type: '' });
 
     const handleSendMessage = (mess) => {
-        socket && socket.emit('new_message', {
-            type: 'text',
-            token: user.token,
-            userId: user.id,
-            conversationId: conversationId,
-            content: {
-                body: textMessage
-            }
-        });
+        if (navigator.onLine){
+            socket && socket.emit('new_message', {
+                type: 'text',
+                token: user.token,
+                userId: user.id,
+                conversationId: conversationId,
+                content: {
+                    body: textMessage
+                }
+            });
+        }
+        else {
+            textNoti.current = 'Có lỗi xảy ra';
+            setIsShowModal(true);
+        }
         setTextMessage('');
     }
     const handleCall = () => {
@@ -226,6 +232,8 @@ const Conversation = memo(({ socket }) => {
                 }
 
             }).catch(e => {
+                textNoti.current = 'Có lỗi xảy ra';
+                setIsShowModal(true);
                 console.log(e);
             })
             input.remove();

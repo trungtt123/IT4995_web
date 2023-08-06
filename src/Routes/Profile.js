@@ -22,6 +22,7 @@ import soict from '../Assets/images/soict.png';
 import SyncLockIcon from '@mui/icons-material/SyncLock';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { delay } from "../Services/Helper/common";
+import Menu from "../Components/Menu";
 const Profile = memo((props) => {
     const history = useHistory();
     const { user } = useSelector(
@@ -59,7 +60,7 @@ const Profile = memo((props) => {
             let regex = /^[a-zA-Z\s]+$/;
             if (!regex.test(removeAccents(name))) {
                 setError('Họ và tên chỉ được chứa chữ cái Latin');
-                return;       
+                return;
             }
         }
 
@@ -106,19 +107,24 @@ const Profile = memo((props) => {
     }, []);
     useEffect(() => {
         const handleClickOutside = async (event) => {
-            if (iconOpenModal.current && iconOpenModal.current.contains(event.target)) {
-                modalExpand.current.style.display = '';
-                iconOpenModal.current.style.display = 'none';
-                modalExpand.current.classList.remove('element-slide-back');
-                modalExpand.current.classList.add('element-slide-from-right');
-                return;
+            try {
+                if (iconOpenModal.current && iconOpenModal.current.contains(event.target)) {
+                    modalExpand.current.style.display = '';
+                    iconOpenModal.current.style.display = 'none';
+                    modalExpand.current.classList.remove('element-slide-back');
+                    modalExpand.current.classList.add('element-slide-from-right');
+                    return;
+                }
+                if (modalExpand.current && !modalExpand.current.contains(event.target)) {
+                    modalExpand.current.classList.remove('element-slide-from-right');
+                    modalExpand.current.classList.add('element-slide-back');
+                    iconOpenModal.current.style.display = '';
+                    await delay(1000);
+                    modalExpand.current.style.display = 'none';
+                }
             }
-            if (modalExpand.current && !modalExpand.current.contains(event.target)) {
-                modalExpand.current.classList.remove('element-slide-from-right');
-                modalExpand.current.classList.add('element-slide-back');
-                iconOpenModal.current.style.display = '';
-                await delay(1000);
-                modalExpand.current.style.display = 'none';
+            catch (e) {
+                console.error(e)
             }
         };
 
@@ -140,29 +146,7 @@ const Profile = memo((props) => {
                     primary={textNoti.current}
                 />
             }
-            <div style={{ position: 'relative', width: '100%', zIndex: 9999 }}>
-                <div style={{ position: 'absolute', top: 0, right: 0, width: '100%' }}>
-                    {<div ref={iconOpenModal}
-                        style={{ position: 'absolute', right: 0 }}>
-                        <MoreHorizIcon onClick={() => setExpand(true)}
-                            style={{ margin: 5, color: '#666666' }} />
-                    </div>}
-                    {<div ref={modalExpand}
-                        className="element-slide-from-right"
-                        style={{
-                            display: 'none',
-                            backgroundColor: '#4da6ff', marginLeft: '50%', height: 200, padding: 10, borderBottomLeftRadius: 10, textAlign: 'center'
-                        }}>
-                        <img src={soict} style={{ width: 100, height: 100, borderRadius: 50 }} />
-                        <Button onClick={() => history.push('/changePassword')} variant="text" style={{ color: 'white' }}>
-                            <span style={{ marginRight: 5 }}>{`Đổi mật khẩu`}</span> <SyncLockIcon style={{ fontSize: 17, marginTop: -3 }} />
-                        </Button>
-                        <Button onClick={() => handleLogout()} variant="text" style={{ color: 'white' }}>
-                            <span style={{ marginRight: 5 }}>{`Đăng xuất`}</span> <LogoutIcon style={{ fontSize: 17, marginTop: -3 }} />
-                        </Button>
-                    </div>}
-                </div>
-            </div>
+            <Menu />
             <div style={{
                 textAlign: 'center',
                 padding: '50px 20px'

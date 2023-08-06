@@ -70,8 +70,8 @@ const ModalAddFriend = ({ socket, closeModal }) => {
                   />
                 </div>
               }
-              <div style={{ color: 'red' }}>{error}</div>
-              <div style={{ color: '#1976d2' }}>{success}</div>
+              <div style={{ color: 'red', fontSize: 14 }}>{error}</div>
+              <div style={{ color: '#1976d2', fontSize: 14 }}>{success}</div>
               {
                 searchUser && searchUser?.is_myself !== "true" && searchUser?.is_friend !== "true" && <div style={{ marginTop: 5 }}>
                   <Button sx={{ width: '100%' }}

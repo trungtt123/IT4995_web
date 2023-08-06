@@ -19,10 +19,30 @@ import OtherProfile from './OtherProfile';
 import CallNotification from './CallNotification';
 import { createHashHistory } from 'history';
 import ConversationInfo from './ConversationInfo';
-const socket = io(`${CHAT_SERVER_URL}`);
 const customHistory = createHashHistory();
 function AppNavigator(props) {
     const dispatch = useDispatch();
+    const [isOnline, setIsOnline] = useState(navigator.onLine);
+  		
+  	useEffect(() => {
+    	function onlineHandler() {
+      		setIsOnline(true);
+    	}
+	
+    	function offlineHandler() {
+      		setIsOnline(false);
+    	}
+	
+    	window.addEventListener("online", onlineHandler);
+    	window.addEventListener("offline", offlineHandler);
+
+	
+    	return () => {
+      		window.removeEventListener("online", onlineHandler);
+      		window.removeEventListener("offline", offlineHandler);
+    	};
+  	}, []);
+    const [socket, setSocket] = useState(io(`${CHAT_SERVER_URL}`));
     const { isCall } = useSelector(
         (state) => state.call
     );
@@ -58,7 +78,10 @@ function AppNavigator(props) {
             }
         };
     }, [socket, user, isCall])
-    console.log('isAuthen', isAuthenticated);
+    useEffect(() => {
+        setSocket(io(`${CHAT_SERVER_URL}`));
+    }, [isOnline])
+    console.log('socket', socket);
     return (
         <>
             <HashRouter>

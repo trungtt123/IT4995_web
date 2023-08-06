@@ -67,7 +67,7 @@ const Home = ({ socket }) => {
                         {<div style={{display: tabIndex === 2 ? '' : 'none'}}><Profile /></div>}
                     </div>
 
-                    <div style={{ position: 'fixed', bottom: -1, width: '100%', height: 60, zIndex: 99999 }}>
+                    <div style={{ position: 'fixed', bottom: -1, width: '100%', height: 60, zIndex: 999 }}>
                         <Tabs style={{ display: 'flex', width: '100%', backgroundColor: 'white' }}
                             value={tabIndex} onChange={handleChange}>
                             <Tab icon={tab1} aria-label="phone" style={{ flexGrow: 1 }} />

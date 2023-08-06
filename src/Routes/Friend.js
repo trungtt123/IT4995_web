@@ -14,6 +14,7 @@ import ModalAddFriend from "../Components/ModalAddFriend";
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
+import { removeAccents } from "../Services/Helper/common";
 
 const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -73,7 +74,7 @@ const Friend = ({ socket }) => {
             <div style={{ margin: '0 8px' }}>
                 <div style={{ width: '100%', display: 'grid', gridTemplateColumns: 'auto auto', overflow: 'hidden' }}>
                     {
-                        friends?.filter((o) => o.username.includes(keyword))?.map((item, index) => {
+                        friends?.filter((o) => removeAccents(o.username?.toUpperCase()).includes(removeAccents(keyword?.toUpperCase())))?.map((item, index) => {
                             let secondary = +item?.same_friends + " bạn chung";
                             return <div key={item.id} style={{ padding: 3 }}>
                                 <div style={{ boxShadow: '2px 2px 4px rgba(0,0,0,0.1)', backgroundColor: 'white', borderRadius: 10, height: 80, display: 'flex', alignItems: 'center' }}
@@ -85,7 +86,7 @@ const Friend = ({ socket }) => {
                                             </ListItemAvatar>
                                             <ListItemText primary={item.username} primaryTypographyProps={{
                                                 style: {
-                                                    fontWeight: 'bold', width: '80%',
+                                                    fontWeight: 'bold', width: '100px',
                                                     textOverflow: 'ellipsis',
                                                     whiteSpace: 'nowrap',
                                                     overflow: 'hidden'
