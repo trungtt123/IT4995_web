@@ -46,7 +46,7 @@ class Room extends Component {
 
       pc_config: {
         iceServers: [
-          { urls: 'stun:stun.l.google.com:19302' },
+          // { urls: 'stun:stun.l.google.com:19302' },
           {
             urls: 'turn:hk-turn1.xirsys.com:80?transport=udp',
             username: 'tSH4W-UfQFcDjiMRR8xlse_Cu92GD_ajaOzASFOstKbzliOBFUF--SdwY0ae3aKUAAAAAGSlE5hjcmFja2VydHZu',
@@ -77,7 +77,8 @@ class Room extends Component {
             username: 'tSH4W-UfQFcDjiMRR8xlse_Cu92GD_ajaOzASFOstKbzliOBFUF--SdwY0ae3aKUAAAAAGSlE5hjcmFja2VydHZu',
             credential: 'c1c8371a-1b00-11ee-ba7a-0242ac120004'
           }
-        ]
+        ],
+        iceTransportPolicy: 'relay'
       },
 
       sdpConstraints: {
@@ -122,8 +123,8 @@ class Room extends Component {
           deviceId: {
             exact: device?.deviceId
           },
-          // width: { ideal: 480 },
-          // height: { ideal: 640 }
+          width: { ideal: 480 },
+          height: { ideal: 480 }
         }
       }
       return navigator.mediaDevices.getUserMedia(constraints)
@@ -832,7 +833,7 @@ class Room extends Component {
             videoType='localVideo'
             videoStyles={{
               width: 150,
-              borderRadius: 20
+              borderRadius: 15
             }}
             frameStyle={{
               display: 'inline-block',
@@ -916,7 +917,7 @@ class Room extends Component {
         </div>
         <div style={{ display: this.state.expand ? '' : 'none' }}>
           <Videos
-            switchVideo={this.switchVideo}
+            // switchVideo={this.switchVideo}
             remoteStreams={remoteStreams}
           />
         </div>

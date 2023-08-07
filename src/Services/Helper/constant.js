@@ -37,4 +37,5 @@ export const TEXT_COMMON = {
     "CREATE_NEW_CONVERSATION_SUCCESSFUL_LOWERCASE": "Tạo mới cuộc hội thoại thành công",
     "CREATE_NEW_CONVERSATION_FAIL_LOWERCASE": "Tạo mới cuộc hội thoại thất bại",
     "CREATE_UPPERCASE": "TẠO MỚI",
+    "UNKNOWN_ERROR": "Có lỗi xảy ra"
 }

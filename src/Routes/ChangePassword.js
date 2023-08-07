@@ -29,6 +29,7 @@ const ChangePassword = (props) => {
     const [isShowModal, setIsShowModal] = useState(false);
     const [error, setError] = useState();
     const handleSubmit = () => {
+        setError('');
         if (!oldPassword || !newPassword || !confirmNewPass) {
             setError(TEXT_COMMON.PLEASE_ENTER_ALL_INFORMATION_LOWERCASE);
             return;
@@ -40,11 +41,21 @@ const ChangePassword = (props) => {
         authService.changePassword(oldPassword, newPassword).then(() => {
             setIsShowModal(true);
         }).catch(e => {
+            if (e?.response?.data?.code === "1004"){
+                if (e?.response?.data?.details === "new_password == password"){
+                    setError('Mật khẩu mới không được trùng với mật khẩu hiện tại');
+                }
+                else if (e?.response?.data?.details === "new_password va password co xau con chung/new_password > 80%"){
+                    setError('Mật khẩu mới không được giống với mật khẩu cũ quá 80%');
+                }
+                else {
+                    setError(TEXT_COMMON.INVALID_PASSWORD_PLEASE_ENTER_A_PASSWORD_OF_AT_LEAST_6_CHARACTERS_AND_NOT_THE_SAME_AS_THE_PHONE_NUMBER)
+                }
+            }
+            setError('Có lỗi xảy ra');
             console.error(e);
         })
     }
-    useEffect(() => {
-    }, []);
     return (
         <>
             {
@@ -85,7 +96,7 @@ const ChangePassword = (props) => {
                         id="confirmNewPass" label="Xác nhận mật khẩu mới" variant="outlined"
                         onChange={(e) => setConfirmNewPass(e.target.value)} />
                 </div>
-                <div style={{ fontSize: 15, color: 'red', textAlign: 'left', marginLeft: 10 }}>{error}</div>
+                <div style={{ fontSize: 14, color: 'red', textAlign: 'left', marginLeft: 10 }}>{error}</div>
                 <div style={{ margin: 10 }}>
                     <Button onClick={() => handleSubmit()} style={{ width: '100%' }} variant="contained">
                         Cập nhật

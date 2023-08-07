@@ -129,7 +129,7 @@ const ModalAddMember = ({ socket, conversation, closeModal }) => {
               <div style={{ marginBottom: 5 }}>
                 <div style={{ maxHeight: 100, overflow: 'scroll' }}>
                   {filterData?.map((item, index) => {
-                    return <div key={item.id} style={{ display: 'flex', flexDirection: 'row' }} onClick={(e) => handleSelectUser(item?.phoneNumber)}>
+                    return <div key={item.id} style={{ display: 'flex', flexDirection: 'row', marginBottom: 5 }} onClick={(e) => handleSelectUser(item?.phoneNumber)}>
                       <Avatar style={{ marginRight: 10 }} src={item?.avatar} />
                       <ListItemText primary={item?.username} primaryTypographyProps={{ style: { fontWeight: 'bold', marginTop: 2 } }}
                       />
