@@ -47,90 +47,89 @@ class Room extends Component {
       pc_config: {
         iceServers: [
           { urls: 'stun:stun.l.google.com:19302' },
+          {
+            urls: 'turn:hk-turn1.xirsys.com:80?transport=udp',
+            username: 'tSH4W-UfQFcDjiMRR8xlse_Cu92GD_ajaOzASFOstKbzliOBFUF--SdwY0ae3aKUAAAAAGSlE5hjcmFja2VydHZu',
+            credential: 'c1c8371a-1b00-11ee-ba7a-0242ac120004'
+          },
+          {
+            urls: 'turn:hk-turn1.xirsys.com:3478?transport=udp',
+            username: 'tSH4W-UfQFcDjiMRR8xlse_Cu92GD_ajaOzASFOstKbzliOBFUF--SdwY0ae3aKUAAAAAGSlE5hjcmFja2VydHZu',
+            credential: 'c1c8371a-1b00-11ee-ba7a-0242ac120004'
+          },
+          {
+            urls: 'turn:hk-turn1.xirsys.com:80?transport=tcp',
+            username: 'tSH4W-UfQFcDjiMRR8xlse_Cu92GD_ajaOzASFOstKbzliOBFUF--SdwY0ae3aKUAAAAAGSlE5hjcmFja2VydHZu',
+            credential: 'c1c8371a-1b00-11ee-ba7a-0242ac120004'
+          },
+          {
+            urls: 'turn:hk-turn1.xirsys.com:3478?transport=tcp',
+            username: 'tSH4W-UfQFcDjiMRR8xlse_Cu92GD_ajaOzASFOstKbzliOBFUF--SdwY0ae3aKUAAAAAGSlE5hjcmFja2VydHZu',
+            credential: 'c1c8371a-1b00-11ee-ba7a-0242ac120004'
+          },
+          {
+            urls: 'turns:hk-turn1.xirsys.com:443?transport=tcp',
+            username: 'tSH4W-UfQFcDjiMRR8xlse_Cu92GD_ajaOzASFOstKbzliOBFUF--SdwY0ae3aKUAAAAAGSlE5hjcmFja2VydHZu',
+            credential: 'c1c8371a-1b00-11ee-ba7a-0242ac120004'
+          },
+          {
+            urls: 'turns:hk-turn1.xirsys.com:5349?transport=tcp',
+            username: 'tSH4W-UfQFcDjiMRR8xlse_Cu92GD_ajaOzASFOstKbzliOBFUF--SdwY0ae3aKUAAAAAGSlE5hjcmFja2VydHZu',
+            credential: 'c1c8371a-1b00-11ee-ba7a-0242ac120004'
+          },
+          {
+            urls: 'turn:relay1.expressturn.com:3478',
+            username: 'efTSII5PQ6XYTYGZ2J',
+            credential: 'N7zCQhVnoDYCa8oQ'
+          },
           // {
-          //   urls: 'turn:hk-turn1.xirsys.com:80?transport=udp',
-          //   username: 'tSH4W-UfQFcDjiMRR8xlse_Cu92GD_ajaOzASFOstKbzliOBFUF--SdwY0ae3aKUAAAAAGSlE5hjcmFja2VydHZu',
-          //   credential: 'c1c8371a-1b00-11ee-ba7a-0242ac120004'
-          // },
-          // {
-          //   urls: 'turn:hk-turn1.xirsys.com:3478?transport=udp',
-          //   username: 'tSH4W-UfQFcDjiMRR8xlse_Cu92GD_ajaOzASFOstKbzliOBFUF--SdwY0ae3aKUAAAAAGSlE5hjcmFja2VydHZu',
-          //   credential: 'c1c8371a-1b00-11ee-ba7a-0242ac120004'
-          // },
-          // {
-          //   urls: 'turn:hk-turn1.xirsys.com:80?transport=tcp',
-          //   username: 'tSH4W-UfQFcDjiMRR8xlse_Cu92GD_ajaOzASFOstKbzliOBFUF--SdwY0ae3aKUAAAAAGSlE5hjcmFja2VydHZu',
-          //   credential: 'c1c8371a-1b00-11ee-ba7a-0242ac120004'
-          // },
-          // {
-          //   urls: 'turn:hk-turn1.xirsys.com:3478?transport=tcp',
-          //   username: 'tSH4W-UfQFcDjiMRR8xlse_Cu92GD_ajaOzASFOstKbzliOBFUF--SdwY0ae3aKUAAAAAGSlE5hjcmFja2VydHZu',
-          //   credential: 'c1c8371a-1b00-11ee-ba7a-0242ac120004'
-          // },
-          // {
-          //   urls: 'turns:hk-turn1.xirsys.com:443?transport=tcp',
-          //   username: 'tSH4W-UfQFcDjiMRR8xlse_Cu92GD_ajaOzASFOstKbzliOBFUF--SdwY0ae3aKUAAAAAGSlE5hjcmFja2VydHZu',
-          //   credential: 'c1c8371a-1b00-11ee-ba7a-0242ac120004'
-          // },
-          // {
-          //   urls: 'turns:hk-turn1.xirsys.com:5349?transport=tcp',
-          //   username: 'tSH4W-UfQFcDjiMRR8xlse_Cu92GD_ajaOzASFOstKbzliOBFUF--SdwY0ae3aKUAAAAAGSlE5hjcmFja2VydHZu',
-          //   credential: 'c1c8371a-1b00-11ee-ba7a-0242ac120004'
-          // },
-          // {
-          //   urls: 'turn:relay1.expressturn.com:3478',
+          //   urls: 'turn:relay2.expressturn.com:443',
           //   username: 'efTSII5PQ6XYTYGZ2J',
           //   credential: 'N7zCQhVnoDYCa8oQ'
           // },
-          {
-            urls: 'turn:relay2.expressturn.com:443',
-            username: 'efTSII5PQ6XYTYGZ2J',
-            credential: 'N7zCQhVnoDYCa8oQ'
-          },
-          {
-            urls: 'turn:relay3.expressturn.com:80',
-            username: 'efTSII5PQ6XYTYGZ2J',
-            credential: 'N7zCQhVnoDYCa8oQ'
-          },
-          {
-            urls: 'turn:relay3.expressturn.com:443',
-            username: 'efTSII5PQ6XYTYGZ2J',
-            credential: 'N7zCQhVnoDYCa8oQ'
-          },
-          {
-            urls: 'turn:relay4.expressturn.com:3478',
-            username: 'efTSII5PQ6XYTYGZ2J',
-            credential: 'N7zCQhVnoDYCa8oQ'
-          },
-          {
-            urls: 'turn:relay5.expressturn.com:3478',
-            username: 'efTSII5PQ6XYTYGZ2J',
-            credential: 'N7zCQhVnoDYCa8oQ'
-          },
-          {
-            urls: 'turns:relay6.expressturn.com:3478',
-            username: 'efTSII5PQ6XYTYGZ2J',
-            credential: 'N7zCQhVnoDYCa8oQ'
-          },
-          {
-            urls: 'turn:relay7.expressturn.com:3478',
-            username: 'efTSII5PQ6XYTYGZ2J',
-            credential: 'N7zCQhVnoDYCa8oQ'
-          },
-          {
-            urls: 'turn:relay8.expressturn.com:3478',
-            username: 'efTSII5PQ6XYTYGZ2J',
-            credential: 'N7zCQhVnoDYCa8oQ'
-          },
+          // {
+          //   urls: 'turn:relay3.expressturn.com:80',
+          //   username: 'efTSII5PQ6XYTYGZ2J',
+          //   credential: 'N7zCQhVnoDYCa8oQ'
+          // },
+          // {
+          //   urls: 'turn:relay3.expressturn.com:443',
+          //   username: 'efTSII5PQ6XYTYGZ2J',
+          //   credential: 'N7zCQhVnoDYCa8oQ'
+          // },
+          // {
+          //   urls: 'turn:relay4.expressturn.com:3478',
+          //   username: 'efTSII5PQ6XYTYGZ2J',
+          //   credential: 'N7zCQhVnoDYCa8oQ'
+          // },
+          // {
+          //   urls: 'turn:relay5.expressturn.com:3478',
+          //   username: 'efTSII5PQ6XYTYGZ2J',
+          //   credential: 'N7zCQhVnoDYCa8oQ'
+          // },
+          // {
+          //   urls: 'turns:relay6.expressturn.com:3478',
+          //   username: 'efTSII5PQ6XYTYGZ2J',
+          //   credential: 'N7zCQhVnoDYCa8oQ'
+          // },
+          // {
+          //   urls: 'turn:relay7.expressturn.com:3478',
+          //   username: 'efTSII5PQ6XYTYGZ2J',
+          //   credential: 'N7zCQhVnoDYCa8oQ'
+          // },
+          // {
+          //   urls: 'turn:relay8.expressturn.com:3478',
+          //   username: 'efTSII5PQ6XYTYGZ2J',
+          //   credential: 'N7zCQhVnoDYCa8oQ'
+          // },
           // {
           //   urls: 'turn:hk-turn1.xirsys.com:80?transport=udp',
           //   username: 'efTSII5PQ6XYTYGZ2J',
           //   credential: 'N7zCQhVnoDYCa8oQ'
           // }
-        ],
-        iceTransportPolicy: 'relay'
+        ]
       },
-
+      iceTransportPolicy: 'relay',
       sdpConstraints: {
         'mandatory': {
           'OfferToReceiveAudio': true,
@@ -363,22 +362,26 @@ class Room extends Component {
         }
 
         this.setState(prevState => {
+          try {
+            // If we already have a stream in display let it stay the same, otherwise use the latest stream
+            // const remoteStream = prevState.remoteStreams.length > 0 ? {} : { remoteStream: e.streams[0] }
+            const remoteStream = prevState.remoteStreams.length > 0 ? {} : { remoteStream: _remoteStream }
 
-          // If we already have a stream in display let it stay the same, otherwise use the latest stream
-          // const remoteStream = prevState.remoteStreams.length > 0 ? {} : { remoteStream: e.streams[0] }
-          const remoteStream = prevState.remoteStreams.length > 0 ? {} : { remoteStream: _remoteStream }
+            // get currently selected video
+            // let selectedVideo = prevState.remoteStreams.filter(stream => stream.id === prevState.selectedVideo.id)
+            // if the video is still in the list, then do nothing, otherwise set to new video stream
+            // selectedVideo = selectedVideo.length ? {} : { selectedVideo: remoteVideo }
 
-          // get currently selected video
-          let selectedVideo = prevState.remoteStreams.filter(stream => stream.id === prevState.selectedVideo.id)
-          // if the video is still in the list, then do nothing, otherwise set to new video stream
-          selectedVideo = selectedVideo.length ? {} : { selectedVideo: remoteVideo }
-
-          return {
-            // selectedVideo: remoteVideo,
-            ...selectedVideo,
-            // remoteStream: e.streams[0],
-            ...remoteStream,
-            remoteStreams, //: [...prevState.remoteStreams, remoteVideo]
+            return {
+              // selectedVideo: remoteVideo,
+              // ...selectedVideo,
+              // remoteStream: e.streams[0],
+              ...remoteStream,
+              remoteStreams, //: [...prevState.remoteStreams, remoteVideo]
+            }
+          }
+          catch(e){
+            console.log(e);
           }
         })
       }
@@ -549,12 +552,12 @@ class Room extends Component {
 
           this.setState(prevState => {
             // check if disconnected peer is the selected video and if there still connected peers, then select the first
-            const selectedVideo = prevState.selectedVideo.id === data.socketID && remoteStreams.length ? { selectedVideo: remoteStreams[0] } : null
+            // const selectedVideo = prevState.selectedVideo.id === data.socketID && remoteStreams.length ? { selectedVideo: remoteStreams[0] } : null
 
             return {
               // remoteStream: remoteStreams.length > 0 && remoteStreams[0].stream || null,
               remoteStreams,
-              ...selectedVideo,
+              // ...selectedVideo,
               status: data.peerCount > 1 ? `Total Connected Peers to room ${this.state.roomId}: ${data.peerCount}` : `Waiting for other peers to connect room ${this.state.roomId}`
             }
           }
@@ -727,10 +730,6 @@ class Room extends Component {
       console.error(e);
     }
   }
-
-  // ************************************* //
-  // NOT REQUIRED
-  // ************************************* //
   disconnectSocket = (socketToDisconnect) => {
     try {
       this.sendToPeer('socket-to-disconnect', null, {
@@ -742,20 +741,6 @@ class Room extends Component {
       console.error(e);
     }
   }
-
-  switchVideo = (_video) => {
-    try {
-      this.setState({
-        selectedVideo: _video
-      })
-    }
-    catch (e) {
-      console.error(e);
-    }
-  }
-
-  // ************************************* //
-  // ************************************* //
   stopTracks = async (stream) => {
     try {
       stream.getTracks().forEach(track => track.stop())
