@@ -42,6 +42,7 @@ class Room extends Component {
       confirmText: '',
       recordedFile: null,
       recording: false,
+      confirmAllowCameraAndMic: false,
       status: 'Please wait...',
 
       pc_config: {
@@ -129,7 +130,7 @@ class Room extends Component {
           // }
         ]
       },
-      iceTransportPolicy: 'relay',
+      // iceTransportPolicy: 'relay',
       sdpConstraints: {
         'mandatory': {
           'OfferToReceiveAudio': true,
@@ -180,6 +181,8 @@ class Room extends Component {
     }
     catch (e) {
       console.error(e);
+      console.log('run');
+      this.setState({ confirmAllowCameraAndMic: true })
     }
   }
   stopCamera = async (type) => {
@@ -207,7 +210,7 @@ class Room extends Component {
       }
     }
     catch (e) {
-
+      this.setState({ confirmAllowCameraAndMic: true })
     }
   }
   switchCam = async () => {
@@ -232,6 +235,7 @@ class Room extends Component {
     }
     catch (e) {
       console.error(e);
+      this.setState({ confirmAllowCameraAndMic: true })
     }
   }
   whoisOnline = () => {
@@ -380,7 +384,7 @@ class Room extends Component {
               remoteStreams, //: [...prevState.remoteStreams, remoteVideo]
             }
           }
-          catch(e){
+          catch (e) {
             console.log(e);
           }
         })
@@ -502,7 +506,6 @@ class Room extends Component {
       })
       this.socket.on('connection-success', async (data) => {
         try {
-
           let stream = await this.getLocalStream(this.state.cams[this.state.camIndex]);
           this.setState({
             localStream: stream
@@ -521,7 +524,8 @@ class Room extends Component {
           })
         }
         catch (e) {
-          console.error(e)
+          console.error(e);
+          this.setState({ confirmAllowCameraAndMic: true })
         }
       })
 
@@ -762,8 +766,8 @@ class Room extends Component {
       localStream,
       peerConnections,
       remoteStreams,
+      confirmAllowCameraAndMic
     } = this.state
-
     if (disconnected) {
       try {
         // disconnect socket
@@ -793,6 +797,13 @@ class Room extends Component {
         backgroundColor: 'black'
       }}>
         <canvas id="canvasElement" width="500" height="500" style={{ display: 'none' }}></canvas>
+        {
+          confirmAllowCameraAndMic && <ConfirmModal
+            isShowReject={false}
+            onAccept={() =>  this.props.handleEndCall()}
+            primary={'Cấp quyền camera và micro để tham gia'}
+          />
+        }
         {
           this.state.isShowModal && <ConfirmModal
             onAccept={() => {
