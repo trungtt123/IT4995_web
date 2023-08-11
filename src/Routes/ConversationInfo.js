@@ -13,6 +13,7 @@ import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import { useSelector, useDispatch } from "react-redux";
 import { Button } from "@mui/material";
 import { getConversation } from "../Redux/conversationSlice";
+import ConfirmModal from "../Components/ConfirmModal";
 const ConversationInfo = memo(({ socket, conversation }) => {
     const history = useHistory();
     const [modeEditName, setModeEditName] = useState(false);
@@ -21,6 +22,8 @@ const ConversationInfo = memo(({ socket, conversation }) => {
     }, [])
     const [conversationName, setConversationName] = useState(conversation?.conversationName);
     const [validate, setValidate] = useState({});
+    const [confirmRemoveMember, setConfirmRemoveMember] = useState(false);
+    const selectedUser = useRef();
     const dispatch = useDispatch();
     const { user } = useSelector(
         (state) => state.auth
@@ -31,8 +34,10 @@ const ConversationInfo = memo(({ socket, conversation }) => {
         console.log('userId', userId);
         history.push({ pathname: '/otherProfile', state: { userId: userId } });
     }
-    const handleRemoveMember = (userId) => {
-        socket && socket.emit('remove_member',
+    const handleRemoveMember = () => {
+        console.log('selectedUser.current', selectedUser.current);
+        const userId = selectedUser.current?._id;
+        userId && socket && socket.emit('remove_member',
             {
                 conversationId: conversation?._id,
                 userId: userId,
@@ -109,6 +114,12 @@ const ConversationInfo = memo(({ socket, conversation }) => {
     }, [socket]);
     return (
         <>
+            {confirmRemoveMember && <ConfirmModal
+                isShowReject={true}
+                onAccept={() => { handleRemoveMember(); setConfirmRemoveMember(false) }}
+                onReject={() => { selectedUser.current = {}; setConfirmRemoveMember(false) }}
+                primary={`Bạn có chắc chắn muốn xóa ${selectedUser.current.name}`}
+            />}
             <HeaderScreen title={"Thông tin cuộc hội thoại"} />
             <div style={{ marginTop: 60, padding: '0 10px' }}>
                 <div style={{ textAlign: 'center' }}>
@@ -161,7 +172,7 @@ const ConversationInfo = memo(({ socket, conversation }) => {
                         {
                             owner.current._id === user.id && item?.permissions !== "owner"
                             && <div style={{ position: 'absolute', right: 15, top: `50%`, transform: `translateY(-50%)` }}>
-                                <Button style={{ fontSize: 10, marginBottom: 5 }} onClick={() => handleRemoveMember(item?.user?._id)}
+                                <Button style={{ fontSize: 10, marginBottom: 5 }} onClick={() => {selectedUser.current = item.user; console.log('item', item); setConfirmRemoveMember(true)}}
                                     variant="contained" size="small">{`Loại bỏ`}</Button>
                             </div>
                         }

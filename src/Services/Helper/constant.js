@@ -28,7 +28,7 @@ export const TEXT_COMMON = {
     "THIS_PHONE_NUMBER_IS_ALREADY_REGISTERED_LOWERCASE": "Số điện thoại này đã được đăng ký",
     "INVALID_PASSWORD_PLEASE_ENTER_A_PASSWORD_OF_AT_LEAST_6_CHARACTERS_AND_NOT_THE_SAME_AS_THE_PHONE_NUMBER": "Mật khẩu không hợp lệ, hãy nhập mật khẩu ít nhất 6 ký tự và không trùng với số điện thoại",
     "CREATE_NEW_ACCOUNT_UPPERCASE": "TẠO TÀI KHOẢN MỚI",
-    "FORGOT_PASSWORD_UPPERCASE": "ĐĂNG NHẬP",
+    "FORGOT_PASSWORD_LOWERCASE": "Quên mật khẩu",
     "CALLING_LOWERCASE": "đang gọi",
     "PLEASE_ENTER_ALL_INFORMATION_LOWERCASE": "Hãy nhập đủ thông tin",
     "UPDATE_SUCCESSFUL_LOWERCASE": "Cập nhật thành công",
@@ -37,5 +37,6 @@ export const TEXT_COMMON = {
     "CREATE_NEW_CONVERSATION_SUCCESSFUL_LOWERCASE": "Tạo mới cuộc hội thoại thành công",
     "CREATE_NEW_CONVERSATION_FAIL_LOWERCASE": "Tạo mới cuộc hội thoại thất bại",
     "CREATE_UPPERCASE": "TẠO MỚI",
-    "UNKNOWN_ERROR": "Có lỗi xảy ra"
+    "UNKNOWN_ERROR": "Có lỗi xảy ra",
+    "INVALID_NAME": "Họ và tên chỉ được chứa chữ cái Latin"
 }

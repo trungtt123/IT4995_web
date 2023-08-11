@@ -40,8 +40,8 @@ const Login = (props) => {
                         : <VisibilityOutlinedIcon onClick={() => setIsShowPass(false)}
                             style={{ position: 'absolute', right: 15, top: 15 }} fontSize="small" />}
                 </div>
-                {loginType === 0 && <div style={{textAlign: 'left', fontSize: 15, color: 'red', marginLeft: '10px'}}>Thông tin đăng nhập không đúng</div>}
-                <div style={{ fontSize: 15, float: 'right', margin: 10 }}>{TEXT_COMMON.FORGOT_PASSWORD_UPPERCASE}</div>
+                {loginType === 0 && <div style={{textAlign: 'left', fontSize: 14, color: 'red', marginLeft: '10px'}}>Thông tin đăng nhập không đúng</div>}
+                <div style={{ fontSize: 14, float: 'right', margin: 10 }}>{TEXT_COMMON.FORGOT_PASSWORD_LOWERCASE}</div>
                 <div style={{ margin: 10 }}>
                     <Button onClick={() => handleSubmit()} style={{ width: '100%' }}
                         variant="contained">{TEXT_COMMON.LOG_IN_LOWERCASE}</Button>

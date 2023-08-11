@@ -28,6 +28,7 @@ const Signup = (props) => {
     const [isShowModal, setIsShowModal] = useState(false);
     const windowHeight = window.innerHeight;
     const handleSubmit = () => {
+        setError('');
         try {
             if (!name) {
                 setError(TEXT_COMMON.PLEASE_ENTER_FULL_NAME_LOWERCASE);
@@ -56,6 +57,10 @@ const Signup = (props) => {
                 else if (e.response.data.code === "1004" && (e.response.data.details === "password" || e.response.data.details === "trùng phone và pass")) {
                     setError(TEXT_COMMON.INVALID_PASSWORD_PLEASE_ENTER_A_PASSWORD_OF_AT_LEAST_6_CHARACTERS_AND_NOT_THE_SAME_AS_THE_PHONE_NUMBER);
                 }
+                else if (e.response.data.code === "1004" && (e.response.data.details === "username khong hop le")) {
+                    setError(TEXT_COMMON.INVALID_NAME);
+                }
+                else setError('Có lỗi xảy ra');
             });
         }
         catch(e){
